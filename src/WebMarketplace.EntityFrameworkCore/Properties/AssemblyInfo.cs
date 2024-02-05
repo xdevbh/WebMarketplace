@@ -1,2 +1,3 @@
 ﻿using System.Runtime.CompilerServices;
-[assembly:InternalsVisibleToAttribute("WebMarketplace.EntityFrameworkCore.Tests")]
+
+[assembly: InternalsVisibleToAttribute("WebMarketplace.EntityFrameworkCore.Tests")]

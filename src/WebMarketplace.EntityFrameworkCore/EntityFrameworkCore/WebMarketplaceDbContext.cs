@@ -12,6 +12,11 @@ using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using WebMarketplace.Carts;
+using WebMarketplace.Orders;
+using WebMarketplace.Organizations;
+using WebMarketplace.Products;
+using WebMarketplace.Reviews;
 
 namespace WebMarketplace.EntityFrameworkCore;
 
@@ -53,10 +58,19 @@ public class WebMarketplaceDbContext :
 
     #endregion
 
+    public DbSet<Organization> Organizations { get; set; }
+    public DbSet<UserOrganization> UserOrganizations { get; set; }
+    public DbSet<ProductCategory> ProductCategories { get; set; }
+    public DbSet<Product> Products { get; set; }
+    public DbSet<Cart> Carts { get; set; }
+    public DbSet<CartItem> CartItems { get; set; }
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderItem> OrderItems { get; set; }
+    public DbSet<Review> Reviews { get; set; }
+
     public WebMarketplaceDbContext(DbContextOptions<WebMarketplaceDbContext> options)
         : base(options)
     {
-
     }
 
     protected override void OnModelCreating(ModelBuilder builder)

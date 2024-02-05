@@ -26,7 +26,7 @@ namespace WebMarketplace.EntityFrameworkCore;
     typeof(AbpAuditLoggingEntityFrameworkCoreModule),
     typeof(AbpTenantManagementEntityFrameworkCoreModule),
     typeof(AbpFeatureManagementEntityFrameworkCoreModule)
-    )]
+)]
 public class WebMarketplaceEntityFrameworkCoreModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
@@ -38,17 +38,16 @@ public class WebMarketplaceEntityFrameworkCoreModule : AbpModule
     {
         context.Services.AddAbpDbContext<WebMarketplaceDbContext>(options =>
         {
-                /* Remove "includeAllEntities: true" to create
-                 * default repositories only for aggregate roots */
+            /* Remove "includeAllEntities: true" to create
+             * default repositories only for aggregate roots */
             options.AddDefaultRepositories(includeAllEntities: true);
         });
 
         Configure<AbpDbContextOptions>(options =>
         {
-                /* The main point to change your DBMS.
-                 * See also WebMarketplaceMigrationsDbContextFactory for EF Core tooling. */
+            /* The main point to change your DBMS.
+             * See also WebMarketplaceMigrationsDbContextFactory for EF Core tooling. */
             options.UseSqlServer();
         });
-
     }
 }
