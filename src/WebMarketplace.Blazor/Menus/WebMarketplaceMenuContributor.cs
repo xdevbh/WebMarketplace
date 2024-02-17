@@ -45,7 +45,7 @@ public class WebMarketplaceMenuContributor : IMenuContributor
                 WebMarketplaceMenus.Home,
                 l["Menu:Home"],
                 "/",
-                icon: "fas fa-home"
+                icon: "Icons.Material.Filled.Home"
             )
         );
      
@@ -76,7 +76,7 @@ public class WebMarketplaceMenuContributor : IMenuContributor
             "Account.Manage",
             accountStringLocalizer["MyAccount"],
             $"{authServerUrl.EnsureEndsWith('/')}Account/Manage?returnUrl={_configuration["App:SelfUrl"]}",
-            icon: "fa fa-cog",
+            icon: "Icons.Material.Filled.Settings",
             order: 1000,
             null).RequireAuthenticated());
 

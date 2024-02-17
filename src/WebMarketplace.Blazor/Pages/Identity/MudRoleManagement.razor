@@ -29,7 +29,7 @@
              ServerData="LoadServerData">
     <ToolBarContent>
         <MudText Typo="Typo.h5">@L["Roles"]</MudText>
-        <MudSpacer />
+        <MudSpacer/>
         <MudButton Color="MudBlazor.Color.Primary"
                    Variant="Variant.Outlined"
                    Disabled="!HasCreatePermission"
@@ -38,35 +38,28 @@
         </MudButton>
     </ToolBarContent>
     <Columns>
-        <MudBlazor.Column T="IdentityRoleDto"
-                          Field="@nameof(IdentityRoleDto.Id)"
-                          Hideable="false"
-                          Title="@L["Actions"]">
+        <TemplateColumn Title="@L["Actions"]">
             <CellTemplate>
                 @if (HasUpdatePermission)
                 {
-                    <MudIconButton Icon="fas fa-edit" 
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit"
                                    OnClick="@(async (_) => { await OpenEditModalAsync(context.Item); })"
-                                   Size="MudBlazor.Size.Small" />
-                    <MudIconButton Icon="fas fa-user-lock" 
+                                   Size="MudBlazor.Size.Small"/>
+                    <MudIconButton Icon="@Icons.Material.Filled.ManageAccounts"
                                    OnClick="@(async (_) => { await OpenPermissionsModalAsync(context.Item); })"
-                                   Size="MudBlazor.Size.Small" />
+                                   Size="MudBlazor.Size.Small"/>
                 }
                 @if (HasDeletePermission)
-                {   
-                    <MudIconButton Icon="fas fa-trash" 
-                                   OnClick="@(async (_) => { await DeleteEntityAsync(context.Item);} )"
-                                   Size="MudBlazor.Size.Small" />
+                {
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                   OnClick="@(async (_) => { await DeleteEntityAsync(context.Item); })"
+                                   Size="MudBlazor.Size.Small"/>
                 }
             </CellTemplate>
-        </MudBlazor.Column>
-        <MudBlazor.Column T="IdentityRoleDto"
-                          Field="@nameof(IdentityRoleDto.Name)"
-                          Hideable="false"
-                          Title=@L["Name"] />
-        <MudBlazor.Column T="IdentityRoleDto"
-                          Field="@nameof(IdentityRoleDto.Name)"
-                          Title="">
+        </TemplateColumn>
+        <PropertyColumn Property="x => x.Name" Title="@L["Name"]"/>
+
+        <TemplateColumn>
             <CellTemplate>
                 @if (context.Item.IsDefault)
                 {
@@ -76,12 +69,12 @@
                 }
                 @if (context.Item.IsPublic)
                 {
-                    <MudChip Color="MudBlazor.Color.Info">
+                    <MudChip Color="MudBlazor.Color.Primary">
                         @L["DisplayName:IsPublic"]
                     </MudChip>
                 }
             </CellTemplate>
-        </MudBlazor.Column>
+        </TemplateColumn>
     </Columns>
 </MudDataGrid>
 
@@ -98,9 +91,9 @@
                      @ref="_createForm">
                 <MudGrid>
                     <MudItem xs="12">
-                        <MudTextField @bind-Value="@NewEntity.Name" 
+                        <MudTextField @bind-Value="@NewEntity.Name"
                                       Label=@L["Name"]
-                                      For=@(() => NewEntity.Name) />
+                                      For=@(() => NewEntity.Name)/>
                     </MudItem>
                     <MudItem xs="6">
                         <MudCheckBox T="bool" @bind-Checked="@NewEntity.IsDefault">
@@ -116,12 +109,14 @@
             </MudForm>
         </DialogContent>
         <DialogActions>
-            <MudButton Color="MudBlazor.Color.Secondary" 
+            <MudButton Color="MudBlazor.Color.Secondary"
+                       StartIcon="@Icons.Material.Filled.Close"
                        OnClick="CloseCreateModalAsync">
                 @L["Cancel"]
             </MudButton>
-            <MudButton Variant="Variant.Filled" 
-                       Color="MudBlazor.Color.Primary" 
+            <MudButton Variant="Variant.Filled"
+                       EndIcon="@Icons.Material.Filled.Save"
+                       Color="MudBlazor.Color.Primary"
                        OnClick="CreateEntityAsync">
                 @L["Save"]
             </MudButton>
@@ -142,9 +137,9 @@
                      @ref="_editForm">
                 <MudGrid>
                     <MudItem xs="12">
-                        <MudTextField @bind-Value="@EditingEntity.Name" 
+                        <MudTextField @bind-Value="@EditingEntity.Name"
                                       Label=@L["Name"]
-                                      For=@(() => EditingEntity.Name) />
+                                      For=@(() => EditingEntity.Name)/>
                     </MudItem>
                     <MudItem xs="6">
                         <MudCheckBox T="bool" @bind-Checked="@EditingEntity.IsDefault">
@@ -160,12 +155,14 @@
             </MudForm>
         </DialogContent>
         <DialogActions>
-            <MudButton Color="MudBlazor.Color.Secondary" 
+            <MudButton Color="MudBlazor.Color.Secondary"
+                       StartIcon="@Icons.Material.Filled.Close"
                        OnClick="CloseEditModalAsync">
                 @L["Cancel"]
             </MudButton>
-            <MudButton Variant="Variant.Filled" 
-                       Color="MudBlazor.Color.Primary" 
+            <MudButton Variant="Variant.Filled"
+                       Color="MudBlazor.Color.Primary"
+                       EndIcon="@Icons.Material.Filled.Save"
                        OnClick="UpdateEntityAsync">
                 @L["Save"]
             </MudButton>

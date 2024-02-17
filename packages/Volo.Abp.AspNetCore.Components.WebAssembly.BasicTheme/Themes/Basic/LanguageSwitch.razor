@@ -8,9 +8,11 @@
 {
     <MudMenu Color="MudBlazor.Color.Inherit" Direction="MudBlazor.Direction.Left" OffsetX="true" Dense="true">
         <ActivatorContent>
-            <MudChip Color="MudBlazor.Color.Primary">
+            <MudButton Variant="Variant.Text" 
+                       Color="MudBlazor.Color.Inherit"
+                       StartIcon="@Icons.Material.Filled.Language">
                 @_currentLanguage.DisplayName
-            </MudChip>
+            </MudButton>
         </ActivatorContent>
         <ChildContent>
             @foreach (var language in _otherLanguages)

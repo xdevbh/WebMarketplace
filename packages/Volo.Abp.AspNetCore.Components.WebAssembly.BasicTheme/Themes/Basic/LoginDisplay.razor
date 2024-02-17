@@ -13,9 +13,11 @@
     <Authorized>
         <MudMenu Color="MudBlazor.Color.Inherit" Direction="MudBlazor.Direction.Left" OffsetX="true" Dense="true">
             <ActivatorContent>
-                <MudChip Color="MudBlazor.Color.Primary">
+                <MudButton Variant="Variant.Text"
+                           Color="MudBlazor.Color.Inherit"
+                           StartIcon="@Icons.Material.Filled.AccountCircle">
                     @CurrentUser.Name
-                </MudChip>
+                </MudButton>
             </ActivatorContent>
             <ChildContent>
                 @if (Menu is not null && Menu.Items.Any())
@@ -26,7 +28,8 @@
                             @menuItem.DisplayName
                         </MudListItem>
                     }
-                    <MudDivider />
+
+                    <MudDivider/>
                 }
                 <MudListItem Icon="@Icons.Material.Outlined.Login" OnClick="BeginSignOut">
                     @UiLocalizer["Logout"]
