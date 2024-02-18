@@ -43,17 +43,14 @@
                 @if (HasUpdatePermission)
                 {
                     <MudIconButton Icon="@Icons.Material.Filled.Edit"
-                                   OnClick="@(async (_) => { await OpenEditModalAsync(context.Item); })"
-                                   Size="MudBlazor.Size.Small"/>
+                                   OnClick="@(async (_) => { await OpenEditModalAsync(context.Item); })"/>
                     <MudIconButton Icon="@Icons.Material.Filled.ManageAccounts"
-                                   OnClick="@(async (_) => { await OpenPermissionsModalAsync(context.Item); })"
-                                   Size="MudBlazor.Size.Small"/>
+                                   OnClick="@(async (_) => { await OpenPermissionsModalAsync(context.Item); })"/>
                 }
                 @if (HasDeletePermission)
                 {
                     <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                                   OnClick="@(async (_) => { await DeleteEntityAsync(context.Item); })"
-                                   Size="MudBlazor.Size.Small"/>
+                                   OnClick="@(async (_) => { await DeleteEntityAsync(context.Item); })" />
                 }
             </CellTemplate>
         </TemplateColumn>

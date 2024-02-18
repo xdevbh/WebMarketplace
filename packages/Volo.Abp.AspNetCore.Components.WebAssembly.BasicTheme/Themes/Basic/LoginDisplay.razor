@@ -24,14 +24,15 @@
                 {
                     @foreach (var menuItem in Menu.Items)
                     {
-                        <MudListItem OnClick="@(async () => await NavigateToAsync(menuItem.Url, menuItem.Target))">
+                        <MudListItem Icon="@Icons.Material.Outlined.AccountCircle"
+                                     OnClick="@(async () => await NavigateToAsync(menuItem.Url, menuItem.Target))">
                             @menuItem.DisplayName
                         </MudListItem>
                     }
 
                     <MudDivider/>
                 }
-                <MudListItem Icon="@Icons.Material.Outlined.Login" OnClick="BeginSignOut">
+                <MudListItem Icon="@Icons.Material.Outlined.Logout" OnClick="BeginSignOut">
                     @UiLocalizer["Logout"]
                 </MudListItem>
             </ChildContent>
@@ -39,9 +40,11 @@
     </Authorized>
     <NotAuthorized>
         <MudLink Color="MudBlazor.Color.Inherit" Href="authentication/login">
-            <MudChip Color="MudBlazor.Color.Primary">
+            <MudButton Variant="Variant.Text"
+                       Color="MudBlazor.Color.Inherit"
+                       StartIcon="@Icons.Material.Filled.Login">
                 @UiLocalizer["Login"]
-            </MudChip>
+            </MudButton>
         </MudLink>
     </NotAuthorized>
 </AuthorizeView>
