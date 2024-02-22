@@ -5,6 +5,7 @@ using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 using WebMarketplace.Organizations;
+using WebMarketplace.ProductCategories;
 using WebMarketplace.Products;
 
 namespace WebMarketplace;

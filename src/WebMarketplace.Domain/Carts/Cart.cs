@@ -9,7 +9,4 @@ namespace WebMarketplace.Carts;
 public class Cart: AuditedAggregateRoot<Guid>
 {
     public Guid UserId { get; set; }
-    
-    public List<CartItem> Items { get; set; }
-    public IdentityUser User { get; set; }
 }

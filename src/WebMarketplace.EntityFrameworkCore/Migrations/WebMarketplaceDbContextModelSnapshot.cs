@@ -1800,9 +1800,7 @@ namespace WebMarketplace.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Carts");
+                    b.ToTable("AppCart", (string)null);
                 });
 
             modelBuilder.Entity("WebMarketplace.Carts.CartItem", b =>
@@ -1860,7 +1858,7 @@ namespace WebMarketplace.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("CartItems");
+                    b.ToTable("AppCartItem", (string)null);
                 });
 
             modelBuilder.Entity("WebMarketplace.Orders.Order", b =>
@@ -1904,9 +1902,7 @@ namespace WebMarketplace.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Orders");
+                    b.ToTable("AppOrder", (string)null);
                 });
 
             modelBuilder.Entity("WebMarketplace.Orders.OrderItem", b =>
@@ -1964,7 +1960,7 @@ namespace WebMarketplace.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("AppOrderItem", (string)null);
                 });
 
             modelBuilder.Entity("WebMarketplace.Organizations.Organization", b =>
@@ -2016,7 +2012,7 @@ namespace WebMarketplace.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Organizations");
+                    b.ToTable("AppOrganization", (string)null);
                 });
 
             modelBuilder.Entity("WebMarketplace.Organizations.UserOrganization", b =>
@@ -2062,9 +2058,57 @@ namespace WebMarketplace.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("UserId");
+                    b.ToTable("AppUserOrganization", (string)null);
+                });
 
-                    b.ToTable("UserOrganizations");
+            modelBuilder.Entity("WebMarketplace.ProductCategories.ProductCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)")
+                        .HasColumnName("ConcurrencyStamp");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ExtraProperties")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ExtraProperties");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ParentCategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentCategoryId");
+
+                    b.ToTable("AppProductCategory", (string)null);
                 });
 
             modelBuilder.Entity("WebMarketplace.Products.Product", b =>
@@ -2129,52 +2173,7 @@ namespace WebMarketplace.Migrations
 
                     b.HasIndex("ProductCategoryId");
 
-                    b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("WebMarketplace.Products.ProductCategory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)")
-                        .HasColumnName("ConcurrencyStamp");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<string>("ExtraProperties")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("ExtraProperties");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("ParentCategoryId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ProductCategories");
+                    b.ToTable("AppProduct", (string)null);
                 });
 
             modelBuilder.Entity("WebMarketplace.Reviews.Review", b =>
@@ -2190,7 +2189,6 @@ namespace WebMarketplace.Migrations
                         .HasColumnName("ConcurrencyStamp");
 
                     b.Property<string>("Content")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreationTime")
@@ -2227,9 +2225,7 @@ namespace WebMarketplace.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Reviews");
+                    b.ToTable("AppReview", (string)null);
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLogAction", b =>
@@ -2374,119 +2370,72 @@ namespace WebMarketplace.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WebMarketplace.Carts.Cart", b =>
-                {
-                    b.HasOne("Volo.Abp.Identity.IdentityUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("WebMarketplace.Carts.CartItem", b =>
                 {
-                    b.HasOne("WebMarketplace.Carts.Cart", "Cart")
-                        .WithMany("Items")
+                    b.HasOne("WebMarketplace.Carts.Cart", null)
+                        .WithMany()
                         .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebMarketplace.Products.Product", "Product")
+                    b.HasOne("WebMarketplace.Products.Product", null)
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Cart");
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("WebMarketplace.Orders.Order", b =>
-                {
-                    b.HasOne("Volo.Abp.Identity.IdentityUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("WebMarketplace.Orders.OrderItem", b =>
                 {
-                    b.HasOne("WebMarketplace.Orders.Order", "Order")
-                        .WithMany("Items")
+                    b.HasOne("WebMarketplace.Orders.Order", null)
+                        .WithMany()
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebMarketplace.Products.Product", "Product")
+                    b.HasOne("WebMarketplace.Products.Product", null)
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Order");
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("WebMarketplace.Organizations.UserOrganization", b =>
                 {
-                    b.HasOne("WebMarketplace.Organizations.Organization", "Organization")
+                    b.HasOne("WebMarketplace.Organizations.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
 
-                    b.HasOne("Volo.Abp.Identity.IdentityUser", "User")
+            modelBuilder.Entity("WebMarketplace.ProductCategories.ProductCategory", b =>
+                {
+                    b.HasOne("WebMarketplace.ProductCategories.ProductCategory", null)
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Organization");
-
-                    b.Navigation("User");
+                        .HasForeignKey("ParentCategoryId");
                 });
 
             modelBuilder.Entity("WebMarketplace.Products.Product", b =>
                 {
-                    b.HasOne("WebMarketplace.Organizations.Organization", "Owner")
-                        .WithMany("Products")
+                    b.HasOne("WebMarketplace.Organizations.Organization", null)
+                        .WithMany()
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebMarketplace.Products.ProductCategory", "Category")
+                    b.HasOne("WebMarketplace.ProductCategories.ProductCategory", null)
                         .WithMany()
                         .HasForeignKey("ProductCategoryId");
-
-                    b.Navigation("Category");
-
-                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("WebMarketplace.Reviews.Review", b =>
                 {
-                    b.HasOne("WebMarketplace.Products.Product", "Product")
+                    b.HasOne("WebMarketplace.Products.Product", null)
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Volo.Abp.Identity.IdentityUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>
@@ -2527,21 +2476,6 @@ namespace WebMarketplace.Migrations
             modelBuilder.Entity("Volo.Abp.TenantManagement.Tenant", b =>
                 {
                     b.Navigation("ConnectionStrings");
-                });
-
-            modelBuilder.Entity("WebMarketplace.Carts.Cart", b =>
-                {
-                    b.Navigation("Items");
-                });
-
-            modelBuilder.Entity("WebMarketplace.Orders.Order", b =>
-                {
-                    b.Navigation("Items");
-                });
-
-            modelBuilder.Entity("WebMarketplace.Organizations.Organization", b =>
-                {
-                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

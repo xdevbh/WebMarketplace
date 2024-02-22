@@ -10,8 +10,5 @@ public class Review : AuditedAggregateRoot<Guid>
     public Guid UserId { get; set; }
     public Guid ProductId { get; set; }
     public double Rating { get; set; }
-    public string Content { get; set; }
-
-    public Product Product { get; set; }
-    public IdentityUser User { get; set; }
+    public string? Content { get; set; }
 }

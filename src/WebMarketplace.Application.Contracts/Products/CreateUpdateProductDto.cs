@@ -6,21 +6,16 @@ namespace WebMarketplace.Products;
 public class CreateUpdateProductDto
 {
     [Required]
-    public string Name { get; set; } = string.Empty;
-    
+    public Guid OrganizationId { get; set; }
     [Required]
-    public decimal Price { get; set; }
-    
+    public string Name { get; set; }
+    [Required]
+    public double Price { get; set; }
     [Required]
     [StringLength(3)]
-    public string Currency { get; set; } = string.Empty;
+    public string Currency { get; set; }
     
-    public string? Description { get; set; } = string.Empty;
-    
-    public string? ImagePath { get; set; } = string.Empty;
-    
-    public Guid ProductCategoryId { get; set; }
-    
-    [Required]
-    public Guid CompanyId { get; set; }
+    public string? Description { get; set; }
+    public string? ImagePath { get; set; }
+    public Guid? ProductCategoryId { get; set; }
 }

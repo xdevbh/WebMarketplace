@@ -10,7 +10,4 @@ public class Order: AuditedAggregateRoot<Guid>
 {
     public Guid UserId { get; set; }
     public OrderStatus Status { get; set; } 
-    
-    public List<OrderItem> Items { get; set; }
-    public IdentityUser User { get; set; }
 }
