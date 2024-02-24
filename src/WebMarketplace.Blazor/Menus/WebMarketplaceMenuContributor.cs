@@ -48,6 +48,31 @@ public class WebMarketplaceMenuContributor : IMenuContributor
                 icon: "fas fa-home"
             )
         );
+        
+        var productsMenu = new ApplicationMenuItem(
+            WebMarketplaceMenus.Products,
+            l["Menu:Products"],
+            "/products",
+            icon: "fa fa-book"
+        );
+        context.Menu.Items.Insert(1, productsMenu);
+
+        var organizationsMenu = new ApplicationMenuItem(
+            WebMarketplaceMenus.Organizations,
+            l["Menu:Organizations"],
+            "/organizations",
+            icon: "fa fa-building"
+        );
+        context.Menu.Items.Insert(2,organizationsMenu);
+
+
+        var managementMenu = new ApplicationMenuItem(
+            WebMarketplaceMenus.Management,
+            l["Menu:Management"],
+            "/management",
+            icon: "fa fa-cog"
+        );
+        context.Menu.AddItem(managementMenu);
      
         var administration = context.Menu.GetAdministration();
 
