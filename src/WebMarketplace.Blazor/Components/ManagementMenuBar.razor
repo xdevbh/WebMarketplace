@@ -1,0 +1,70 @@
+@inherits Volo.Abp.AspNetCore.Components.AbpComponentBase
+@inject NavigationManager NavigationManager
+
+<Bar Mode="BarMode.VerticalInline"
+     CollapseMode="BarCollapseMode.Small"
+     Breakpoint="Breakpoint.Desktop"
+     NavigationBreakpoint="Breakpoint.Tablet"
+     Background="Background.Light"
+     ThemeContrast="ThemeContrast.Light">
+    <BarToggler />
+    <BarBrand>
+        <BarItem>
+            <BarLink>
+                Management
+            </BarLink>
+        </BarItem>
+    </BarBrand>
+    <BarMenu>
+        <BarStart>
+            @foreach (var menuItem in MenuItems)
+            {
+                <BarItem>
+                    <BarLink To="@menuItem.Link">
+                        <BarIcon IconName=@(menuItem.Icon)/>
+                        @menuItem.Title
+                    </BarLink>
+                </BarItem>
+            }
+        </BarStart>
+    </BarMenu>
+</Bar>
+
+@code {
+
+    private class MenuItem
+    {
+        public string Title { get; set; }
+        public string Icon { get; set; }
+        public string Link { get; set; }
+    }
+    
+    private List<MenuItem> MenuItems { get; set; } = new List<MenuItem>
+    {
+        new MenuItem
+        {
+            Title = "Home",
+            Icon = "fa-house",
+            Link = "/management"
+        },
+        new MenuItem
+        {
+            Title = "Products",
+            Icon = "fas fa-box",
+            Link = "/management/products"
+        },
+        new MenuItem
+        {
+            Title = "Orders",
+            Icon = "fa-clipboard-list",
+            Link = "/management/orders"
+        }
+    };
+
+
+    private void GoTo(string menuItemLink)
+    {
+        NavigationManager.NavigateTo(menuItemLink);
+    }
+
+}

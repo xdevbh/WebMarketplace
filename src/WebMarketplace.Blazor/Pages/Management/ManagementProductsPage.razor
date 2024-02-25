@@ -1,0 +1,33 @@
+@page "/management/products"
+@using WebMarketplace.Products
+@using Volo.Abp.Application.Dtos
+@using Microsoft.Extensions.Localization
+@using WebMarketplace.Localization
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inherits AbpCrudPageBase<IProductAppService, ProductDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateProductDto>
+@layout ManagementPageLayout
+
+<Card>
+    <CardHeader>
+        <h2>@L["Products"]</h2>
+    </CardHeader>
+    <CardBody>
+        <DataGrid TItem="ProductDto"
+                  Data="Entities"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  PageSize="PageSize">
+            <DataGridColumns>
+                <DataGridColumn TItem="ProductDto"
+                                Field="@nameof(ProductDto.Name)"
+                                Caption="@L["Name"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="ProductDto"
+                                Field="@nameof(ProductDto.Price)"
+                                Caption="@L["Price"]">
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>

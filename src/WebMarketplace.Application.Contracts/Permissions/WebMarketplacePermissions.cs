@@ -6,11 +6,11 @@ public static class WebMarketplacePermissions
     //public const string MyPermission1 = GroupName + ".MyPermission1";
 
     public const string GroupName = "WebMarketplace";
-    public const string VendorManagementGroup = "VendorManagement";
-    public const string ProductsManagementGroup = "ProductManagement";
-    public const string OrdersManagementGroup = "OrderManagement";
-    public const string CartsManagementGroup = "CartManagement";
-    public const string ReviewsManagementGroup = "ReviewsManagement";
+    public const string VendorManagementGroup = GroupName + "VendorManagement";
+    public const string ProductsManagementGroup = GroupName + "ProductManagement";
+    public const string OrdersManagementGroup = GroupName + "OrderManagement";
+    public const string CartsManagementGroup = GroupName + "CartManagement";
+    public const string ReviewsManagementGroup = GroupName + "ReviewsManagement";
 
     public static class Vendors
     {

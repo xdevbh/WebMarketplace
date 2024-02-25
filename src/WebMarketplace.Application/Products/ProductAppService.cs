@@ -9,7 +9,7 @@ public class ProductAppService : CrudAppService
     <Product, ProductDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateProductDto>
 {
     public ProductAppService(IRepository<Product, Guid> repository)
-        : base(repository)
+            : base(repository)
     {
     }
 }

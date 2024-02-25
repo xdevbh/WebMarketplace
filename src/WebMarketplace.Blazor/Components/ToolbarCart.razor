@@ -1,0 +1,15 @@
+@inherits Volo.Abp.AspNetCore.Components.AbpComponentBase
+
+<BarLink @onclick="GoToCart">
+    <BarIcon IconName="IconName.ShoppingCart"/>
+    Cart
+</BarLink>
+
+@code {
+
+    private async Task GoToCart()
+    {
+        await Message.Info("TODO: Show cart");
+    }
+
+}

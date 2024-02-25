@@ -1,0 +1,22 @@
+@using Volo.Abp.AspNetCore.Components.Web.BasicTheme.Themes.Basic
+@inherits Volo.Abp.AspNetCore.Components.Web.BasicTheme.Themes.Basic.MainLayout
+@layout MainLayout
+
+<Layout>
+    <Layout Sider>
+        <LayoutSider>
+            <LayoutSiderContent >
+                <ManagementMenuBar/>
+            </LayoutSiderContent>
+        </LayoutSider>
+        <Layout>
+            <LayoutContent Padding="Padding.Is4.OnX">
+               @Body
+            </LayoutContent>
+        </Layout>
+    </Layout>
+</Layout>
+
+@code {
+    
+}

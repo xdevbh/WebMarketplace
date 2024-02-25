@@ -7,10 +7,12 @@ using WebMarketplace.MultiTenancy;
 using Volo.Abp.Account.Localization;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Identity.Blazor;
+using Volo.Abp.Identity.Blazor.Pages.Identity;
 using Volo.Abp.SettingManagement.Blazor.Menus;
 using Volo.Abp.TenantManagement.Blazor.Navigation;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.Users;
+using WebMarketplace.Permissions;
 
 namespace WebMarketplace.Blazor.Menus;
 
@@ -64,16 +66,15 @@ public class WebMarketplaceMenuContributor : IMenuContributor
             icon: "fa fa-building"
         );
         context.Menu.Items.Insert(2,vendorsMenu);
+        
+            var managementMenu = new ApplicationMenuItem(
+                WebMarketplaceMenus.Management,
+                l["Menu:Management"],
+                "/management",
+                icon: "fa fa-cog"
+            ).RequireAuthenticated().RequirePermissions(WebMarketplacePermissions.Vendors.Edit);
+            context.Menu.AddItem(managementMenu);
 
-
-        var managementMenu = new ApplicationMenuItem(
-            WebMarketplaceMenus.Management,
-            l["Menu:Management"],
-            "/management",
-            icon: "fa fa-cog"
-        );
-        context.Menu.AddItem(managementMenu);
-     
         var administration = context.Menu.GetAdministration();
 
         if (MultiTenancyConsts.IsEnabled)

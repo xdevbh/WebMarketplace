@@ -15,9 +15,10 @@ using Volo.Abp.AutoMapper;
 using Volo.Abp.Modularity;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.Identity.Blazor.WebAssembly;
-using Volo.Abp.Security.Claims;
 using Volo.Abp.SettingManagement.Blazor.WebAssembly;
 using Volo.Abp.TenantManagement.Blazor.WebAssembly;
+using Volo.Abp.AspNetCore.Components.Web.Theming.Toolbars;
+using WebMarketplace.Blazor.Toolbars;
 
 namespace WebMarketplace.Blazor;
 
@@ -43,6 +44,7 @@ public class WebMarketplaceBlazorModule : AbpModule
         ConfigureUI(builder);
         ConfigureMenu(context);
         ConfigureAutoMapper(context);
+        ConfigureToolbar(context);
     }
 
     private void ConfigureRouter(ServiceConfigurationContext context)
@@ -103,5 +105,14 @@ public class WebMarketplaceBlazorModule : AbpModule
         {
             options.AddMaps<WebMarketplaceBlazorModule>();
         });
+    }
+    
+    private void ConfigureToolbar(ServiceConfigurationContext context)
+    {
+        Configure<AbpToolbarOptions>(options =>
+        {
+            options.Contributors.Add(new WebMarketplaceToolbarContributor());
+        });
+
     }
 }
