@@ -17,30 +17,30 @@ public class WebMarketplaceApplicationAutoMapperProfile : Profile
          * into multiple profile classes for a better organization. */
         
         CreateMap<Product, ProductDto>();
-        CreateMap<Product, CreateUpdateProductDto>();
+        CreateMap<CreateUpdateProductDto, Product>();
         
         CreateMap<ProductCategory, ProductCategoryDto>();
-        CreateMap<ProductCategory, CreateUpdateProductCategoryDto>();
+        CreateMap<CreateUpdateProductCategoryDto, ProductCategory>();
         
         CreateMap<Cart, CartDto>();
-        CreateMap<Cart, CreateUpdateCartDto>();
+        CreateMap<CreateUpdateCartDto, Cart>();
         
         CreateMap<CartItem, CartItemDto>();
-        CreateMap<CartItem, CreateUpdateCartItemDto>();
+        CreateMap<CreateUpdateCartItemDto, CartItem>();
         
         CreateMap<Order, OrderDto>();
-        CreateMap<Order, CreateUpdateOrderDto>();
+        CreateMap<CreateUpdateOrderDto, Order>();
         
         CreateMap<OrderItem, OrderItemDto>();
-        CreateMap<OrderItem, CreateUpdateOrderItemDto>();
+        CreateMap<CreateUpdateOrderItemDto, OrderItem>();
         
         CreateMap<Vendor, VendorDto>();
-        CreateMap<Vendor, CreateUpdateVendorDto>();
+        CreateMap<CreateUpdateVendorDto, Vendor>();
         
         CreateMap<UserVendor, UserVendorDto>();
-        CreateMap<UserVendor, CreateUpdateVendorDto>();
+        CreateMap<CreateUpdateVendorDto, UserVendor>();
         
         CreateMap<Review, ReviewDto>();
-        CreateMap<Review, CreateUpdateReviewDto>();
+        CreateMap<CreateUpdateReviewDto, Review>();
     }
 }
