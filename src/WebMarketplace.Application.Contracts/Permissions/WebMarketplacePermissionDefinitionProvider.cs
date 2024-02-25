@@ -73,13 +73,13 @@ public class WebMarketplacePermissionDefinitionProvider : PermissionDefinitionPr
             WebMarketplacePermissions.Carts.Delete, L("Permission:Carts.Delete"));
         
         var reviewsPermission = reviewsManagementGroup.AddPermission(
-            WebMarketplacePermissions.Reviews.Default, L("Permission:Carts"));
+            WebMarketplacePermissions.Reviews.Default, L("Permission:Reviews"));
         reviewsPermission.AddChild(
-            WebMarketplacePermissions.Reviews.Create, L("Permission:Carts.Create"));
+            WebMarketplacePermissions.Reviews.Create, L("Permission:Reviews.Create"));
         reviewsPermission.AddChild(
-            WebMarketplacePermissions.Reviews.Edit, L("Permission:Carts.Edit"));
+            WebMarketplacePermissions.Reviews.Edit, L("Permission:Reviews.Edit"));
         reviewsPermission.AddChild(
-            WebMarketplacePermissions.Reviews.Delete, L("Permission:Carts.Delete"));
+            WebMarketplacePermissions.Reviews.Delete, L("Permission:Reviews.Delete"));
     }
 
     private static LocalizableString L(string name)
