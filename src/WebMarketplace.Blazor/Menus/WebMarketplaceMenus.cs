@@ -7,11 +7,11 @@ public class WebMarketplaceMenus
 
     //Add your menu items here...
     public const string Products = Prefix + ".Products";
-    public const string Organizations = Prefix + ".Vendors";
+    public const string Vendors = Prefix + ".Vendors";
     
     public const string Management = Prefix + ".Management";
     public const string ProductManagement = Management + ".Product";
-    public const string OrganizationManagement = Management + ".Vendor";
+    public const string VendorManagement = Management + ".Vendor";
     public const string OrderManagement = Management + ".Order";
 
 }

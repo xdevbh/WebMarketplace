@@ -58,7 +58,7 @@ public class WebMarketplaceMenuContributor : IMenuContributor
         context.Menu.Items.Insert(1, productsMenu);
 
         var vendorsMenu = new ApplicationMenuItem(
-            WebMarketplaceMenus.Organizations,
+            WebMarketplaceMenus.Vendors,
             l["Menu:Vendors"],
             "/vendors",
             icon: "fa fa-building"

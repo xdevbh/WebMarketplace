@@ -44,7 +44,7 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
             await _vendorRepository.InsertAsync(
                 new Vendor
                 {
-                    Name = "Test Organization 1",
+                    Name = "Test vendor 1",
                     Address = "Test Address 1"
                 },
                 true
