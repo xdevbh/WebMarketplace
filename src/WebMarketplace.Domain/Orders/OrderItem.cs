@@ -1,12 +1,9 @@
 using System;
-using System.ComponentModel;
-using Scriban.Parsing;
 using Volo.Abp.Domain.Entities.Auditing;
-using WebMarketplace.Products;
 
 namespace WebMarketplace.Orders;
 
-public class OrderItem: AuditedAggregateRoot<Guid>
+public class OrderItem : FullAuditedAggregateRoot<Guid>
 {
     public Guid OrderId { get; set; }
     public Guid ProductId { get; set; }

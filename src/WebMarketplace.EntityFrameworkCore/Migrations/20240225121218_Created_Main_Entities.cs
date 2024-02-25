@@ -12,7 +12,7 @@ namespace WebMarketplace.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "AppCart",
+                name: "AppCarts",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -26,11 +26,11 @@ namespace WebMarketplace.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AppCart", x => x.Id);
+                    table.PrimaryKey("PK_AppCarts", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AppOrder",
+                name: "AppOrders",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -41,36 +41,18 @@ namespace WebMarketplace.Migrations
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AppOrder", x => x.Id);
+                    table.PrimaryKey("PK_AppOrders", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AppOrganization",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ExtraProperties = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
-                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AppOrganization", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AppProductCategory",
+                name: "AppProductCategories",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -86,41 +68,40 @@ namespace WebMarketplace.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AppProductCategory", x => x.Id);
+                    table.PrimaryKey("PK_AppProductCategories", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AppProductCategory_AppProductCategory_ParentCategoryId",
+                        name: "FK_AppProductCategories_AppProductCategories_ParentCategoryId",
                         column: x => x.ParentCategoryId,
-                        principalTable: "AppProductCategory",
+                        principalTable: "AppProductCategories",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "AppUserOrganization",
+                name: "AppVendors",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OrganizationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ExtraProperties = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AppUserOrganization", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AppUserOrganization_AppOrganization_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "AppOrganization",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                    table.PrimaryKey("PK_AppVendors", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AppProduct",
+                name: "AppProducts",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -130,7 +111,7 @@ namespace WebMarketplace.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ProductCategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    OrganizationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VendorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ExtraProperties = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -140,22 +121,47 @@ namespace WebMarketplace.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AppProduct", x => x.Id);
+                    table.PrimaryKey("PK_AppProducts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AppProduct_AppOrganization_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "AppOrganization",
+                        name: "FK_AppProducts_AppProductCategories_ProductCategoryId",
+                        column: x => x.ProductCategoryId,
+                        principalTable: "AppProductCategories",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_AppProducts_AppVendors_VendorId",
+                        column: x => x.VendorId,
+                        principalTable: "AppVendors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AppProduct_AppProductCategory_ProductCategoryId",
-                        column: x => x.ProductCategoryId,
-                        principalTable: "AppProductCategory",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "AppCartItem",
+                name: "AppUserVendors",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VendorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ExtraProperties = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppUserVendors", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AppUserVendors_AppVendors_VendorId",
+                        column: x => x.VendorId,
+                        principalTable: "AppVendors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AppCartItems",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -173,23 +179,23 @@ namespace WebMarketplace.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AppCartItem", x => x.Id);
+                    table.PrimaryKey("PK_AppCartItems", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AppCartItem_AppCart_CartId",
+                        name: "FK_AppCartItems_AppCarts_CartId",
                         column: x => x.CartId,
-                        principalTable: "AppCart",
+                        principalTable: "AppCarts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AppCartItem_AppProduct_ProductId",
+                        name: "FK_AppCartItems_AppProducts_ProductId",
                         column: x => x.ProductId,
-                        principalTable: "AppProduct",
+                        principalTable: "AppProducts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AppOrderItem",
+                name: "AppOrderItems",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -203,27 +209,30 @@ namespace WebMarketplace.Migrations
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    LastModifierId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    DeleterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AppOrderItem", x => x.Id);
+                    table.PrimaryKey("PK_AppOrderItems", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AppOrderItem_AppOrder_OrderId",
+                        name: "FK_AppOrderItems_AppOrders_OrderId",
                         column: x => x.OrderId,
-                        principalTable: "AppOrder",
+                        principalTable: "AppOrders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AppOrderItem_AppProduct_ProductId",
+                        name: "FK_AppOrderItems_AppProducts_ProductId",
                         column: x => x.ProductId,
-                        principalTable: "AppProduct",
+                        principalTable: "AppProducts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AppReview",
+                name: "AppReviews",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -240,90 +249,90 @@ namespace WebMarketplace.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AppReview", x => x.Id);
+                    table.PrimaryKey("PK_AppReviews", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AppReview_AppProduct_ProductId",
+                        name: "FK_AppReviews_AppProducts_ProductId",
                         column: x => x.ProductId,
-                        principalTable: "AppProduct",
+                        principalTable: "AppProducts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppCartItem_CartId",
-                table: "AppCartItem",
+                name: "IX_AppCartItems_CartId",
+                table: "AppCartItems",
                 column: "CartId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppCartItem_ProductId",
-                table: "AppCartItem",
+                name: "IX_AppCartItems_ProductId",
+                table: "AppCartItems",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppOrderItem_OrderId",
-                table: "AppOrderItem",
+                name: "IX_AppOrderItems_OrderId",
+                table: "AppOrderItems",
                 column: "OrderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppOrderItem_ProductId",
-                table: "AppOrderItem",
+                name: "IX_AppOrderItems_ProductId",
+                table: "AppOrderItems",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppProduct_OrganizationId",
-                table: "AppProduct",
-                column: "OrganizationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AppProduct_ProductCategoryId",
-                table: "AppProduct",
-                column: "ProductCategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AppProductCategory_ParentCategoryId",
-                table: "AppProductCategory",
+                name: "IX_AppProductCategories_ParentCategoryId",
+                table: "AppProductCategories",
                 column: "ParentCategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppReview_ProductId",
-                table: "AppReview",
+                name: "IX_AppProducts_ProductCategoryId",
+                table: "AppProducts",
+                column: "ProductCategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppProducts_VendorId",
+                table: "AppProducts",
+                column: "VendorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppReviews_ProductId",
+                table: "AppReviews",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppUserOrganization_OrganizationId",
-                table: "AppUserOrganization",
-                column: "OrganizationId");
+                name: "IX_AppUserVendors_VendorId",
+                table: "AppUserVendors",
+                column: "VendorId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AppCartItem");
+                name: "AppCartItems");
 
             migrationBuilder.DropTable(
-                name: "AppOrderItem");
+                name: "AppOrderItems");
 
             migrationBuilder.DropTable(
-                name: "AppReview");
+                name: "AppReviews");
 
             migrationBuilder.DropTable(
-                name: "AppUserOrganization");
+                name: "AppUserVendors");
 
             migrationBuilder.DropTable(
-                name: "AppCart");
+                name: "AppCarts");
 
             migrationBuilder.DropTable(
-                name: "AppOrder");
+                name: "AppOrders");
 
             migrationBuilder.DropTable(
-                name: "AppProduct");
+                name: "AppProducts");
 
             migrationBuilder.DropTable(
-                name: "AppOrganization");
+                name: "AppProductCategories");
 
             migrationBuilder.DropTable(
-                name: "AppProductCategory");
+                name: "AppVendors");
         }
     }
 }

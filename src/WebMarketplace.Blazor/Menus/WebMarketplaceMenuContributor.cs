@@ -57,13 +57,13 @@ public class WebMarketplaceMenuContributor : IMenuContributor
         );
         context.Menu.Items.Insert(1, productsMenu);
 
-        var organizationsMenu = new ApplicationMenuItem(
+        var vendorsMenu = new ApplicationMenuItem(
             WebMarketplaceMenus.Organizations,
-            l["Menu:Organizations"],
-            "/organizations",
+            l["Menu:Vendors"],
+            "/vendors",
             icon: "fa fa-building"
         );
-        context.Menu.Items.Insert(2,organizationsMenu);
+        context.Menu.Items.Insert(2,vendorsMenu);
 
 
         var managementMenu = new ApplicationMenuItem(

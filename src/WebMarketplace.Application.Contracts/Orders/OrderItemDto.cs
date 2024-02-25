@@ -1,10 +1,9 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 using Volo.Abp.Application.Dtos;
 
 namespace WebMarketplace.Orders;
 
-public class OrderItemDto : AuditedEntityDto<Guid>
+public class OrderItemDto : FullAuditedEntityDto<Guid>
 {
     public Guid OrderId { get; set; }
     public Guid ProductId { get; set; }

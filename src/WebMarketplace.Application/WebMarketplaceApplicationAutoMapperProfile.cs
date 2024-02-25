@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using WebMarketplace.Carts;
 using WebMarketplace.Orders;
-using WebMarketplace.Organizations;
 using WebMarketplace.ProductCategories;
 using WebMarketplace.Products;
 using WebMarketplace.Reviews;
+using WebMarketplace.Vendors;
 
 namespace WebMarketplace;
 
@@ -34,11 +34,11 @@ public class WebMarketplaceApplicationAutoMapperProfile : Profile
         CreateMap<OrderItem, OrderItemDto>();
         CreateMap<OrderItem, CreateUpdateOrderItemDto>();
         
-        CreateMap<Organization, OrganizationDto>();
-        CreateMap<Organization, CreateUpdateOrganizationDto>();
+        CreateMap<Vendor, VendorDto>();
+        CreateMap<Vendor, CreateUpdateVendorDto>();
         
-        CreateMap<UserOrganization, UserOrganizationDto>();
-        CreateMap<UserOrganization, CreateUpdateOrganizationDto>();
+        CreateMap<UserVendor, UserVendorDto>();
+        CreateMap<UserVendor, CreateUpdateVendorDto>();
         
         CreateMap<Review, ReviewDto>();
         CreateMap<Review, CreateUpdateReviewDto>();

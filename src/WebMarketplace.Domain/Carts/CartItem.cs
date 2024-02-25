@@ -1,6 +1,5 @@
 using System;
 using Volo.Abp.Domain.Entities.Auditing;
-using WebMarketplace.Products;
 
 namespace WebMarketplace.Carts;
 

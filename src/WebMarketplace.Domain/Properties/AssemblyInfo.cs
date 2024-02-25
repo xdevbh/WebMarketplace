@@ -1,3 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-[assembly:InternalsVisibleToAttribute("WebMarketplace.Domain.Tests")]
-[assembly:InternalsVisibleToAttribute("WebMarketplace.TestBase")]
+
+[assembly: InternalsVisibleToAttribute("WebMarketplace.Domain.Tests")]
+[assembly: InternalsVisibleToAttribute("WebMarketplace.TestBase")]

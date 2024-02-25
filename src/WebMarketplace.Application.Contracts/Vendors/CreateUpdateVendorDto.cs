@@ -1,13 +1,11 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace WebMarketplace.Organizations;
+namespace WebMarketplace.Vendors;
 
-public class CreateUpdateOrganizationDto
+public class CreateUpdateVendorDto
 {
-    [Required] 
-    public string Name { get; set; }
+    [Required] public string Name { get; set; }
     public string? Description { get; set; }
     public string? ImagePath { get; set; }
     public string Address { get; set; }
-}   
+}

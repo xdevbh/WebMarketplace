@@ -13,7 +13,7 @@ using WebMarketplace.EntityFrameworkCore;
 namespace WebMarketplace.Migrations
 {
     [DbContext(typeof(WebMarketplaceDbContext))]
-    [Migration("20240222220813_Created_Main_Entities")]
+    [Migration("20240225121218_Created_Main_Entities")]
     partial class Created_Main_Entities
     {
         /// <inheritdoc />
@@ -1803,7 +1803,7 @@ namespace WebMarketplace.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AppCart", (string)null);
+                    b.ToTable("AppCarts", (string)null);
                 });
 
             modelBuilder.Entity("WebMarketplace.Carts.CartItem", b =>
@@ -1861,7 +1861,7 @@ namespace WebMarketplace.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("AppCartItem", (string)null);
+                    b.ToTable("AppCartItems", (string)null);
                 });
 
             modelBuilder.Entity("WebMarketplace.Orders.Order", b =>
@@ -1884,10 +1884,24 @@ namespace WebMarketplace.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("CreatorId");
 
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
                     b.Property<string>("ExtraProperties")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("ExtraProperties");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
 
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("datetime2")
@@ -1905,7 +1919,7 @@ namespace WebMarketplace.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AppOrder", (string)null);
+                    b.ToTable("AppOrders", (string)null);
                 });
 
             modelBuilder.Entity("WebMarketplace.Orders.OrderItem", b =>
@@ -1932,10 +1946,24 @@ namespace WebMarketplace.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
                     b.Property<string>("ExtraProperties")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("ExtraProperties");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
 
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("datetime2")
@@ -1963,105 +1991,7 @@ namespace WebMarketplace.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("AppOrderItem", (string)null);
-                });
-
-            modelBuilder.Entity("WebMarketplace.Organizations.Organization", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)")
-                        .HasColumnName("ConcurrencyStamp");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ExtraProperties")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("ExtraProperties");
-
-                    b.Property<string>("ImagePath")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AppOrganization", (string)null);
-                });
-
-            modelBuilder.Entity("WebMarketplace.Organizations.UserOrganization", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)")
-                        .HasColumnName("ConcurrencyStamp");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<string>("ExtraProperties")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("ExtraProperties");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<Guid>("OrganizationId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.ToTable("AppUserOrganization", (string)null);
+                    b.ToTable("AppOrderItems", (string)null);
                 });
 
             modelBuilder.Entity("WebMarketplace.ProductCategories.ProductCategory", b =>
@@ -2111,7 +2041,7 @@ namespace WebMarketplace.Migrations
 
                     b.HasIndex("ParentCategoryId");
 
-                    b.ToTable("AppProductCategory", (string)null);
+                    b.ToTable("AppProductCategories", (string)null);
                 });
 
             modelBuilder.Entity("WebMarketplace.Products.Product", b =>
@@ -2161,22 +2091,22 @@ namespace WebMarketplace.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("OrganizationId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
                     b.Property<Guid?>("ProductCategoryId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                    b.Property<Guid>("VendorId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.HasIndex("OrganizationId");
+                    b.HasKey("Id");
 
                     b.HasIndex("ProductCategoryId");
 
-                    b.ToTable("AppProduct", (string)null);
+                    b.HasIndex("VendorId");
+
+                    b.ToTable("AppProducts", (string)null);
                 });
 
             modelBuilder.Entity("WebMarketplace.Reviews.Review", b =>
@@ -2228,7 +2158,119 @@ namespace WebMarketplace.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("AppReview", (string)null);
+                    b.ToTable("AppReviews", (string)null);
+                });
+
+            modelBuilder.Entity("WebMarketplace.Vendors.UserVendor", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)")
+                        .HasColumnName("ConcurrencyStamp");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<string>("ExtraProperties")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ExtraProperties");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("VendorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VendorId");
+
+                    b.ToTable("AppUserVendors", (string)null);
+                });
+
+            modelBuilder.Entity("WebMarketplace.Vendors.Vendor", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)")
+                        .HasColumnName("ConcurrencyStamp");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ExtraProperties")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ExtraProperties");
+
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AppVendors", (string)null);
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLogAction", b =>
@@ -2403,15 +2445,6 @@ namespace WebMarketplace.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WebMarketplace.Organizations.UserOrganization", b =>
-                {
-                    b.HasOne("WebMarketplace.Organizations.Organization", null)
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("WebMarketplace.ProductCategories.ProductCategory", b =>
                 {
                     b.HasOne("WebMarketplace.ProductCategories.ProductCategory", null)
@@ -2421,15 +2454,15 @@ namespace WebMarketplace.Migrations
 
             modelBuilder.Entity("WebMarketplace.Products.Product", b =>
                 {
-                    b.HasOne("WebMarketplace.Organizations.Organization", null)
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("WebMarketplace.ProductCategories.ProductCategory", null)
                         .WithMany()
                         .HasForeignKey("ProductCategoryId");
+
+                    b.HasOne("WebMarketplace.Vendors.Vendor", null)
+                        .WithMany()
+                        .HasForeignKey("VendorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("WebMarketplace.Reviews.Review", b =>
@@ -2437,6 +2470,15 @@ namespace WebMarketplace.Migrations
                     b.HasOne("WebMarketplace.Products.Product", null)
                         .WithMany()
                         .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("WebMarketplace.Vendors.UserVendor", b =>
+                {
+                    b.HasOne("WebMarketplace.Vendors.Vendor", null)
+                        .WithMany()
+                        .HasForeignKey("VendorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

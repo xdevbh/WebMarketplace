@@ -15,10 +15,10 @@ using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using WebMarketplace.Carts;
 using WebMarketplace.Orders;
-using WebMarketplace.Organizations;
 using WebMarketplace.ProductCategories;
 using WebMarketplace.Products;
 using WebMarketplace.Reviews;
+using WebMarketplace.Vendors;
 
 namespace WebMarketplace.EntityFrameworkCore;
 
@@ -60,8 +60,8 @@ public class WebMarketplaceDbContext :
 
     #endregion
 
-    public DbSet<Organization> Organizations { get; set; }
-    public DbSet<UserOrganization> UserOrganizations { get; set; }
+    public DbSet<Vendor> Vendors { get; set; }
+    public DbSet<UserVendor> UserVendors { get; set; }
     public DbSet<ProductCategory> ProductCategories { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<Cart> Carts { get; set; }
@@ -103,13 +103,13 @@ public class WebMarketplaceDbContext :
 
         builder.Entity<Cart>(b =>
         {
-            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "Cart", WebMarketplaceConsts.DbSchema);
+            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "Carts", WebMarketplaceConsts.DbSchema);
             b.ConfigureByConvention(); //auto configure for the base class props
         });
 
         builder.Entity<CartItem>(b =>
         {
-            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "CartItem", WebMarketplaceConsts.DbSchema);
+            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "CartItems", WebMarketplaceConsts.DbSchema);
             b.ConfigureByConvention();
             b.HasOne<Cart>().WithMany().HasForeignKey(x => x.CartId).IsRequired();
             b.HasOne<Product>().WithMany().HasForeignKey(x => x.ProductId).IsRequired();
@@ -121,13 +121,13 @@ public class WebMarketplaceDbContext :
 
         builder.Entity<Order>(b =>
         {
-            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "Order", WebMarketplaceConsts.DbSchema);
+            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "Orders", WebMarketplaceConsts.DbSchema);
             b.ConfigureByConvention(); //auto configure for the base class props
         });
 
         builder.Entity<OrderItem>(b =>
         {
-            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "OrderItem", WebMarketplaceConsts.DbSchema);
+            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "OrderItems", WebMarketplaceConsts.DbSchema);
             b.ConfigureByConvention();
             b.HasOne<Order>().WithMany().HasForeignKey(x => x.OrderId).IsRequired();
             b.HasOne<Product>().WithMany().HasForeignKey(x => x.ProductId).IsRequired();
@@ -139,31 +139,31 @@ public class WebMarketplaceDbContext :
 
         builder.Entity<Product>(b =>
         {
-            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "Product", WebMarketplaceConsts.DbSchema);
+            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "Products", WebMarketplaceConsts.DbSchema);
             b.ConfigureByConvention(); //auto configure for the base class props
             b.HasOne<ProductCategory>().WithMany().HasForeignKey(x => x.ProductCategoryId).IsRequired(false);
-            b.HasOne<Organization>().WithMany().HasForeignKey(x => x.OrganizationId).IsRequired();
+            b.HasOne<Vendor>().WithMany().HasForeignKey(x => x.VendorId).IsRequired();
         });
 
         #endregion
 
-        #region Organization
+        #region Vendor
 
-        builder.Entity<Organization>(b =>
+        builder.Entity<Vendor>(b =>
         {
-            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "Organization", WebMarketplaceConsts.DbSchema);
+            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "Vendors", WebMarketplaceConsts.DbSchema);
             b.ConfigureByConvention();
         });
 
         #endregion
 
-        #region UserOrganization
+        #region UserVendor
 
-        builder.Entity<UserOrganization>(b =>
+        builder.Entity<UserVendor>(b =>
         {
-            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "UserOrganization", WebMarketplaceConsts.DbSchema);
+            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "UserVendors", WebMarketplaceConsts.DbSchema);
             b.ConfigureByConvention();
-            b.HasOne<Organization>().WithMany().HasForeignKey(x => x.OrganizationId).IsRequired();
+            b.HasOne<Vendor>().WithMany().HasForeignKey(x => x.VendorId).IsRequired();
         });
 
         #endregion
@@ -172,7 +172,7 @@ public class WebMarketplaceDbContext :
 
         builder.Entity<ProductCategory>(b =>
         {
-            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "ProductCategory", WebMarketplaceConsts.DbSchema);
+            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "ProductCategories", WebMarketplaceConsts.DbSchema);
             b.ConfigureByConvention();
             b.HasOne<ProductCategory>().WithMany().HasForeignKey(x=>x.ParentCategoryId).IsRequired(false);
         });
@@ -183,7 +183,7 @@ public class WebMarketplaceDbContext :
 
         builder.Entity<Review>(b =>
         {
-            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "Review", WebMarketplaceConsts.DbSchema);
+            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "Reviews", WebMarketplaceConsts.DbSchema);
             b.ConfigureByConvention();
             b.HasOne<Product>().WithMany().HasForeignKey(x => x.ProductId).IsRequired();
         });

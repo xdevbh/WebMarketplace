@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
-using WebMarketplace.Organizations;
 using WebMarketplace.ProductCategories;
 using WebMarketplace.Products;
+using WebMarketplace.Vendors;
 
 namespace WebMarketplace;
 
@@ -14,15 +14,15 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
 {
     private readonly IRepository<ProductCategory, Guid> _productCategoryRepository;
     private readonly IRepository<Product, Guid> _productRepository;
-    private readonly IRepository<Organization, Guid> _organizationRepository;
-    
+    private readonly IRepository<Vendor, Guid> _vendorRepository;
+
     public WebMarketplaceDataSeederContributor(
-        IRepository<ProductCategory, Guid> productCategoryRepository, 
-        IRepository<Product, Guid> productRepository, 
-        IRepository<Organization, Guid> organizationRepository)
+        IRepository<ProductCategory, Guid> productCategoryRepository,
+        IRepository<Product, Guid> productRepository,
+        IRepository<Vendor, Guid> vendorRepository)
     {
         _productRepository = productRepository;
-        _organizationRepository = organizationRepository;
+        _vendorRepository = vendorRepository;
         _productCategoryRepository = productCategoryRepository;
     }
 
@@ -31,36 +31,37 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
         if (await _productCategoryRepository.GetCountAsync() <= 0)
         {
             await _productCategoryRepository.InsertAsync(
-                new ProductCategory()
+                new ProductCategory
                 {
                     Name = "Test Category 1"
-                }, 
-                autoSave: true
+                },
+                true
             );
         }
-        if (await _organizationRepository.GetCountAsync() <= 0)
+
+        if (await _vendorRepository.GetCountAsync() <= 0)
         {
-            await _organizationRepository.InsertAsync(
-                new Organization()
+            await _vendorRepository.InsertAsync(
+                new Vendor
                 {
                     Name = "Test Organization 1",
-                    Address = "Test Address 1",
-                }, 
-                autoSave: true
+                    Address = "Test Address 1"
+                },
+                true
             );
         }
-        
+
         if (await _productRepository.GetCountAsync() <= 0)
         {
             await _productRepository.InsertAsync(
-                new Product()
+                new Product
                 {
                     Name = "Test Product 1",
                     Price = 100,
                     Currency = "USD",
-                    OrganizationId = (await _organizationRepository.GetListAsync()).First().Id
-                }, 
-                autoSave: true
+                    VendorId = (await _vendorRepository.GetListAsync()).First().Id
+                },
+                true
             );
         }
     }

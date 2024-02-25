@@ -1,7 +1,5 @@
 using System;
 using Volo.Abp.Domain.Entities.Auditing;
-using Volo.Abp.Identity;
-using WebMarketplace.Products;
 
 namespace WebMarketplace.Reviews;
 
