@@ -1,10 +1,14 @@
 @page "/management/products"
+@using WebMarketplace.Permissions
 @using WebMarketplace.Products
 @using Volo.Abp.Application.Dtos
 @using Microsoft.Extensions.Localization
 @using WebMarketplace.Localization
-@inject IStringLocalizer<WebMarketplaceResource> L
-@inherits AbpCrudPageBase<IProductAppService, ProductDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateProductDto>
+@using Volo.Abp
+@using Volo.Abp.AspNetCore.Components.Web
+@inject AbpBlazorMessageLocalizerHelper<WebMarketplaceResource> LH
+@inject IProductAppService ProductAppService
+@inherits WebMarketplaceComponentBase   
 @layout ManagementPageLayout
 
 <Card>
@@ -13,12 +17,13 @@
     </CardHeader>
     <CardBody>
         <DataGrid TItem="ProductDto"
-                  Data="Entities"
+                  Data="ProductList"
                   ReadData="OnDataGridReadAsync"
                   TotalItems="TotalCount"
                   ShowPager="true"
                   PageSize="PageSize">
             <DataGridColumns>
+                <DataGridCommandColumn />
                 <DataGridColumn TItem="ProductDto"
                                 Field="@nameof(ProductDto.Name)"
                                 Caption="@L["Name"]">
@@ -31,3 +36,5 @@
         </DataGrid>
     </CardBody>
 </Card>
+
+            

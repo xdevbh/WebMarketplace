@@ -3,4 +3,7 @@
 public static class WebMarketplaceDomainErrorCodes
 {
     /* You can add your business exception error codes here, as constants */
+
+    // todo: create translation for these error codes
+    public const string ProductAssignmentException = "WebMarketplace:00001";
 }
