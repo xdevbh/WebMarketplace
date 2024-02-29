@@ -1,0 +1,22 @@
+@inherits LayoutComponentBase
+@* @layout MainLayout *@
+
+<Layout Sider>
+    <LayoutSider>
+        <LayoutSiderContent>
+            <ManagementMenuBar/>
+        </LayoutSiderContent>
+    </LayoutSider>
+    <Layout>
+        <LayoutHeader Fixed>
+            <ManagementHeaderBar/>
+        </LayoutHeader>
+        <LayoutContent Padding="Padding.Is4.OnAll">
+            @Body
+        </LayoutContent>
+    </Layout>
+</Layout>
+
+@code {
+
+}

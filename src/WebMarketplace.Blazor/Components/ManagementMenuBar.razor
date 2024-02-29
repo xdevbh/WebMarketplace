@@ -2,13 +2,14 @@
 @inject NavigationManager NavigationManager
 
 <Bar Mode="BarMode.VerticalInline"
+     Breakpoint="Breakpoint.Desktop" 
+     NavigationBreakpoint="Breakpoint.Tablet" 
      CollapseMode="BarCollapseMode.Small"
-     Breakpoint="Breakpoint.Desktop"
-     NavigationBreakpoint="Breakpoint.Tablet"
-     Background="Background.Light"
-     ThemeContrast="ThemeContrast.Light">
+     ThemeContrast="ThemeContrast.Light"
+     Background = "Background.White"
+     Shadow="Shadow.Default">
     <BarToggler />
-    <BarBrand>
+    <BarBrand Padding="Padding.Is4.OnX">
         <BarItem>
             <BarLink>
                 Management
@@ -43,8 +44,8 @@
     {
         new MenuItem
         {
-            Title = "Home",
-            Icon = "fa-house",
+            Title = "Dashboard",
+            Icon = "fa-chart-bar",
             Link = "/management"
         },
         new MenuItem
