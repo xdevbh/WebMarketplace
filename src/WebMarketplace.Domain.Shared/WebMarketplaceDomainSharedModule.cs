@@ -1,4 +1,4 @@
-﻿using WebMarketplace.Localization;
+using WebMarketplace.Localization;
 using Volo.Abp.AuditLogging;
 using Volo.Abp.BackgroundJobs;
 using Volo.Abp.FeatureManagement;
@@ -12,6 +12,7 @@ using Volo.Abp.SettingManagement;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.Validation.Localization;
 using Volo.Abp.VirtualFileSystem;
+using Volo.Abp.BlobStoring.Database;
 
 namespace WebMarketplace;
 
@@ -25,7 +26,8 @@ namespace WebMarketplace;
     typeof(AbpSettingManagementDomainSharedModule),
     typeof(AbpTenantManagementDomainSharedModule)    
     )]
-public class WebMarketplaceDomainSharedModule : AbpModule
+[DependsOn(typeof(BlobStoringDatabaseDomainSharedModule))]
+    public class WebMarketplaceDomainSharedModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.Data;
@@ -19,6 +19,8 @@ using WebMarketplace.ProductCategories;
 using WebMarketplace.Products;
 using WebMarketplace.Reviews;
 using WebMarketplace.Vendors;
+using Volo.Abp.BlobStoring.Database.EntityFrameworkCore;
+using WebMarketplace.ProductMedias;
 
 namespace WebMarketplace.EntityFrameworkCore;
 
@@ -64,11 +66,13 @@ public class WebMarketplaceDbContext :
     public DbSet<UserVendor> UserVendors { get; set; }
     public DbSet<ProductCategory> ProductCategories { get; set; }
     public DbSet<Product> Products { get; set; }
+    public DbSet<ProductMedia> ProductMedias { get; set; }
     public DbSet<Cart> Carts { get; set; }
     public DbSet<CartItem> CartItems { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<Review> Reviews { get; set; }
+
 
     public WebMarketplaceDbContext(DbContextOptions<WebMarketplaceDbContext> options)
         : base(options)
@@ -116,7 +120,7 @@ public class WebMarketplaceDbContext :
         });
 
         #endregion
-        
+
         #region Order_OrderItem
 
         builder.Entity<Order>(b =>
@@ -134,7 +138,7 @@ public class WebMarketplaceDbContext :
         });
 
         #endregion
-        
+
         #region Product
 
         builder.Entity<Product>(b =>
@@ -174,7 +178,7 @@ public class WebMarketplaceDbContext :
         {
             b.ToTable(WebMarketplaceConsts.DbTablePrefix + "ProductCategories", WebMarketplaceConsts.DbSchema);
             b.ConfigureByConvention();
-            b.HasOne<ProductCategory>().WithMany().HasForeignKey(x=>x.ParentCategoryId).IsRequired(false);
+            b.HasOne<ProductCategory>().WithMany().HasForeignKey(x => x.ParentCategoryId).IsRequired(false);
         });
 
         #endregion
@@ -189,5 +193,7 @@ public class WebMarketplaceDbContext :
         });
 
         #endregion
+
+        builder.ConfigureBlobStoring();
     }
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Volo.Abp.AuditLogging;
 using Volo.Abp.BackgroundJobs;
@@ -14,6 +14,7 @@ using Volo.Abp.PermissionManagement.OpenIddict;
 using Volo.Abp.SettingManagement;
 using Volo.Abp.TenantManagement;
 using WebMarketplace.MultiTenancy;
+using Volo.Abp.BlobStoring.Database;
 
 namespace WebMarketplace;
 
@@ -30,6 +31,7 @@ namespace WebMarketplace;
     typeof(AbpTenantManagementDomainModule),
     typeof(AbpEmailingModule)
 )]
+[DependsOn(typeof(BlobStoringDatabaseDomainModule))]
 public class WebMarketplaceDomainModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)

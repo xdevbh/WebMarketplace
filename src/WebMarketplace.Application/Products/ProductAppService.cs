@@ -1,22 +1,23 @@
-using Microsoft.AspNetCore.Authorization;
 using System;
-using System.Threading.Tasks;
-using Volo.Abp.Application.Dtos;
-using Volo.Abp.Application.Services;
-using Volo.Abp.Domain.Repositories;
-using WebMarketplace.Permissions;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Volo.Abp.Application.Dtos;
+using Volo.Abp.BlobStoring;
+using Volo.Abp.Domain.Repositories;
+using WebMarketplace.BlobContainers;
+using WebMarketplace.Permissions;
 using WebMarketplace.Vendors;
 
 namespace WebMarketplace.Products;
 
 public class ProductAppService : WebMarketplaceAppService, IProductAppService
 {
+    private readonly IBlobContainer<ProductImageContainer> _blobContainer;
+    private readonly ProductManager _productManager;
     private readonly IRepository<Product, Guid> _productRepository;
     private readonly IRepository<UserVendor, Guid> _userVendorRepository;
-    private readonly ProductManager _productManager;
 
 
     public ProductAppService(
@@ -27,6 +28,66 @@ public class ProductAppService : WebMarketplaceAppService, IProductAppService
         _productManager = productManager;
         _productRepository = productRepository;
         _userVendorRepository = userVendorRepository;
+    }
+
+    [AllowAnonymous]
+    public async Task<PagedResultDto<ProductDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    {
+        if (input.Sorting.IsNullOrWhiteSpace())
+        {
+            input.Sorting = nameof(Product.Name);
+        }
+
+        var query = await _productRepository.GetQueryableAsync();
+
+        query = ApplySorting(query, input);
+        query = ApplyPaging(query, input);
+
+        var queryResult = await AsyncExecuter.ToListAsync(query);
+        var productsDtos = queryResult.Select(x => ObjectMapper.Map<Product, ProductDto>(x)).ToList();
+        var totalCount = queryResult.Count();
+
+        return new PagedResultDto<ProductDto>(
+            totalCount,
+            productsDtos
+        );
+    }
+
+    [AllowAnonymous]
+    public async Task<PagedResultDto<ProductDto>> GetListByVendorAsync(PagedAndSortedResultRequestDto input,
+        Guid vendorId)
+    {
+        var queryable = await _productRepository.GetQueryableAsync();
+
+        var query = queryable.Where(x => x.VendorId == vendorId);
+        query = ApplySorting(query, input);
+        query = ApplyPaging(query, input);
+
+        var queryResult = await AsyncExecuter.ToListAsync(query);
+        var productsDtos = queryResult.Select(x => ObjectMapper.Map<Product, ProductDto>(x)).ToList();
+        var totalCount = queryResult.Count();
+
+        return new PagedResultDto<ProductDto>(
+            totalCount,
+            productsDtos
+        );
+    }
+
+    private IQueryable<Product> ApplyPaging(IQueryable<Product> query, PagedAndSortedResultRequestDto input)
+    {
+        return query
+            .Skip(input.SkipCount)
+            .Take(input.MaxResultCount);
+    }
+
+    private IQueryable<Product> ApplySorting(IQueryable<Product> query, PagedAndSortedResultRequestDto input)
+    {
+        if (!string.IsNullOrEmpty(input.Sorting))
+        {
+            query = query.OrderBy(input.Sorting);
+        }
+
+        return query;
     }
 
     #region CRUD_Operations
@@ -47,9 +108,7 @@ public class ProductAppService : WebMarketplaceAppService, IProductAppService
     public async Task UpdateAsync(Guid id, CreateUpdateProductDto input)
     {
         var product = await _productRepository.GetAsync(id);
-
         var newProduct = ObjectMapper.Map(input, product);
-
         await _productRepository.UpdateAsync(newProduct);
     }
 
@@ -70,63 +129,4 @@ public class ProductAppService : WebMarketplaceAppService, IProductAppService
     }
 
     #endregion
-
-    [AllowAnonymous]
-    public async Task<PagedResultDto<ProductDto>> GetListAsync(PagedAndSortedResultRequestDto input)
-    {
-        if (input.Sorting.IsNullOrWhiteSpace())
-        {
-            input.Sorting = nameof(Product.Name);
-        }
-
-        var query = await _productRepository.GetQueryableAsync();
-
-        query = ApplySorting(query, input);
-        query = ApplyPaging(query, input);
-
-        var queryResult = await AsyncExecuter.ToListAsync(query);
-        var productsDtos = queryResult.Select(x => ObjectMapper.Map<Product, ProductDto>(x)).ToList();
-        var totalCount = queryResult.Count();
-
-        return new PagedResultDto<ProductDto>(
-           totalCount,
-           productsDtos
-       );
-    }
-
-    [AllowAnonymous]
-    public async Task<PagedResultDto<ProductDto>> GetListByVendorAsync(PagedAndSortedResultRequestDto input, Guid vendorId)
-    {
-        var queryable = await _productRepository.GetQueryableAsync();
-
-        var query = queryable.Where(x => x.VendorId == vendorId);
-        query = ApplySorting(query, input);
-        query = ApplyPaging(query, input);
-
-        var queryResult = await AsyncExecuter.ToListAsync(query);
-        var productsDtos = queryResult.Select(x => ObjectMapper.Map<Product, ProductDto>(x)).ToList();
-        var totalCount = queryResult.Count();
-
-        return new PagedResultDto<ProductDto>(
-           totalCount,
-           productsDtos
-       );
-    }
-
-    private IQueryable<Product> ApplyPaging(IQueryable<Product> query, PagedAndSortedResultRequestDto input)
-    {
-        return query
-            .Skip(input.SkipCount)
-            .Take(input.MaxResultCount);
-    }
-
-    private IQueryable<Product> ApplySorting(IQueryable<Product> query, PagedAndSortedResultRequestDto input)
-    {
-        if (!string.IsNullOrEmpty(input.Sorting))
-        {
-            query = query.OrderBy(input.Sorting);
-        }
-
-        return query;
-    }
 }

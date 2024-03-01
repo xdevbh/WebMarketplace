@@ -2,6 +2,7 @@
 using WebMarketplace.Carts;
 using WebMarketplace.Orders;
 using WebMarketplace.ProductCategories;
+using WebMarketplace.ProductMedias;
 using WebMarketplace.Products;
 using WebMarketplace.Reviews;
 using WebMarketplace.Vendors;
@@ -15,32 +16,36 @@ public class WebMarketplaceApplicationAutoMapperProfile : Profile
         /* You can configure your AutoMapper mapping configuration here.
          * Alternatively, you can split your mapping configurations
          * into multiple profile classes for a better organization. */
-        
+
         CreateMap<Product, ProductDto>();
         CreateMap<CreateUpdateProductDto, Product>();
-        
+
         CreateMap<ProductCategory, ProductCategoryDto>();
         CreateMap<CreateUpdateProductCategoryDto, ProductCategory>();
-        
+
         CreateMap<Cart, CartDto>();
         CreateMap<CreateUpdateCartDto, Cart>();
-        
+
         CreateMap<CartItem, CartItemDto>();
         CreateMap<CreateUpdateCartItemDto, CartItem>();
-        
+
         CreateMap<Order, OrderDto>();
         CreateMap<CreateUpdateOrderDto, Order>();
-        
+
         CreateMap<OrderItem, OrderItemDto>();
         CreateMap<CreateUpdateOrderItemDto, OrderItem>();
-        
+
         CreateMap<Vendor, VendorDto>();
         CreateMap<CreateUpdateVendorDto, Vendor>();
-        
+
         CreateMap<UserVendor, UserVendorDto>();
         CreateMap<CreateUpdateVendorDto, UserVendor>();
-        
+
         CreateMap<Review, ReviewDto>();
         CreateMap<CreateUpdateReviewDto, Review>();
+
+        CreateMap<ProductMedia, ProductMediaDto>();
+        CreateMap<CreateProductMediaDto, ProductMedia>();
+        CreateMap<UpdateProductMediaDto, ProductMedia>();
     }
 }
