@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using WebMarketplace.Carts;
+using WebMarketplace.Currencies;
 using WebMarketplace.Orders;
 using WebMarketplace.ProductCategories;
 using WebMarketplace.Products;
@@ -20,6 +21,7 @@ public class WebMarketplaceApplicationAutoMapperProfile : Profile
         CreateMap<CreateUpdateProductDto, Product>();
         
         CreateMap<ProductCategory, ProductCategoryDto>();
+        CreateMap<ProductCategory, ProductCategoryLookupDto>();
         CreateMap<CreateUpdateProductCategoryDto, ProductCategory>();
         
         CreateMap<Cart, CartDto>();
@@ -42,5 +44,8 @@ public class WebMarketplaceApplicationAutoMapperProfile : Profile
         
         CreateMap<Review, ReviewDto>();
         CreateMap<CreateUpdateReviewDto, Review>();
+        
+        CreateMap<Currency, CurrencyDto>();
+        CreateMap<Currency, CurrencyLookupDto>();
     }
 }

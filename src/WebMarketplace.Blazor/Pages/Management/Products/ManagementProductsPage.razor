@@ -1,4 +1,4 @@
-@page "/management/products"
+@page "/management/product/list"
 @using WebMarketplace.Permissions
 @using WebMarketplace.Products
 @using Volo.Abp.Application.Dtos
@@ -8,12 +8,23 @@
 @using Volo.Abp.AspNetCore.Components.Web
 @inject AbpBlazorMessageLocalizerHelper<WebMarketplaceResource> LH
 @inject IProductAppService ProductAppService
+@inject NavigationManager NavigationManager
 @inherits WebMarketplaceComponentBase   
 @layout ManagementPageLayout
 
 <Card>
     <CardHeader>
-        <h2>@L["Products"]</h2>
+        <Row>
+            <Column ColumnSize="ColumnSize.IsAuto">
+                <h2>@L["Products"]</h2>
+            </Column>
+            <Column ColumnSize="ColumnSize.IsAuto">
+                <Button Color="Color.Primary"
+                        Clicked="">
+                    @L["SaveProduct"]
+                </Button>
+            </Column>
+        </Row>
     </CardHeader>
     <CardBody>
         <DataGrid TItem="ProductDto"
@@ -23,7 +34,7 @@
                   ShowPager="true"
                   PageSize="PageSize">
             <DataGridColumns>
-                <DataGridCommandColumn />
+                <DataGridCommandColumn/>
                 <DataGridColumn TItem="ProductDto"
                                 Field="@nameof(ProductDto.Name)"
                                 Caption="@L["Name"]">
@@ -36,5 +47,3 @@
         </DataGrid>
     </CardBody>
 </Card>
-
-            

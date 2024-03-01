@@ -13,5 +13,10 @@ public class WebMarketplaceMenus
     public const string ProductManagement = Management + ".Product";
     public const string VendorManagement = Management + ".Vendor";
     public const string OrderManagement = Management + ".Order";
+    
+    public const string Administration = Prefix + ".Administration";
+    public const string UserVendorAdministration = Administration + ".UserVendor";
+
+
 
 }

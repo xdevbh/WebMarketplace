@@ -6,6 +6,6 @@ using WebMarketplace.Products;
 namespace WebMarketplace.Carts;
 
 public interface ICartAppService : ICrudAppService
-    <CartDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateProductDto>
+    <CartDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateCartDto>
 {
 }

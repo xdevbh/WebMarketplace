@@ -6,11 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components;
 using Volo.Abp.Application.Dtos;
 using WebMarketplace.Products;
 
 
-namespace WebMarketplace.Blazor.Pages.Management
+namespace WebMarketplace.Blazor.Pages.Management.Products
 {
     public partial class ManagementProductsPage
     {
@@ -66,6 +67,11 @@ namespace WebMarketplace.Blazor.Pages.Management
             await GetProductsAsync();
 
             await InvokeAsync(StateHasChanged);
+        }
+        
+        private void CreateNewProduct()
+        {
+            NavigationManager.NavigateTo("/management/products/new");
         }
     }
 }

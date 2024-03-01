@@ -1,0 +1,124 @@
+@page "/management/product/edit/{id}"
+@layout ManagementPageLayout
+@inherits WebMarketplaceComponentBase
+@using Microsoft.Extensions.Localization
+@using WebMarketplace.Localization
+@using WebMarketplace.ProductCategories
+@using WebMarketplace.Products
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject IProductAppService ProductAppService
+@inject IProductCategoryAppService ProductCategoryAppService
+
+
+
+<Card>
+    <CardHeader>
+        <h2>@L["Main"]</h2>
+    </CardHeader>
+    <CardBody>
+        <Accordion>
+            <Collapse Visible="@productInfoVisible">
+                <CollapseHeader>
+                    <Heading Size="HeadingSize.Is5">
+                        <AccordionToggle>@L["ProductInfo"]</AccordionToggle>
+                    </Heading>
+                </CollapseHeader>
+                <CollapseBody>
+                    <Field>
+                        <FieldLabel>@L["ProductName"]</FieldLabel>
+                        <TextEdit Placeholder="@L["ProductName"]"
+                                  @bind-Text="@Product.Name"/>
+                    </Field>
+                    <Field>
+                        <FieldLabel>@L["ProductShortDescription"]</FieldLabel>
+                        <TextEdit Placeholder="@L["ProductShortDescription"]"
+                                  @bind-Text="@Product.Description"/>
+                    </Field>
+                    <Field>
+                        <FieldLabel>@L["ProductFullDescription"]</FieldLabel>
+                        <TextEdit Placeholder="@L["ProductFullDescription"]"
+                                  @bind-Text="@Product.Description"/>
+                    </Field>
+                    <Field>
+                        <FieldLabel>@L["ProductCategory"]</FieldLabel>
+                        <SelectList TItem="ProductCategoryLookupDto"
+                                    TValue="Guid?"
+                                    Data="@Categories"
+                                    TextField="@((item)=>item.Name)"
+                                    ValueField="@((item)=>item.Id)"
+                                    @bind-SelectedValue="@Product.ProductCategoryId"
+                                    DefaultItemText="@L["SelectProductCategory"]" />
+                    </Field>
+                </CollapseBody>
+            </Collapse>
+        </Accordion>
+        <Accordion>
+            <Collapse Visible="@productPriceVisible">
+                <CollapseHeader>
+                    <Heading Size="HeadingSize.Is5">
+                        <AccordionToggle>@L["Prices"]</AccordionToggle>
+                    </Heading>
+                </CollapseHeader>
+                <CollapseBody>
+                    <Field>
+                        <FieldLabel>@L["Price"]</FieldLabel>
+                        <NumericPicker TValue="double" CurrencySymbol="$"/>
+                    </Field>
+                    <Field>
+                        <FieldLabel>@L["Currency"]</FieldLabel>
+                        <Select TValue="Guid">
+                            <SelectItem Value="@Guid.NewGuid()">CZK</SelectItem>
+                            <SelectItem Value="@Guid.NewGuid()">EUR</SelectItem>
+                        </Select>
+                    </Field>
+                    <Field>
+                        <FieldLabel>@L["Tax"]</FieldLabel>
+                        <NumericPicker TValue="double" CurrencySymbol="$"/>
+                    </Field>
+                </CollapseBody>
+            </Collapse>
+        </Accordion>
+        <Accordion>
+            <Collapse Visible="@productInventoryVisible">
+                <CollapseHeader>
+                    <Heading Size="HeadingSize.Is5">
+                        <AccordionToggle>@L["Inventory"]</AccordionToggle>
+                    </Heading>
+                </CollapseHeader>
+                <CollapseBody>
+                    <Field>
+                        <FieldLabel>@L["Inventory"]</FieldLabel>
+                        <NumericPicker TValue="double"/>
+                    </Field>
+                </CollapseBody>
+            </Collapse>
+        </Accordion>
+        <Accordion>
+            <Collapse Visible="@productPublishingVisible">
+                <CollapseHeader>
+                    <Heading Size="HeadingSize.Is5">
+                        <AccordionToggle>@L["Publishing"]</AccordionToggle>
+                    </Heading>
+                </CollapseHeader>
+                <CollapseBody>
+                    <Field>
+                        <FieldLabel>@L["Published"]</FieldLabel>
+                        <Check TValue="bool">@L["Published"]</Check>
+                    </Field>
+                </CollapseBody>
+            </Collapse>
+        </Accordion>
+        <Accordion>
+            <Collapse Visible="@productPublishingVisible">
+                <CollapseHeader>
+                    <Heading Size="HeadingSize.Is5">
+                        <AccordionToggle>@L["Publishing"]</AccordionToggle>
+                    </Heading>
+                </CollapseHeader>
+                <CollapseBody>
+                    
+                </CollapseBody>
+            </Collapse>
+        </Accordion>
+    </CardBody>
+</Card>

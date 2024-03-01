@@ -6,7 +6,7 @@ using Volo.Abp.Domain.Repositories;
 namespace WebMarketplace.Vendors;
 
 public class VendorAppService : CrudAppService
-    <Vendor, VendorDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateVendorDto>
+    <Vendor, VendorDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateVendorDto>, IVendorAppService
 {
     public VendorAppService(IRepository<Vendor, Guid> repository)
         : base(repository)

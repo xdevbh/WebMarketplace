@@ -1,0 +1,28 @@
+@page "/management/user-vendor"
+@attribute [Authorize(WebMarketplacePermissions.UserVendors.Default)]
+@using WebMarketplace.Permissions
+@using Microsoft.AspNetCore.Authorization
+@using Volo.Abp.Application.Dtos
+@using WebMarketplace.Localization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp
+@using Volo.Abp.AspNetCore.Components.Web
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject AbpBlazorMessageLocalizerHelper<WebMarketplaceResource> LH
+
+<Card>
+    <CardHeader>
+        <CardTitle>
+            <h4>@L["UserVendors"]</h4>
+        </CardTitle>    
+    </CardHeader>
+    <CardBody>
+  
+    </CardBody>
+</Card>
+
+
+@code
+{
+    
+}

@@ -6,7 +6,7 @@ using Volo.Abp.Domain.Repositories;
 namespace WebMarketplace.Carts;
 
 public class CartItemAppService : CrudAppService
-    <CartItem, CartItemDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateCartItemDto>
+    <CartItem, CartItemDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateCartItemDto>, ICartItemAppService
 {
     public CartItemAppService(IRepository<CartItem, Guid> repository)
         : base(repository)

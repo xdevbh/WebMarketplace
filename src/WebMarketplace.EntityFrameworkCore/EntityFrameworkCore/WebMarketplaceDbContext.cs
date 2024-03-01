@@ -14,6 +14,7 @@ using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using WebMarketplace.Carts;
+using WebMarketplace.Currencies;
 using WebMarketplace.Orders;
 using WebMarketplace.ProductCategories;
 using WebMarketplace.Products;
@@ -69,6 +70,7 @@ public class WebMarketplaceDbContext :
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<Review> Reviews { get; set; }
+    public DbSet<Currency> Currencies { get; set; }
 
     public WebMarketplaceDbContext(DbContextOptions<WebMarketplaceDbContext> options)
         : base(options)
@@ -146,6 +148,28 @@ public class WebMarketplaceDbContext :
         });
 
         #endregion
+        
+        #region ProductCategory
+
+        builder.Entity<ProductCategory>(b =>
+        {
+            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "ProductCategories", WebMarketplaceConsts.DbSchema);
+            b.ConfigureByConvention();
+            b.HasOne<ProductCategory>().WithMany().HasForeignKey(x=>x.ParentCategoryId).IsRequired(false);
+        });
+
+        #endregion
+        
+        #region ProductCategory
+
+        builder.Entity<ProductCategory>(b =>
+        {
+            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "ProductCategories", WebMarketplaceConsts.DbSchema);
+            b.ConfigureByConvention();
+            b.HasOne<ProductCategory>().WithMany().HasForeignKey(x=>x.ParentCategoryId).IsRequired(false);
+        });
+
+        #endregion
 
         #region Vendor
 
@@ -168,17 +192,6 @@ public class WebMarketplaceDbContext :
 
         #endregion
 
-        #region ProductCategory
-
-        builder.Entity<ProductCategory>(b =>
-        {
-            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "ProductCategories", WebMarketplaceConsts.DbSchema);
-            b.ConfigureByConvention();
-            b.HasOne<ProductCategory>().WithMany().HasForeignKey(x=>x.ParentCategoryId).IsRequired(false);
-        });
-
-        #endregion
-
         #region Review
 
         builder.Entity<Review>(b =>
@@ -186,6 +199,20 @@ public class WebMarketplaceDbContext :
             b.ToTable(WebMarketplaceConsts.DbTablePrefix + "Reviews", WebMarketplaceConsts.DbSchema);
             b.ConfigureByConvention();
             b.HasOne<Product>().WithMany().HasForeignKey(x => x.ProductId).IsRequired();
+        });
+
+        #endregion
+        
+        #region Currency
+
+        builder.Entity<Currency>(b =>
+        {
+            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "Currencies", WebMarketplaceConsts.DbSchema);
+            b.ConfigureByConvention();
+            b.Property(x => x.Code).HasMaxLength(3).IsRequired();;
+            b.Property(x => x.NumericCode).HasMaxLength(3).IsRequired();
+            b.HasIndex(x => x.Code).IsUnique();
+            b.HasIndex(x => x.NumericCode).IsUnique();;
         });
 
         #endregion

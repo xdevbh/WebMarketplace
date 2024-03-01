@@ -5,8 +5,9 @@ using Volo.Abp.Domain.Repositories;
 
 namespace WebMarketplace.Orders;
 
-public class OrderItemAppService : CrudAppService
-    <OrderItem, OrderItemDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateOrderItemDto>
+public class OrderItemAppService :
+    CrudAppService
+    <OrderItem, OrderItemDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateOrderItemDto>, IOrderItemAppService
 {
     public OrderItemAppService(IRepository<OrderItem, Guid> repository)
         : base(repository)
