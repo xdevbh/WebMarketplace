@@ -87,7 +87,7 @@ public partial class ManagementVendorListPage
     private async Task DeleteUserVendorAsync(VendorDto context)
     {
         var confirmMessage = L["VendorDeletionConfirmationMessage"];
-        var message =confirmMessage + " " + context.Name + "?";
+        var message =confirmMessage + " '" + context.Name + "'?";
         if (!await Message.Confirm(message))
         {
             return;
