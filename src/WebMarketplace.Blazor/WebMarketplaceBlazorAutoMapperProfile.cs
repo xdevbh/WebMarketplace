@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using WebMarketplace.UserVendors;
+using WebMarketplace.Vendors;
 
 namespace WebMarketplace.Blazor;
 
@@ -9,5 +10,7 @@ public class WebMarketplaceBlazorAutoMapperProfile : Profile
     {
         //Define your AutoMapper configuration here for the Blazor project.
         CreateMap<UserVendorDto, CreateUpdateUserVendorDto>();
+        CreateMap<VendorDto, CreateUpdateVendorDto>();
+
     }
 }

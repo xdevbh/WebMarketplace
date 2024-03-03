@@ -1,0 +1,121 @@
+@page "/management/vendor/edit/{Id}"
+@layout ManagementPageLayout
+@inherits WebMarketplaceComponentBase
+@using Microsoft.Extensions.Localization
+@using WebMarketplace.Localization
+@using WebMarketplace.Vendors
+@using WebMarketplace.Permissions
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject IVendorAppService VendorAppService
+@inject NavigationManager NavigationManager
+
+<Card>
+    <CardHeader>
+        <Row Class="justify-content-between">
+            <Column ColumnSize="ColumnSize.IsAuto">
+                <h2>@L["EditVendor"]</h2>
+            </Column>
+            <Column ColumnSize="ColumnSize.IsAuto">
+                @if (CanEditVendor)
+                {
+                    <Button Color="Color.Primary"
+                            Clicked="SaveVendorAsync">
+                        <Icon Name="IconName.Save"/>
+                        @L["Save"]
+                    </Button>
+                }
+            </Column>
+        </Row>
+    </CardHeader>
+    <CardBody>
+        <Accordion>
+            <Collapse Visible="@infoVisible">
+                <CollapseHeader>
+                    <Heading Size="HeadingSize.Is5">
+                        <AccordionToggle>@L["Info"]</AccordionToggle>
+                    </Heading>
+                </CollapseHeader>
+                <CollapseBody>
+                    <Field>
+                        <FieldLabel>@L["Name"]</FieldLabel>
+                        <TextEdit Placeholder="@L["VendorName"]"
+                                  @bind-Text="@Vendor.Name"/>
+                    </Field>
+                    <Field>
+                        <FieldLabel>@L["Description"]</FieldLabel>
+                        <TextEdit Placeholder="@L["Description"]"
+                                  @bind-Text="@Vendor.Description"/>
+                    </Field>
+                </CollapseBody>
+            </Collapse>
+            <Collapse Visible="@addressVisible">
+                <CollapseHeader>
+                    <Heading Size="HeadingSize.Is5">
+                        <AccordionToggle>@L["Address"]</AccordionToggle>
+                    </Heading>
+                </CollapseHeader>
+                <CollapseBody>
+                    <Field>
+                        <FieldLabel>@L["Address"]</FieldLabel>
+                        <TextEdit Placeholder="@L["Address"]"
+                                  @bind-Text="@Vendor.Address"/>
+                    </Field>
+                </CollapseBody>
+            </Collapse>
+            <Collapse Visible="@mediaVisible">
+                <CollapseHeader>
+                    <Heading Size="HeadingSize.Is5">
+                        <AccordionToggle>@L["Media"]</AccordionToggle>
+                    </Heading>
+                </CollapseHeader>
+                <CollapseBody>
+                    <Field>
+                        <FieldLabel>@L["Logo"]</FieldLabel>
+                        <FileUpload Placeholder="@L["Logo"]"/>
+                    </Field>
+                </CollapseBody>
+            </Collapse>
+        </Accordion>
+    </CardBody>
+</Card>
+
+@code {
+    [Parameter] public string Id { get; set; }
+    public Guid VendorId { get; set; }
+    public VendorDto Vendor { get; set; } = new VendorDto();
+    
+    private bool CanEditVendor { get; set; } = false;
+    private bool infoVisible = true;
+    private bool addressVisible = true;
+    private bool mediaVisible = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Guid.TryParse(Id, out Guid vendorId))
+        {
+            VendorId = vendorId;
+        }
+        
+        await GetVendorAsync();
+        await SetPermissionsAsync();
+    }
+
+    private async Task SetPermissionsAsync()
+    {
+        CanEditVendor = await AuthorizationService
+            .IsGrantedAsync(WebMarketplacePermissions.Vendors.Edit);
+    }
+
+    protected async Task GetVendorAsync()
+    {
+        Vendor = await VendorAppService.GetAsync(VendorId);
+    }
+
+    protected async Task SaveVendorAsync()
+    {
+        var editedVendor = ObjectMapper.Map<VendorDto, CreateUpdateVendorDto>(Vendor);
+        await VendorAppService.UpdateAsync(Vendor.Id, editedVendor);
+        NavigationManager.NavigateTo("/management/vendor/list");
+    }
+
+}
