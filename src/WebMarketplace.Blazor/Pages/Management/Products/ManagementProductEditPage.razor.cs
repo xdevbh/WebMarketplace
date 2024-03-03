@@ -35,10 +35,10 @@ public partial class ManagementProductEditPage
             }
         }
     }
-    
+
     protected async Task GetCategoriesAsync()
     {
-        var tt =  await ProductCategoryAppService.GetLookupListAsync();
+        var tt = await ProductCategoryAppService.GetLookupListAsync();
         Categories = tt.AsEnumerable();
     }
 }

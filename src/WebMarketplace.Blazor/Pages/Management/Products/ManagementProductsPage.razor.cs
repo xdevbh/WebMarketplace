@@ -68,7 +68,7 @@ namespace WebMarketplace.Blazor.Pages.Management.Products
 
             await InvokeAsync(StateHasChanged);
         }
-        
+
         private void CreateNewProduct()
         {
             NavigationManager.NavigateTo("/management/products/new");

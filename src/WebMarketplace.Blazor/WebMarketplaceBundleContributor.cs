@@ -9,7 +9,6 @@ public class WebMarketplaceBundleContributor : IBundleContributor
 {
     public void AddScripts(BundleContext context)
     {
-
     }
 
     public void AddStyles(BundleContext context)

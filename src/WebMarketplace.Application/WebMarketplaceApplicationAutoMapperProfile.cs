@@ -5,6 +5,7 @@ using WebMarketplace.Orders;
 using WebMarketplace.ProductCategories;
 using WebMarketplace.Products;
 using WebMarketplace.Reviews;
+using WebMarketplace.UserVendors;
 using WebMarketplace.Vendors;
 
 namespace WebMarketplace;
@@ -40,7 +41,7 @@ public class WebMarketplaceApplicationAutoMapperProfile : Profile
         CreateMap<CreateUpdateVendorDto, Vendor>();
         
         CreateMap<UserVendor, UserVendorDto>();
-        CreateMap<CreateUpdateVendorDto, UserVendor>();
+        CreateMap<CreateUpdateUserVendorDto, UserVendor>();
         
         CreateMap<Review, ReviewDto>();
         CreateMap<CreateUpdateReviewDto, Review>();

@@ -1,28 +1,222 @@
 @page "/management/user-vendor"
+@inherits WebMarketplaceComponentBase
+@layout ManagementPageLayout
 @attribute [Authorize(WebMarketplacePermissions.UserVendors.Default)]
 @using WebMarketplace.Permissions
-@using Microsoft.AspNetCore.Authorization
-@using Volo.Abp.Application.Dtos
 @using WebMarketplace.Localization
 @using Microsoft.Extensions.Localization
-@using Volo.Abp
-@using Volo.Abp.AspNetCore.Components.Web
+@using Volo.Abp.Identity
+@using WebMarketplace.UserVendors
 @inject IStringLocalizer<WebMarketplaceResource> L
 @inject AbpBlazorMessageLocalizerHelper<WebMarketplaceResource> LH
+@inject IUserVendorAppService UserVendorAppService
+
 
 <Card>
     <CardHeader>
         <CardTitle>
-            <h4>@L["UserVendors"]</h4>
-        </CardTitle>    
+            <Row Class="justify-content-between">
+                <Column ColumnSize="ColumnSize.IsAuto">
+                    <h2>@L["UserVendor"]</h2>
+                </Column>
+                <Column ColumnSize="ColumnSize.IsAuto">
+                    @if (CanCreateUserVendor)
+                    {
+                        <Button Color="Color.Primary"
+                                Clicked="OpenCreateUserVendorModal">
+                            <Icon Name="IconName.Add"/>
+                            @L["New"]
+                        </Button>
+                    }
+                </Column>
+            </Row>
+        </CardTitle>
     </CardHeader>
     <CardBody>
-  
+        <DataGrid TItem="UserVendorDto"
+                  Data="UserVendors"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  ShowPageSizes="true"
+                  PageSize="PageSize"
+                  Filterable="true">
+            <DataGridColumns>
+                <DataGridColumn TItem="UserVendorDto"
+                                Filterable="false">
+                    <DisplayTemplate>
+                        <Dropdown>
+                            <DropdownToggle Color="Color.Primary">
+                                @L["Actions"]
+                            </DropdownToggle>
+                            <DropdownMenu>
+                                @if (CanEditUserVendor)
+                                {
+                                    <DropdownItem Clicked="() => OpenEditUserVendorModal(context)">
+                                        <Icon Name="IconName.Edit"/>
+                                        @L["Edit"]
+                                    </DropdownItem>
+                                }
+                                @if (CanDeleteUserVendor)
+                                {
+                                    <DropdownItem Clicked="() => DeleteUserVendorAsync(context)">
+                                        <Icon Name="IconName.Delete"/>
+                                        @L["Delete"]
+                                    </DropdownItem>
+                                }
+                            </DropdownMenu>
+                        </Dropdown>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="UserVendorDto"
+                                Field="@nameof(UserVendorDto.VendorId)"
+                                Caption="@L["Vendors"]">
+                    <DisplayTemplate>
+                        @context.Vendor.Name
+                    </DisplayTemplate>
+                    <FilterTemplate>
+                        @{
+                            selectedVendorFilter = (Guid?)context.SearchValue ?? Guid.Empty;
+                            <Select TValue="Guid" SelectedValue="@selectedVendorFilter" SelectedValueChanged="@(e => { selectedVendorFilter = e; context.TriggerFilterChange(selectedVendorFilter); })">
+                                <SelectItem Value="@(Guid.Empty)">All</SelectItem>
+                                @foreach (var vendor in Vendors)
+                                {
+                                    <SelectItem Value="@vendor.Id">@vendor.Name</SelectItem>
+                                }
+                            </Select>
+                        }
+                    </FilterTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="UserVendorDto"
+                                Field="@nameof(UserVendorDto.UserId)"
+                                Caption="@L["User"]">
+                    <DisplayTemplate>
+                        @context.User.UserName
+                    </DisplayTemplate>
+                    <FilterTemplate>
+                        @{
+                            selectedUserFilter = (Guid?)context.SearchValue ?? Guid.Empty;
+                            <Select TValue="Guid" SelectedValue="@selectedUserFilter" SelectedValueChanged="@(e => { selectedUserFilter = e; context.TriggerFilterChange(selectedUserFilter); })">
+                                <SelectItem Value="@(Guid.Empty)">All</SelectItem>
+                                @foreach (var user in Users)
+                                {
+                                    <SelectItem Value="@user.Id">@user.UserName</SelectItem>
+                                }
+                            </Select>
+                        }
+                    </FilterTemplate>
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
     </CardBody>
 </Card>
 
+<Modal @ref="CreateUserVendorModal">
+    <ModalBackdrop/>
+    <ModalContent IsCentered="true">
+        <Form>
+            <ModalHeader>
+                <ModalTitle>@L["NewUserVendor"]</ModalTitle>
+                <CloseButton Clicked="CloseCreateUserVendorModal"/>
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@CreateValidationsRef" Model="@NewUserVendor" ValidateOnLoad="false">
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Vendor"]</FieldLabel>
+                            <Select TValue="Guid" @bind-SelectedValue="@NewUserVendor.VendorId">
+                                @foreach (var vendor in Vendors)
+                                {
+                                    <SelectItem TValue="Guid" Value="@(vendor.Id)">
+                                        @vendor.Name
+                                    </SelectItem>
+                                }
+                            </Select>
+                        </Field>
+                    </Validation>
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["User"]</FieldLabel>
+                            <Select TValue="Guid" @bind-SelectedValue="@NewUserVendor.UserId">
+                                @foreach (var user in Users)
+                                {
+                                    <SelectItem TValue="Guid" Value="@(user.Id)">
+                                        @user.UserName
+                                    </SelectItem>
+                                }
+                            </Select>
+                        </Field>
+                    </Validation>
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="CloseCreateUserVendorModal">
+                    @L["Cancel"]
+                </Button>
+                <Button Color="Color.Primary"
+                        Type="@ButtonType.Submit"
+                        PreventDefaultOnSubmit="true"
+                        Clicked="CreateUserVendorAsync">
+                    <Icon Name="IconName.Save"/>
+                    @L["Save"]
+                </Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
 
-@code
-{
-    
-}
+<Modal @ref="EditUserVendorModal">
+    <ModalBackdrop/>
+    <ModalContent IsCentered="true">
+        <Form>
+            <ModalHeader>
+                <ModalTitle>@L["EditUserVendor"]</ModalTitle>
+                <CloseButton Clicked="CloseEditUserVendorModal"/>
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@EditValidationsRef" Model="@EditUserVendor" ValidateOnLoad="false">
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Vendor"]</FieldLabel>
+                            <Select TValue="Guid" @bind-SelectedValue="@EditUserVendor.VendorId">
+                                @foreach (var vendor in Vendors)
+                                {
+                                    <SelectItem TValue="Guid" Value="@(vendor.Id)">
+                                        @vendor.Name
+                                    </SelectItem>
+                                }
+                            </Select>
+                        </Field>
+                    </Validation>
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["User"]</FieldLabel>
+                            <Select TValue="Guid" @bind-SelectedValue="@EditUserVendor.UserId">
+                                @foreach (var user in Users)
+                                {
+                                    <SelectItem TValue="Guid" Value="@(user.Id)">
+                                        @user.UserName
+                                    </SelectItem>
+                                }
+                            </Select>
+                        </Field>
+                    </Validation>
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="CloseEditUserVendorModal">
+                    @L["Cancel"]
+                </Button>
+                <Button Color="Color.Primary"
+                        Type="@ButtonType.Submit"
+                        PreventDefaultOnSubmit="true"
+                        Clicked="UpdateUserVendorAsync">
+                    <Icon Name="IconName.Save"/>
+                    @L["Save"]
+                </Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>

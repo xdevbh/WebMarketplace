@@ -10,7 +10,6 @@
 @inject IProductCategoryAppService ProductCategoryAppService
 
 
-
 <Card>
     <CardHeader>
         <h2>@L["Main"]</h2>
@@ -44,10 +43,10 @@
                         <SelectList TItem="ProductCategoryLookupDto"
                                     TValue="Guid?"
                                     Data="@Categories"
-                                    TextField="@((item)=>item.Name)"
-                                    ValueField="@((item)=>item.Id)"
+                                    TextField="@((item) => item.Name)"
+                                    ValueField="@((item) => item.Id)"
                                     @bind-SelectedValue="@Product.ProductCategoryId"
-                                    DefaultItemText="@L["SelectProductCategory"]" />
+                                    DefaultItemText="@L["SelectProductCategory"]"/>
                     </Field>
                 </CollapseBody>
             </Collapse>
@@ -116,7 +115,7 @@
                     </Heading>
                 </CollapseHeader>
                 <CollapseBody>
-                    
+
                 </CollapseBody>
             </Collapse>
         </Accordion>

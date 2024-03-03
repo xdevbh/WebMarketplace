@@ -6,6 +6,14 @@
     "Menu:Vendors": "Vendors",
     "Menu:Management": "Management",
     "Welcome": "Welcome",
+    "Search": "Search",
+    "Cart": "Cart",
+    "New": "New",
+    "Actions": "Actions",
+    "Edit": "Edit",
+    "Delete": "Delete",
+    "Save": "Save",
+    "Cancel": "Cancel",
     "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP framework. For more information, visit abp.io.",
     "Permission:VendorsManagementGroup": "Vendors management",
     "Permission:ProductsManagementGroup": "Products management",
@@ -39,6 +47,12 @@
     "Permission:Reviews": "Review management",
     "Permission:Reviews.Create": "Creating new reviews",
     "Permission:Reviews.Edit": "Editing the reviews",
-    "Permission:Reviews.Delete": "Deleting the reviews"
+    "Permission:Reviews.Delete": "Deleting the reviews",
+    "UserVendor": "User Vendor",
+    "Vendors": "Vendors",
+    "User": "User",
+    "NewUserVendor": "New User Vendor",
+    "EditUserVendor": "Edit User Vendor",
+    "UserVendorDeletionConfirmationMessage": "Are you sure you want to delete the UserVendor?"
   }
 }

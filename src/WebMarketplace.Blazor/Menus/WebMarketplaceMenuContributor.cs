@@ -50,7 +50,7 @@ public class WebMarketplaceMenuContributor : IMenuContributor
                 icon: "fas fa-home"
             )
         );
-        
+
         var productsMenu = new ApplicationMenuItem(
             WebMarketplaceMenus.Products,
             l["Menu:Products"],
@@ -65,15 +65,15 @@ public class WebMarketplaceMenuContributor : IMenuContributor
             "/vendors",
             icon: "fa fa-building"
         );
-        context.Menu.Items.Insert(2,vendorsMenu);
-        
-            var managementMenu = new ApplicationMenuItem(
-                WebMarketplaceMenus.Management,
-                l["Menu:Management"],
-                "/management",
-                icon: "fa fa-cog"
-            ).RequireAuthenticated().RequirePermissions(WebMarketplacePermissions.Vendors.Edit);
-            context.Menu.AddItem(managementMenu);
+        context.Menu.Items.Insert(2, vendorsMenu);
+
+        var managementMenu = new ApplicationMenuItem(
+            WebMarketplaceMenus.Management,
+            l["Menu:Management"],
+            "/management",
+            icon: "fa fa-cog"
+        ).RequireAuthenticated().RequirePermissions(WebMarketplacePermissions.Vendors.Edit);
+        context.Menu.AddItem(managementMenu);
 
         var administration = context.Menu.GetAdministration();
 

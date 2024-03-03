@@ -49,10 +49,7 @@ public class WebMarketplaceBlazorModule : AbpModule
 
     private void ConfigureRouter(ServiceConfigurationContext context)
     {
-        Configure<AbpRouterOptions>(options =>
-        {
-            options.AppAssembly = typeof(WebMarketplaceBlazorModule).Assembly;
-        });
+        Configure<AbpRouterOptions>(options => { options.AppAssembly = typeof(WebMarketplaceBlazorModule).Assembly; });
     }
 
     private void ConfigureMenu(ServiceConfigurationContext context)
@@ -88,10 +85,10 @@ public class WebMarketplaceBlazorModule : AbpModule
     private static void ConfigureUI(WebAssemblyHostBuilder builder)
     {
         builder.RootComponents.Add<App>("#ApplicationContainer");
-
     }
 
-    private static void ConfigureHttpClient(ServiceConfigurationContext context, IWebAssemblyHostEnvironment environment)
+    private static void ConfigureHttpClient(ServiceConfigurationContext context,
+        IWebAssemblyHostEnvironment environment)
     {
         context.Services.AddTransient(sp => new HttpClient
         {
@@ -101,18 +98,11 @@ public class WebMarketplaceBlazorModule : AbpModule
 
     private void ConfigureAutoMapper(ServiceConfigurationContext context)
     {
-        Configure<AbpAutoMapperOptions>(options =>
-        {
-            options.AddMaps<WebMarketplaceBlazorModule>();
-        });
+        Configure<AbpAutoMapperOptions>(options => { options.AddMaps<WebMarketplaceBlazorModule>(); });
     }
-    
+
     private void ConfigureToolbar(ServiceConfigurationContext context)
     {
-        Configure<AbpToolbarOptions>(options =>
-        {
-            options.Contributors.Add(new WebMarketplaceToolbarContributor());
-        });
-
+        Configure<AbpToolbarOptions>(options => { options.Contributors.Add(new WebMarketplaceToolbarContributor()); });
     }
 }

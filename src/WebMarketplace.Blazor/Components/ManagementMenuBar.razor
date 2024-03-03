@@ -2,13 +2,13 @@
 @inject NavigationManager NavigationManager
 
 <Bar Mode="BarMode.VerticalInline"
-     Breakpoint="Breakpoint.Desktop" 
-     NavigationBreakpoint="Breakpoint.Tablet" 
+     Breakpoint="Breakpoint.Desktop"
+     NavigationBreakpoint="Breakpoint.Tablet"
      CollapseMode="BarCollapseMode.Small"
      ThemeContrast="ThemeContrast.Light"
-     Background = "Background.White"
+     Background="Background.White"
      Shadow="Shadow.Default">
-    <BarToggler />
+    <BarToggler/>
     <BarBrand Padding="Padding.Is4.OnX">
         <BarItem>
             <BarLink>
@@ -39,7 +39,7 @@
         public string Icon { get; set; }
         public string Link { get; set; }
     }
-    
+
     private List<MenuItem> MenuItems { get; set; } = new List<MenuItem>
     {
         new MenuItem
@@ -59,6 +59,12 @@
             Title = "Orders",
             Icon = "fa-clipboard-list",
             Link = "/management/order/list"
+        },
+        new MenuItem
+        {
+            Title = "UserVendors",
+            Icon = "fa-clipboard-list",
+            Link = "/management/user-vendor"
         }
     };
 
