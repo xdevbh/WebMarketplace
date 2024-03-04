@@ -10,6 +10,6 @@ namespace WebMarketplace.ProductCategories;
 public interface IProductCategoryAppService : ICrudAppService
     <ProductCategoryDto, Guid>
 {
-    Task<List<ProductCategoryLookupDto>> GetLookupListAsync();
-
+    Task<ListResultDto<ProductCategoryLookupDto>> GetLookupListAsync();
+    Task<ListResultDto<ProductCategoryDto>> GetAllCategoriesAsync();
 }

@@ -11,27 +11,22 @@
 @inject AbpBlazorMessageLocalizerHelper<WebMarketplaceResource> LH
 @inject IUserVendorAppService UserVendorAppService
 
+<Div Flex="Flex.JustifyContent.Between"
+     Margin="@commonMargin">
+    <Heading Size="HeadingSize.Is3">@L["UserVendor"]</Heading>
+    <Div>
+        @if (CanCreateUserVendor)
+        {
+            <Button Color="Color.Primary"
+                    Clicked="OpenCreateUserVendorModal">
+                <Icon Name="IconName.Add"/>
+                @L["New"]
+            </Button>
+        }
+    </Div>
+</Div>
 
 <Card>
-    <CardHeader>
-        <CardTitle>
-            <Row Class="justify-content-between">
-                <Column ColumnSize="ColumnSize.IsAuto">
-                    <h2>@L["UserVendor"]</h2>
-                </Column>
-                <Column ColumnSize="ColumnSize.IsAuto">
-                    @if (CanCreateUserVendor)
-                    {
-                        <Button Color="Color.Primary"
-                                Clicked="OpenCreateUserVendorModal">
-                            <Icon Name="IconName.Add"/>
-                            @L["New"]
-                        </Button>
-                    }
-                </Column>
-            </Row>
-        </CardTitle>
-    </CardHeader>
     <CardBody>
         <DataGrid TItem="UserVendorDto"
                   Data="UserVendors"
@@ -110,6 +105,7 @@
         </DataGrid>
     </CardBody>
 </Card>
+
 
 <Modal @ref="CreateUserVendorModal">
     <ModalBackdrop/>

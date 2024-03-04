@@ -42,4 +42,6 @@ public class CurrencyAppService : WebMarketplaceAppService, ICurrencyAppService
         var dtos = ObjectMapper.Map<List<Currency>, List<CurrencyLookupDto>>(currencies);
         return new ListResultDto<CurrencyLookupDto>(dtos);
     }
+    
+    
 }

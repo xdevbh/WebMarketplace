@@ -1,11 +1,7 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Blazorise;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using WebMarketplace.Currencies;
 using WebMarketplace.Permissions;
 using WebMarketplace.ProductCategories;
@@ -13,54 +9,35 @@ using WebMarketplace.Products;
 
 namespace WebMarketplace.Blazor.Pages.Management.Products;
 
-public partial class ManagementProductEditPage
+public partial class ManagementProductNewPage
 {
-    
-    [Parameter] public string Id { get; set; }
-    public Guid? ProductId { get; set; }
     private IFluentSpacingOnBreakpointWithSideAndSize commonMargin = Margin.Is3.FromBottom;
+    private bool CanCreate { get; set; } = false;
+    private Validations CreateValidationsRef { get; set; }
 
     private bool productInfoVisible { get; set; } = true;
     private bool productInventoryVisible { get; set; } = false;
     private bool productMediaVisible { get; set; } = false;
     private bool productPriceVisible { get; set; } = true;
     private bool productPublishingVisible { get; set; } = false;
+
+    // [Parameter] public Guid? Id { get; set; }
     private CreateUpdateProductDto NewProduct { get; set; } = new CreateUpdateProductDto();
     private IEnumerable<ProductCategoryLookupDto> Categories { get; set; } = new List<ProductCategoryLookupDto>();
-    private IEnumerable<CurrencyLookupDto> Currencies { get; set; } = new List<CurrencyLookupDto>();    
-    private bool CanEdit { get; set; } = false;
-    private Validations EditValidationsRef { get; set; }
-
+    private IEnumerable<CurrencyLookupDto> Currencies { get; set; } = new List<CurrencyLookupDto>();
 
     protected override async Task OnInitializedAsync()
     {
-        if (Guid.TryParse(Id, out Guid productId))
-        {
-            ProductId = productId;
-        }
-
-        await SetPermissionsAsync();
-        await GetProductAsync();
         await GetCategoriesAsync();
         await GetCurrenciesAsync();
+        await SetPermissionsAsync();
+        NewProduct = new CreateUpdateProductDto();
     }
 
     private async Task SetPermissionsAsync()
     {
-        CanEdit = await AuthorizationService
-            .IsGrantedAsync(WebMarketplacePermissions.Products.Edit);
-    }
-
-    protected async Task GetProductAsync()
-    {
-        if (ProductId.HasValue)
-        {
-            var product = await ProductAppService.GetAsync(ProductId.Value);
-            if (product != null)
-            {
-                NewProduct = ObjectMapper.Map<ProductDto, CreateUpdateProductDto>(product);
-            }
-        }
+        CanCreate = await AuthorizationService
+            .IsGrantedAsync(WebMarketplacePermissions.Products.Create);
     }
 
     protected async Task GetCategoriesAsync()
@@ -75,15 +52,15 @@ public partial class ManagementProductEditPage
         Currencies = result.Items;
     }
 
-    private async Task SaveProductAsync(MouseEventArgs arg)
+    protected async Task SaveProductAsync()
     {
-        if (await EditValidationsRef.ValidateAll())
+        if (await CreateValidationsRef.ValidateAll())
         {
-            await ProductAppService.UpdateAsync(ProductId.Value, NewProduct);
+            await ProductAppService.CreateAsync(NewProduct);
             GoToProductList();
         }
     }
-
+    
     private void GoToProductList()
     {
         NavigationManager.NavigateTo("/management/product/list");

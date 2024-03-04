@@ -13,26 +13,23 @@
 @inject IVendorAppService VendorAppService
 @inject NavigationManager NavigationManager 
 
+
+<Div Flex="Flex.JustifyContent.Between"
+     Margin="@commonMargin">
+    <Heading Size="HeadingSize.Is3">@L["Vendors"]</Heading>
+    <Div>
+        @if (CanCreateVendor)
+        {
+            <Button Color="Color.Primary"
+                    Clicked="OpenCreateUserVendorModal">
+                <Icon Name="IconName.Add"/>
+                @L["New"]
+            </Button>
+        }
+    </Div>
+</Div>
+
 <Card>
-    <CardHeader>
-        <CardTitle>
-            <Row Class="justify-content-between">
-                <Column ColumnSize="ColumnSize.IsAuto">
-                    <h2>@L["Vendors"]</h2>
-                </Column>
-                <Column ColumnSize="ColumnSize.IsAuto">
-                    @if (CanCreateVendor)
-                    {
-                        <Button Color="Color.Primary"
-                                Clicked="OpenCreateUserVendorModal">
-                            <Icon Name="IconName.Add"/>
-                            @L["New"]
-                        </Button>
-                    }
-                </Column>
-            </Row>
-        </CardTitle>
-    </CardHeader>
     <CardBody>
         <DataGrid TItem="VendorDto"
                   Data="Vendors"

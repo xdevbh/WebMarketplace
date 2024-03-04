@@ -9,81 +9,84 @@
 @inject IVendorAppService VendorAppService
 @inject NavigationManager NavigationManager
 
-<Card>
-    <CardHeader>
-        <Row Class="justify-content-between">
-            <Column ColumnSize="ColumnSize.IsAuto">
-                <h2>@L["EditVendor"]</h2>
-            </Column>
-            <Column ColumnSize="ColumnSize.IsAuto">
-                @if (CanEditVendor)
-                {
-                    <Button Color="Color.Primary"
-                            Clicked="SaveVendorAsync">
-                        <Icon Name="IconName.Save"/>
-                        @L["Save"]
-                    </Button>
-                }
-            </Column>
-        </Row>
-    </CardHeader>
-    <CardBody>
-        <Accordion>
-            <Collapse Visible="@infoVisible">
-                <CollapseHeader>
-                    <Heading Size="HeadingSize.Is5">
-                        <AccordionToggle>@L["Info"]</AccordionToggle>
-                    </Heading>
-                </CollapseHeader>
-                <CollapseBody>
-                    <Field>
-                        <FieldLabel>@L["Name"]</FieldLabel>
-                        <TextEdit Placeholder="@L["VendorName"]"
-                                  @bind-Text="@Vendor.Name"/>
-                    </Field>
-                    <Field>
-                        <FieldLabel>@L["Description"]</FieldLabel>
-                        <TextEdit Placeholder="@L["Description"]"
-                                  @bind-Text="@Vendor.Description"/>
-                    </Field>
-                </CollapseBody>
-            </Collapse>
-            <Collapse Visible="@addressVisible">
-                <CollapseHeader>
-                    <Heading Size="HeadingSize.Is5">
-                        <AccordionToggle>@L["Address"]</AccordionToggle>
-                    </Heading>
-                </CollapseHeader>
-                <CollapseBody>
-                    <Field>
-                        <FieldLabel>@L["Address"]</FieldLabel>
-                        <TextEdit Placeholder="@L["Address"]"
-                                  @bind-Text="@Vendor.Address"/>
-                    </Field>
-                </CollapseBody>
-            </Collapse>
-            <Collapse Visible="@mediaVisible">
-                <CollapseHeader>
-                    <Heading Size="HeadingSize.Is5">
-                        <AccordionToggle>@L["Media"]</AccordionToggle>
-                    </Heading>
-                </CollapseHeader>
-                <CollapseBody>
-                    <Field>
-                        <FieldLabel>@L["Logo"]</FieldLabel>
-                        <FileUpload Placeholder="@L["Logo"]"/>
-                    </Field>
-                </CollapseBody>
-            </Collapse>
-        </Accordion>
-    </CardBody>
-</Card>
+<Div Flex="Flex.JustifyContent.Between"
+     Margin="@commonMargin">
+    <Heading Size="HeadingSize.Is3">@L["EditVendor"]</Heading>
+    <Div>
+        <Button Color="Color.Secondary"
+                Clicked="GoToList">
+            <Icon Name="IconName.Times"/>
+            @L["Cancel"]
+        </Button>
+        @if (CanEditVendor)
+        {
+            <Button Color="Color.Primary"
+                    Clicked="SaveVendorAsync">
+                <Icon Name="IconName.Save"/>
+                @L["Save"]
+            </Button>
+        }
+    </Div>
+</Div>
+
+<Accordion>
+    <Collapse Visible="@infoVisible"
+              Margin="@commonMargin">
+        <CollapseHeader>
+            <Heading Size="HeadingSize.Is5">
+                <AccordionToggle>@L["Info"]</AccordionToggle>
+            </Heading>
+        </CollapseHeader>
+        <CollapseBody>
+            <Field>
+                <FieldLabel>@L["Name"]</FieldLabel>
+                <TextEdit Placeholder="@L["VendorName"]"
+                          @bind-Text="@Vendor.Name"/>
+            </Field>
+            <Field>
+                <FieldLabel>@L["Description"]</FieldLabel>
+                <TextEdit Placeholder="@L["Description"]"
+                          @bind-Text="@Vendor.Description"/>
+            </Field>
+        </CollapseBody>
+    </Collapse>
+    <Collapse Visible="@addressVisible"
+              Margin="@commonMargin">
+        <CollapseHeader>
+            <Heading Size="HeadingSize.Is5">
+                <AccordionToggle>@L["Address"]</AccordionToggle>
+            </Heading>
+        </CollapseHeader>
+        <CollapseBody>
+            <Field>
+                <FieldLabel>@L["Address"]</FieldLabel>
+                <TextEdit Placeholder="@L["Address"]"
+                          @bind-Text="@Vendor.Address"/>
+            </Field>
+        </CollapseBody>
+    </Collapse>
+    <Collapse Visible="@mediaVisible"
+              Margin="@commonMargin">
+        <CollapseHeader>
+            <Heading Size="HeadingSize.Is5">
+                <AccordionToggle>@L["Media"]</AccordionToggle>
+            </Heading>
+        </CollapseHeader>
+        <CollapseBody>
+            <Field>
+                <FieldLabel>@L["Logo"]</FieldLabel>
+                <FileUpload Placeholder="@L["Logo"]"/>
+            </Field>
+        </CollapseBody>
+    </Collapse>
+</Accordion>
 
 @code {
     [Parameter] public string Id { get; set; }
     public Guid VendorId { get; set; }
     public VendorDto Vendor { get; set; } = new VendorDto();
-    
+    private IFluentSpacingOnBreakpointWithSideAndSize commonMargin = Margin.Is3.FromBottom;
+
     private bool CanEditVendor { get; set; } = false;
     private bool infoVisible = true;
     private bool addressVisible = true;
@@ -95,7 +98,7 @@
         {
             VendorId = vendorId;
         }
-        
+
         await GetVendorAsync();
         await SetPermissionsAsync();
     }
@@ -115,6 +118,11 @@
     {
         var editedVendor = ObjectMapper.Map<VendorDto, CreateUpdateVendorDto>(Vendor);
         await VendorAppService.UpdateAsync(Vendor.Id, editedVendor);
+        GoToList();
+    }
+
+    private void GoToList()
+    {
         NavigationManager.NavigateTo("/management/vendor/list");
     }
 

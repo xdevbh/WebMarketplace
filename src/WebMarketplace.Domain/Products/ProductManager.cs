@@ -6,16 +6,21 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
+using WebMarketplace.Vendors;
 
 namespace WebMarketplace.Products
 {
     public class ProductManager : DomainService
     {
         private readonly IRepository<Product, Guid> _productRepository;
+        private readonly IRepository<UserVendor, Guid> _userVendorRepository;
 
-        public ProductManager(IRepository<Product, Guid> productRepository)
+        public ProductManager(
+            IRepository<Product, Guid> productRepository,
+            IRepository<UserVendor, Guid> userVendorRepository)
         {
             _productRepository = productRepository;
+            _userVendorRepository = userVendorRepository;
         }
 
         public async Task AssignAsync(Product product, Guid? userId)
@@ -25,7 +30,7 @@ namespace WebMarketplace.Products
                 throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductAssignmentException);
             }
 
-            var userVendor = await _productRepository.FirstOrDefaultAsync(x => x.Id == userId.Value);
+            var userVendor = await _userVendorRepository.FirstOrDefaultAsync(x => x.UserId == userId.Value);
             if (userVendor == null)
             {
                 throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductAssignmentException);
@@ -36,7 +41,7 @@ namespace WebMarketplace.Products
 
         public async Task<bool> HasEditPermissionAsync(Product product, Guid? userId)
         {
-            var userVendor = await _productRepository.FirstOrDefaultAsync(x => x.Id == userId.Value);
+            var userVendor = await _userVendorRepository.FirstOrDefaultAsync(x => x.UserId == userId.Value);
             if (userVendor == null)
             {
                 throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductAssignmentException);

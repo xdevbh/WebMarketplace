@@ -1,4 +1,4 @@
-@page "/management/product/edit/{id}"
+@page "/management/product/new"
 @layout ManagementPageLayout
 @using WebMarketplace.Localization
 @using WebMarketplace.ProductCategories
@@ -16,13 +16,13 @@
 
 <Div Flex="Flex.JustifyContent.Between"
      Margin="@commonMargin">
-    <Heading Size="HeadingSize.Is3">@L["EditProduct"]</Heading>
+    <Heading Size="HeadingSize.Is3">@L["NewProduct"]</Heading>
     <Div>
         <Button Color="Color.Secondary"
-                        Clicked="GoToProductList">
-                    <Icon Name="IconName.Times"/>
-                    @L["Cancel"]
-                </Button>
+                Clicked="GoToProductList">
+            <Icon Name="IconName.Times"/>
+            @L["Cancel"]
+        </Button>
         <Button Color="Color.Primary"
                 Clicked="SaveProductAsync">
             <Icon Name="IconName.Save"/>
@@ -34,13 +34,13 @@
 
 <Validations Model="@NewProduct"
              Mode="ValidationMode.Manual"
-             @ref="@EditValidationsRef">
+             @ref="@CreateValidationsRef">
     <Validation>
         <Accordion>
             <Collapse Visible="@productInfoVisible"
                       Margin="@commonMargin">
                 <CollapseHeader>
-                    <Heading Size="HeadingSize.Is5">
+                    <Heading Size="HeadingSize.Is3">
                         <AccordionToggle>@L["ProductInfo"]</AccordionToggle>
                     </Heading>
                 </CollapseHeader>
@@ -48,7 +48,7 @@
                     <Validation MessageLocalizer="@LH.Localize">
                         <Field>
                             <FieldLabel>@L["ProductName"]</FieldLabel>
-                            <TextEdit Placeholder="@L["SelectProductName"]"
+                            <TextEdit Placeholder="@L["ProductName"]"
                                       @bind-Text="@NewProduct.Name">
                                 <Feedback>
                                     <ValidationError/>
@@ -59,7 +59,7 @@
                     <Validation MessageLocalizer="@LH.Localize">
                         <Field>
                             <FieldLabel>@L["ProductShortDescription"]</FieldLabel>
-                            <TextEdit Placeholder="@L["SelectProductShortDescription"]"
+                            <TextEdit Placeholder="@L["ProductShortDescription"]"
                                       @bind-Text="@NewProduct.ShortDescription">
                                 <Feedback>
                                     <ValidationError/>
@@ -70,7 +70,7 @@
                     <Validation MessageLocalizer="@LH.Localize">
                         <Field>
                             <FieldLabel>@L["ProductFullDescription"]</FieldLabel>
-                            <TextEdit Placeholder="@L["SelectProductFullDescription"]"
+                            <TextEdit Placeholder="@L["ProductFullDescription"]"
                                       @bind-Text="@NewProduct.FullDescription">
                                 <Feedback>
                                     <ValidationError/>
@@ -92,11 +92,10 @@
                     </Validation>
                 </CollapseBody>
             </Collapse>
-
             <Collapse Visible="@productPriceVisible"
                       Margin="@commonMargin">
                 <CollapseHeader>
-                    <Heading Size="HeadingSize.Is5">
+                    <Heading Size="HeadingSize.Is3">
                         <AccordionToggle>@L["Prices"]</AccordionToggle>
                     </Heading>
                 </CollapseHeader>
@@ -169,7 +168,7 @@
                         <FieldLabel>@L["Published"]</FieldLabel>
                         <Check TValue="bool"
                                @bind-Checked="@NewProduct.IsPublished">
-                            @L["SelectPublished"]
+                            @L["Published"]
                         </Check>
                     </Field>
                 </CollapseBody>

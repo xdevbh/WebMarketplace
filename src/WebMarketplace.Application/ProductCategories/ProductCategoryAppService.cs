@@ -24,9 +24,18 @@ public class ProductCategoryAppService : CrudAppService
     }
 
     [Authorize(WebMarketplacePermissions.ProductCategories.Default)]
-    public async Task<List<ProductCategoryLookupDto>> GetLookupListAsync()
+    public async Task<ListResultDto<ProductCategoryLookupDto>> GetLookupListAsync()
     {
         var categories = await Repository.GetListAsync();
-        return ObjectMapper.Map<List<ProductCategory>, List<ProductCategoryLookupDto>>(categories);
+        var dtos = ObjectMapper.Map<List<ProductCategory>, List<ProductCategoryLookupDto>>(categories);
+        return new ListResultDto<ProductCategoryLookupDto>(dtos);
+    }
+    
+    [Authorize(WebMarketplacePermissions.ProductCategories.Default)]
+    public async Task<ListResultDto<ProductCategoryDto>> GetAllCategoriesAsync()
+    {
+        var categories = await Repository.GetListAsync();
+        var dtos = ObjectMapper.Map<List<ProductCategory>, List<ProductCategoryDto>>(categories);
+        return new ListResultDto<ProductCategoryDto>(dtos);
     }
 }

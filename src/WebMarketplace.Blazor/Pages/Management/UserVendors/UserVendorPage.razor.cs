@@ -19,7 +19,7 @@ public partial class UserVendorPage
     private IReadOnlyList<UserVendorDto> UserVendors = new List<UserVendorDto>();
     private IReadOnlyList<VendorDto> Vendors = new List<VendorDto>();
     private IReadOnlyList<IdentityUserDto> Users = new List<IdentityUserDto>();
-
+    private IFluentSpacingOnBreakpointWithSideAndSize commonMargin = Margin.Is3.FromBottom;
     private UserVendorDto selectedUserVendor;
     private int PageSize { get; } = LimitedResultRequestDto.DefaultMaxResultCount;
     private int CurrentPage { get; set; }

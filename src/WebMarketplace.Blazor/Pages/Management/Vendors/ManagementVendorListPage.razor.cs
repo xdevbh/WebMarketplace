@@ -15,7 +15,8 @@ public partial class ManagementVendorListPage
 {
     private IReadOnlyList<VendorDto> Vendors = new List<VendorDto>();
     private IReadOnlyList<VendorDto> AllVendors = new List<VendorDto>();
-
+    
+    private IFluentSpacingOnBreakpointWithSideAndSize commonMargin = Margin.Is3.FromBottom;
     private VendorDto selectedVendor;
     private int PageSize { get; } = LimitedResultRequestDto.DefaultMaxResultCount;
     private int CurrentPage { get; set; }

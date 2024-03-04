@@ -10,6 +10,7 @@ public interface IProductAppService : IApplicationService
     Task<ProductDto> GetAsync(Guid id);
 
     Task<PagedResultDto<ProductDto>> GetListAsync(PagedAndSortedResultRequestDto input);
+    Task<PagedResultDto<ProductDto>> GetFilteredListAsync(ProductRequestDto input);
 
     Task<ProductDto> CreateAsync(CreateUpdateProductDto input);
 

@@ -1,0 +1,162 @@
+@page "/management/product/list"
+@inject AbpBlazorMessageLocalizerHelper<WebMarketplaceResource> LH
+@using WebMarketplace.Localization
+@using WebMarketplace.ProductCategories
+@using WebMarketplace.Products
+@using WebMarketplace.Currencies
+@inherits WebMarketplaceComponentBase   
+@layout ManagementPageLayout
+@inject IProductAppService ProductAppService
+@inject IProductCategoryAppService ProductCategoryAppService
+@inject ICurrencyAppService CurrencyAppService
+@inject NavigationManager NavigationManager
+
+<Div Flex="Flex.JustifyContent.Between"
+     Margin="@commonMargin">
+    <Heading Size="HeadingSize.Is3">@L["Products"]</Heading>
+    <Div>
+        <Button Color="Color.Primary"
+                Clicked="OpenCreateProduct">
+            <Icon Name="IconName.Add"/>
+            New
+        </Button>
+    </Div>
+</Div>
+
+<Accordion Margin="@commonMargin">
+    <Collapse>
+        <CollapseHeader>
+            <Heading Size="HeadingSize.Is3">
+                <AccordionToggle>Search</AccordionToggle>
+            </Heading>
+        </CollapseHeader>
+        <CollapseBody>
+            <Field>
+                <FieldLabel>@L["Name"]</FieldLabel>
+                <TextEdit Placeholder="@L["SelectName"]"
+                          @bind-Text="@selectedNameFilter"/>
+            </Field>
+            <Field>
+                <FieldLabel>@L["Category"]</FieldLabel>
+                <SelectList TItem="ProductCategoryDto"
+                            TValue="Guid"
+                            Data="@Categories"
+                            TextField="@((item) => item.Name)"
+                            ValueField="@((item) => item.Id)"
+                            @bind-SelectedValue="@selectedCategoryFilter"
+                            DefaultItemText="@L["SelectCategory"]"
+                            DefaultItemValue="Guid.Empty"/>
+            </Field>
+            <Fields>
+                <Field>
+                    <FieldLabel>@L["Price"]</FieldLabel>
+                    <NumericEdit TValue="double?" @bind-Value="@selectedPriceFilter" />
+                </Field>
+                <Field>
+                    <FieldLabel>@L["Currency"]</FieldLabel>
+                    <SelectList TItem="CurrencyDto"
+                                TValue="string?"
+                                Data="@Currencies"
+                                TextField="@((item) => item.Code)"
+                                ValueField="@((item) => item.Code)"
+                                @bind-SelectedValue="@selectedCurrencyFilter"
+                                DefaultItemText="@L["SelectCurrency"]"/>
+                </Field>
+            </Fields>
+            <Fields>
+                <Field>
+                    <FieldLabel>@L["InStock"]</FieldLabel>
+                    <NumericEdit TValue="int?" 
+                                 @bind-Value="@selectedStockFilter" 
+                                 caption />
+                </Field>
+                <Field>
+                    <FieldLabel>@L["Published"]</FieldLabel>
+                   <Select TValue="bool?" @bind-SelectedValue="selectedPublishedFilter">
+                       <SelectItem TValue="bool?" Value="null">@L["All"]</SelectItem>
+                       <SelectItem TValue="bool?" Value="true">@L["Yes"]</SelectItem>
+                       <SelectItem TValue="bool?" Value="false">@L["No"]</SelectItem>
+                   </Select>
+                </Field>
+            </Fields>
+            <Button Color="Color.Primary" 
+                    Block
+                    Clicked="GetProductsAsync">
+                <Icon Name="IconName.Search"/>
+                Search
+            </Button>
+        </CollapseBody>
+    </Collapse>
+</Accordion>
+
+<Card Margin="@commonMargin">
+    <CardBody>
+        <DataGrid TItem="ProductDto"
+                  Data="Products"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  ShowPageSizes="true"
+                  PageSize="PageSize">
+            <DataGridColumns>
+                <DataGridColumn TItem="ProductDto"
+                                Filterable="false">
+                    <DisplayTemplate>
+                        <Dropdown>
+                            <DropdownToggle Color="Color.Primary">
+                                @L["Actions"]
+                            </DropdownToggle>
+                            <DropdownMenu>
+                                @if (CanEditProduct)
+                                {
+                                    <DropdownItem Clicked="() => OpenEditProduct(context)">
+                                        <Icon Name="IconName.Edit"/>
+                                        @L["Edit"]
+                                    </DropdownItem>
+                                }
+                                @if (CanDeleteProduct)
+                                {
+                                    <DropdownItem Clicked="() => DeleteProductDtoAsync(context)">
+                                        <Icon Name="IconName.Delete"/>
+                                        @L["Delete"]
+                                    </DropdownItem>
+                                }
+                            </DropdownMenu>
+                        </Dropdown>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="ProductDto"
+                                Field="@nameof(ProductDto.Id)"
+                                Caption="@L["Id"]"/>
+                <DataGridColumn TItem="ProductDto"
+                                Field="@nameof(ProductDto.ProductCategoryId)"
+                                Caption="@L["Category"]">
+                    <DisplayTemplate>
+                        @Categories.FirstOrDefault(x => x.Id == context.ProductCategoryId)?.Name
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="ProductDto"
+                                Field="@nameof(ProductDto.Name)"
+                                Caption="@L["Name"]">
+                    <DisplayTemplate>
+                        @context.Name
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="ProductDto"
+                                Field="@nameof(ProductDto.Price)"
+                                Caption="@L["Price"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="ProductDto"
+                                Field="@nameof(ProductDto.Currency)"
+                                Caption="@L["Currency"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="ProductDto"
+                                Field="@nameof(ProductDto.InStock)"
+                                Caption="@L["InStock"]"/>
+                <DataGridColumn TItem="ProductDto"
+                                Field="@nameof(ProductDto.IsPublished)"
+                                Caption="@L["Published"]"/>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>

@@ -12,7 +12,12 @@ public class CreateUpdateProductDto
     [Required] [StringLength(3)] 
     public string Currency { get; set; }
 
-    public string? Description { get; set; }
-    public string? ImagePath { get; set; }
+    public Guid VendorId { get; set; }
     public Guid? ProductCategoryId { get; set; }
+    public string? ShortDescription { get; set; }
+    public string? FullDescription { get; set; }
+    public double TaxPercent { get; set; }
+
+    public int InStock { get; set; }
+    public bool IsPublished { get; set; }
 }
