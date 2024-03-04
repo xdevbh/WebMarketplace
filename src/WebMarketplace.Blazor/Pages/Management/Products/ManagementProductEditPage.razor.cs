@@ -10,6 +10,7 @@ using WebMarketplace.Currencies;
 using WebMarketplace.Permissions;
 using WebMarketplace.ProductCategories;
 using WebMarketplace.Products;
+using WebMarketplace.Vendors;
 
 namespace WebMarketplace.Blazor.Pages.Management.Products;
 
@@ -17,6 +18,8 @@ public partial class ManagementProductEditPage
 {
     
     [Parameter] public string Id { get; set; }
+    private VendorDto Vendor { get; set; } = new VendorDto();
+
     public Guid? ProductId { get; set; }
     private IFluentSpacingOnBreakpointWithSideAndSize commonMargin = Margin.Is3.FromBottom;
 
@@ -39,10 +42,18 @@ public partial class ManagementProductEditPage
             ProductId = productId;
         }
 
+        await GetVendorAsync();
         await SetPermissionsAsync();
         await GetProductAsync();
         await GetCategoriesAsync();
         await GetCurrenciesAsync();
+    }
+    
+    private async Task GetVendorAsync()
+    {
+        var user = CurrentUser;
+        if (user.Id.HasValue)
+            Vendor = await UserVendorAppService.GetVendorByUserAsync(user.Id.Value);
     }
 
     private async Task SetPermissionsAsync()

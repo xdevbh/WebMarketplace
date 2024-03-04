@@ -13,46 +13,34 @@ namespace WebMarketplace.Products
     public class ProductManager : DomainService
     {
         private readonly IRepository<Product, Guid> _productRepository;
-        private readonly IRepository<UserVendor, Guid> _userVendorRepository;
+        private readonly UserVendorManager _userVendorManager;
 
         public ProductManager(
             IRepository<Product, Guid> productRepository,
-            IRepository<UserVendor, Guid> userVendorRepository)
+            UserVendorManager userVendorManager)
         {
             _productRepository = productRepository;
-            _userVendorRepository = userVendorRepository;
+            _userVendorManager = userVendorManager;
         }
-
-        public async Task AssignAsync(Product product, Guid? userId)
-        {
-            if (userId == null)
-            {
-                throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductAssignmentException);
-            }
-
-            var userVendor = await _userVendorRepository.FirstOrDefaultAsync(x => x.UserId == userId.Value);
-            if (userVendor == null)
-            {
-                throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductAssignmentException);
-            }
-
-            product.VendorId = userVendor.VendorId;
-        }
+        
 
         public async Task<bool> HasEditPermissionAsync(Product product, Guid? userId)
         {
-            var userVendor = await _userVendorRepository.FirstOrDefaultAsync(x => x.UserId == userId.Value);
-            if (userVendor == null)
+            if (userId == null)
             {
-                throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductAssignmentException);
+                return false;
+            }
+            
+            var vendor = await _userVendorManager.GetVendorByUserAsync(userId.Value);
+            if (vendor == null)
+            {
+                return false;
             }
 
-            if (product.VendorId != userVendor.VendorId)
-            {
-                throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductAssignmentException);
-            }
+            if (product.VendorId == vendor.Id)
+                return true;
 
-            return true;
+            return false;
         }
 
 

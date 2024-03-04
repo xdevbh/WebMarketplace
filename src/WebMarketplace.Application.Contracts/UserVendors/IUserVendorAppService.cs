@@ -14,4 +14,5 @@ public interface IUserVendorAppService : ICrudAppService
     Task<PagedResultDto<UserVendorDto>> GetFilteredListAsync(UserVendorRequestDto input);
     Task<List<IdentityUserDto>> GetAllUsersAsync();
     Task<List<VendorDto>> GetAllVendorsAsync();
+    Task<VendorDto> GetVendorByUserAsync(Guid userId);
 }

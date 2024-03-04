@@ -10,11 +10,13 @@ using WebMarketplace.Currencies;
 using WebMarketplace.Permissions;
 using WebMarketplace.ProductCategories;
 using WebMarketplace.Products;
+using WebMarketplace.Vendors;
 
 namespace WebMarketplace.Blazor.Pages.Management.Products;
 
 public partial class ManagementProductListPage
 {
+    private VendorDto Vendor { get; set; } = new VendorDto();
     private IFluentSpacingOnBreakpointWithSideAndSize commonMargin = Margin.Is3.FromBottom;
     private IReadOnlyList<ProductDto> Products { get; set; }
     private IReadOnlyList<ProductCategoryDto> Categories { get; set; } = new List<ProductCategoryDto>();
@@ -31,20 +33,30 @@ public partial class ManagementProductListPage
     private bool CanDeleteProduct { get; set; }
 
     #region filter
+
     private string? selectedNameFilter { get; set; }
     private double? selectedPriceFilter { get; set; }
     private Guid selectedCategoryFilter { get; set; }
     private int? selectedStockFilter { get; set; }
     private bool? selectedPublishedFilter { get; set; }
     private string? selectedCurrencyFilter { get; set; }
+
     #endregion
 
     protected override async Task OnInitializedAsync()
     {
+        await GetVendorAsync();
         await SetPermissionsAsync();
         await GetProductsAsync();
         await GetProductCategoriesAsync();
         await GetCurrenciesAsync();
+    }
+
+    private async Task GetVendorAsync()
+    {
+        var user = CurrentUser;
+        if (user.Id.HasValue)
+            Vendor = await UserVendorAppService.GetVendorByUserAsync(user.Id.Value);
     }
 
     private async Task GetProductCategoriesAsync()
@@ -52,7 +64,7 @@ public partial class ManagementProductListPage
         var result = await ProductCategoryAppService.GetAllCategoriesAsync();
         Categories = result.Items;
     }
-    
+
     private async Task GetCurrenciesAsync()
     {
         var result = await CurrencyAppService.GetListAsync();
@@ -78,10 +90,11 @@ public partial class ManagementProductListPage
             MaxResultCount = PageSize,
             SkipCount = CurrentPage * PageSize,
             Sorting = CurrentSorting,
+            VendorId = Vendor.Id,
             Name = selectedNameFilter,
             Price = selectedPriceFilter,
             ProductCategoryId = selectedCategoryFilter == Guid.Empty ? null : selectedCategoryFilter,
-            InStock  = selectedStockFilter,
+            InStock = selectedStockFilter,
             IsPublished = selectedPublishedFilter,
             Currency = selectedCurrencyFilter
         });
@@ -101,7 +114,7 @@ public partial class ManagementProductListPage
         await GetProductsAsync();
         await InvokeAsync(StateHasChanged);
     }
-    
+
 
     private void OpenCreateProduct()
     {

@@ -4,8 +4,10 @@
 @using WebMarketplace.ProductCategories
 @using WebMarketplace.Products
 @using WebMarketplace.Currencies
+@using WebMarketplace.UserVendors
 @inherits WebMarketplaceComponentBase   
 @layout ManagementPageLayout
+@inject IUserVendorAppService UserVendorAppService
 @inject IProductAppService ProductAppService
 @inject IProductCategoryAppService ProductCategoryAppService
 @inject ICurrencyAppService CurrencyAppService
@@ -50,7 +52,7 @@
             <Fields>
                 <Field>
                     <FieldLabel>@L["Price"]</FieldLabel>
-                    <NumericEdit TValue="double?" @bind-Value="@selectedPriceFilter" />
+                    <NumericEdit TValue="double?" @bind-Value="@selectedPriceFilter"/>
                 </Field>
                 <Field>
                     <FieldLabel>@L["Currency"]</FieldLabel>
@@ -66,20 +68,20 @@
             <Fields>
                 <Field>
                     <FieldLabel>@L["InStock"]</FieldLabel>
-                    <NumericEdit TValue="int?" 
-                                 @bind-Value="@selectedStockFilter" 
-                                 caption />
+                    <NumericEdit TValue="int?"
+                                 @bind-Value="@selectedStockFilter"
+                                 caption/>
                 </Field>
                 <Field>
                     <FieldLabel>@L["Published"]</FieldLabel>
-                   <Select TValue="bool?" @bind-SelectedValue="selectedPublishedFilter">
-                       <SelectItem TValue="bool?" Value="null">@L["All"]</SelectItem>
-                       <SelectItem TValue="bool?" Value="true">@L["Yes"]</SelectItem>
-                       <SelectItem TValue="bool?" Value="false">@L["No"]</SelectItem>
-                   </Select>
+                    <Select TValue="bool?" @bind-SelectedValue="selectedPublishedFilter">
+                        <SelectItem TValue="bool?" Value="null">@L["All"]</SelectItem>
+                        <SelectItem TValue="bool?" Value="true">@L["Yes"]</SelectItem>
+                        <SelectItem TValue="bool?" Value="false">@L["No"]</SelectItem>
+                    </Select>
                 </Field>
             </Fields>
-            <Button Color="Color.Primary" 
+            <Button Color="Color.Primary"
                     Block
                     Clicked="GetProductsAsync">
                 <Icon Name="IconName.Search"/>

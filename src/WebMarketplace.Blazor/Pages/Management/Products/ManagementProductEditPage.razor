@@ -5,9 +5,11 @@
 @using WebMarketplace.Products
 @using Microsoft.Extensions.Localization
 @using WebMarketplace.Currencies
+@using WebMarketplace.UserVendors
 @inherits WebMarketplaceComponentBase
 @inject IStringLocalizer<WebMarketplaceResource> L
 @inject AbpBlazorMessageLocalizerHelper<WebMarketplaceResource> LH
+@inject IUserVendorAppService UserVendorAppService
 @inject IProductAppService ProductAppService
 @inject IProductCategoryAppService ProductCategoryAppService
 @inject ICurrencyAppService CurrencyAppService

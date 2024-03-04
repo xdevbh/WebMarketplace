@@ -83,6 +83,8 @@
     "SelectProductFullDescription": "Select product full description",
     "ProductCategory": "Product category",
     "SelectProductCategory": "Select product category",
-    "Inventory": "Inventory"
+    "Inventory": "Inventory",
+    "EditProduct": "Edit Product",
+    "ProductDeletionConfirmationMessage": "Are you sure you want to delete the Product"
   }
 }

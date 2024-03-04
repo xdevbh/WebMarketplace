@@ -8,6 +8,7 @@ using WebMarketplace.Permissions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using Volo.Abp;
 using WebMarketplace.Vendors;
 
 namespace WebMarketplace.Products;
@@ -55,7 +56,6 @@ public class ProductAppService : WebMarketplaceAppService, IProductAppService
     {
         var user = CurrentUser;
         var product = ObjectMapper.Map<CreateUpdateProductDto, Product>(input);
-        await _productManager.AssignAsync(product, user.Id);
         await _productRepository.InsertAsync(product);
 
         return ObjectMapper.Map<Product, ProductDto>(product);
@@ -65,6 +65,12 @@ public class ProductAppService : WebMarketplaceAppService, IProductAppService
     public async Task UpdateAsync(Guid id, CreateUpdateProductDto input)
     {
         var product = await _productRepository.GetAsync(id);
+        var user = CurrentUser;
+        var canUpdate = await _productManager.HasEditPermissionAsync(product, user.Id);
+        if (!canUpdate)
+        {
+            throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductUpdateException);
+        }
         var newProduct = ObjectMapper.Map(input, product);
         await _productRepository.UpdateAsync(newProduct);
     }
@@ -72,10 +78,17 @@ public class ProductAppService : WebMarketplaceAppService, IProductAppService
     [Authorize(WebMarketplacePermissions.Products.Delete)]
     public async Task DeleteAsync(Guid id)
     {
-        var user = CurrentUser;
         var product = await _productRepository.GetAsync(id);
-        //await _productManager.HasEditPermissionAsync(product, user.Id);
-        await _productRepository.DeleteAsync(id);
+        var user = CurrentUser;
+        var canDelete = await _productManager.HasEditPermissionAsync(product, user.Id);
+        if (canDelete)
+        {
+            await _productRepository.DeleteAsync(id);
+        }
+        else
+        {
+            throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductDeleteException);
+        }
     }
 
     [AllowAnonymous]
@@ -146,6 +159,11 @@ public class ProductAppService : WebMarketplaceAppService, IProductAppService
     
     private IQueryable<Product> ApplyFilter(IQueryable<Product> query, ProductRequestDto input)
     {
+        if (input.VendorId != null)
+        {
+            query = query.Where(x => x.VendorId == input.VendorId);
+        }
+        
         if (input.Name != null)
         {
             query = query.Where(x => x.Name.Contains(input.Name));
@@ -175,8 +193,6 @@ public class ProductAppService : WebMarketplaceAppService, IProductAppService
         {
             query = query.Where(x => x.IsPublished == input.IsPublished);
         }
-        
-        
         
         return query;
     }

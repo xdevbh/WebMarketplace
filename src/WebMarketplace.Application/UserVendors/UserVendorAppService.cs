@@ -16,17 +16,20 @@ public class UserVendorAppService : CrudAppService
     private readonly IRepository<Vendor, Guid> _vendorRepository;
     private readonly IIdentityUserRepository _userRepository;
     private readonly IdentityUserAppService _userAppService;
+    private readonly UserVendorManager _userVendorManager;
 
     public UserVendorAppService(
         IRepository<UserVendor, Guid> repository,
         IRepository<Vendor, Guid> vendorRepository,
         IIdentityUserRepository userRepository,
-        IdentityUserAppService userAppService)
+        IdentityUserAppService userAppService,
+        UserVendorManager userVendorManager)
         : base(repository)
     {
         _vendorRepository = vendorRepository;
         _userRepository = userRepository;
         _userAppService = userAppService;
+        _userVendorManager = userVendorManager;
     }
 
     public async Task<PagedResultDto<UserVendorDto>> GetFilteredListAsync(UserVendorRequestDto input)
@@ -115,5 +118,11 @@ public class UserVendorAppService : CrudAppService
     public override Task<UserVendorDto> UpdateAsync(Guid id, CreateUpdateUserVendorDto input)
     {
         return base.UpdateAsync(id, input);
+    }
+    
+    public async Task<VendorDto> GetVendorByUserAsync(Guid userId)
+    {
+        var vendor = await _userVendorManager.GetVendorByUserAsync(userId);
+        return ObjectMapper.Map<Vendor, VendorDto>(vendor);
     }
 }

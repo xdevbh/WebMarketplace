@@ -5,6 +5,7 @@ namespace WebMarketplace.Products;
 
 public class ProductRequestDto : PagedAndSortedResultRequestDto
 {
+    public Guid? VendorId { get; set; }
     public Guid? ProductCategoryId { get; set; }
     public string? Name { get; set; }
     public double? Price { get; set; }

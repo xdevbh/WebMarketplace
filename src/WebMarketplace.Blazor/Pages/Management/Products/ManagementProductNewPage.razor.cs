@@ -6,12 +6,14 @@ using WebMarketplace.Currencies;
 using WebMarketplace.Permissions;
 using WebMarketplace.ProductCategories;
 using WebMarketplace.Products;
+using WebMarketplace.Vendors;
 
 namespace WebMarketplace.Blazor.Pages.Management.Products;
 
 public partial class ManagementProductNewPage
 {
     private IFluentSpacingOnBreakpointWithSideAndSize commonMargin = Margin.Is3.FromBottom;
+    private VendorDto Vendor { get; set; } = new VendorDto();
     private bool CanCreate { get; set; } = false;
     private Validations CreateValidationsRef { get; set; }
 
@@ -28,10 +30,18 @@ public partial class ManagementProductNewPage
 
     protected override async Task OnInitializedAsync()
     {
+        await GetVendorAsync();
         await GetCategoriesAsync();
         await GetCurrenciesAsync();
         await SetPermissionsAsync();
         NewProduct = new CreateUpdateProductDto();
+    }
+
+    private async Task GetVendorAsync()
+    {
+        var user = CurrentUser;
+        if (user.Id.HasValue)
+            Vendor = await UserVendorAppService.GetVendorByUserAsync(user.Id.Value);
     }
 
     private async Task SetPermissionsAsync()
@@ -54,13 +64,14 @@ public partial class ManagementProductNewPage
 
     protected async Task SaveProductAsync()
     {
+        NewProduct.VendorId = Vendor.Id;
         if (await CreateValidationsRef.ValidateAll())
         {
             await ProductAppService.CreateAsync(NewProduct);
             GoToProductList();
         }
     }
-    
+
     private void GoToProductList()
     {
         NavigationManager.NavigateTo("/management/product/list");
