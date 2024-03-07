@@ -54,7 +54,7 @@ public class WebMarketplaceMenuContributor : IMenuContributor
         var productsMenu = new ApplicationMenuItem(
             WebMarketplaceMenus.Products,
             l["Menu:Products"],
-            "/products",
+            "/product/list",
             icon: "fa fa-book"
         );
         context.Menu.Items.Insert(1, productsMenu);
@@ -62,7 +62,7 @@ public class WebMarketplaceMenuContributor : IMenuContributor
         var vendorsMenu = new ApplicationMenuItem(
             WebMarketplaceMenus.Vendors,
             l["Menu:Vendors"],
-            "/vendors",
+            "/vendor/list",
             icon: "fa fa-building"
         );
         context.Menu.Items.Insert(2, vendorsMenu);

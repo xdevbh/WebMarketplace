@@ -20,6 +20,7 @@ public class WebMarketplaceApplicationAutoMapperProfile : Profile
         
         CreateMap<Product, ProductDto>();
         CreateMap<CreateUpdateProductDto, Product>();
+        CreateMap<Product, ProductViewDto>();
         
         CreateMap<ProductCategory, ProductCategoryDto>();
         CreateMap<ProductCategory, ProductCategoryLookupDto>();

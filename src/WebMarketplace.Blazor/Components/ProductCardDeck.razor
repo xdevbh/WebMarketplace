@@ -1,0 +1,96 @@
+@using WebMarketplace.Products
+
+<CardDeck Margin="Margin.Is4.FromBottom">
+    @foreach (var product in Products)
+    {
+        <ProductCard Product="product"></ProductCard>
+    }
+</CardDeck>
+<Div Flex="Flex.JustifyContent.Between"
+     Margin="Margin.Is4.FromBottom">
+    <Div Margin="Margin.Is4.FromEnd"
+         Flex="Flex.Row">
+        <Div>
+            <Pagination Margin="Margin.Is4.FromEnd">
+                <PaginationItem Disabled="@IsFirstDisabled">
+                    <PaginationLink Clicked="@(() => SetPage(1))">
+                        <span aria-hidden="true">First</span>
+                    </PaginationLink>
+                </PaginationItem>
+                <PaginationItem Disabled="@IsPrevDisabled">
+                    <PaginationLink Clicked="@(() => SetPage(CurrentPage - 1))">
+                        <span aria-hidden="true">Prev</span>
+                    </PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                    <PaginationLink>
+                        @CurrentPage
+                    </PaginationLink>
+                </PaginationItem>
+                <PaginationItem Disabled="@IsNextDisabled">
+                    <PaginationLink Clicked="@(() => SetPage(CurrentPage + 1))">
+                        <span aria-hidden="true">Next</span>
+                    </PaginationLink>
+                </PaginationItem>
+                <PaginationItem Disabled="@IsLastDisabled">
+                    <PaginationLink Clicked="@(() => SetPage(TotalPages))">
+                        <span aria-hidden="true">Last</span>
+                    </PaginationLink>
+                </PaginationItem>
+            </Pagination>
+        </Div>
+        <Div>
+            <SelectList TItem="int"
+                        TValue="int"
+                        Data="@PageSizeList"
+                        TextField="@((item) => item.ToString())"
+                        ValueField="@((item) => item)"
+                        @bind-SelectedValue="@PageSize"/>
+        </Div>
+    </Div>
+    <Div>
+        <Text>
+            @ProductCount of @TotalCount.ToString() items
+        </Text>
+    </Div>
+</Div>
+
+
+@code {
+    [Parameter] public IReadOnlyList<ProductDto> Products { get; set; }
+    [Parameter] public int PageSize { get; set; } = 10;
+    [Parameter] public int CurrentPage { get; set; } = 1;
+    [Parameter] public string CurrentSorting { get; set; }
+    [Parameter] public int TotalCount { get; set; } = 0;
+    [Parameter] public EventCallback<int> ReadData { get; set; }
+
+
+    private List<int> PageSizeList = new List<int>() { 5, 10, 25, 50, 100, 250 };
+
+    private int ProductCount { get; set; }
+    private int TotalPages { get; set; }
+
+    private bool IsActive(int page) => CurrentPage == page;
+    private bool IsFirstDisabled => CurrentPage == 1;
+    private bool IsLastDisabled => CurrentPage == TotalPages;
+    private bool IsNextDisabled => CurrentPage < TotalPages;
+    private bool IsPrevDisabled => CurrentPage > 1;
+
+    private void SetPage(int page)
+    {
+        if (page < 1 || page > TotalPages)
+        {
+            return;
+        }
+
+        CurrentPage = page;
+        ReadData.InvokeAsync(CurrentPage);
+    }
+
+    protected override void OnParametersSet()
+    {
+        CurrentPage = 1;
+        ProductCount = Products.Count;
+        TotalPages = (int)Math.Ceiling(decimal.Divide(TotalCount, PageSize));
+    }
+}

@@ -1,0 +1,114 @@
+@page "/product/list"
+@layout MyMainLayout
+@using WebMarketplace.Products
+@using Volo.Abp.Application.Dtos
+@inherits WebMarketplaceComponentBase   
+@inject IProductAppService ProductAppService
+
+<Div Flex="Flex.JustifyContent.Between"
+     Margin="Margin.Is4.FromBottom">
+    <Heading Size="HeadingSize.Is3">@L["Products"]</Heading>
+    <Div>
+        <Button Color="Color.Primary"
+                Clicked="ChangeFilterVisibility">
+            <Icon Name="IconName.Filter"/>
+            @L["Filter"]
+        </Button>
+    </Div>
+</Div>
+
+<Row>
+    @if (filterVisible)
+    {
+        <Column ColumnSize="FilterColumnSize"
+                Padding="Padding.Is4.OnX.Is4.FromBottom">
+            <ProductFilter OnFilterChanged="ReadProductsAsync"
+                           ProductCategoryId="selectedProductCategoryId"
+                           VendorId="selectedVendorId"
+                           MinRating="selectedMinRating"
+                           MaxRating="selectedMaxRating"
+                           MinPrice="selectedMinPrice"
+                           MaxPrice="selectedMaxPrice"
+                           Currency="@selectedCurrency"/>
+        </Column>
+    }
+    <Column ColumnSize="ProductColumnSize"
+            Padding="Padding.Is4.OnX.Is4.FromBottom">
+        <ProductCardDeck Products="Products"
+                         ReadData="ReadProductsAsync"
+                         TotalCount="TotalCount"
+                         PageSize="PageSize"
+                         CurrentPage="CurrentPage"
+                         CurrentSorting="@CurrentSorting"/>
+    </Column>
+</Row>
+
+
+@code {
+    private IReadOnlyList<ProductDto> Products { get; set; } = new List<ProductDto>();
+    private bool filterVisible = false;
+
+    #region Filter
+
+    public Guid? selectedProductCategoryId { get; set; }
+    public Guid? selectedVendorId { get; set; }
+    public double? selectedMinRating { get; set; }
+    public double? selectedMaxRating { get; set; }
+    public double? selectedMinPrice { get; set; }
+    public double? selectedMaxPrice { get; set; }
+    public string? selectedCurrency { get; set; }
+
+    #endregion
+
+    #region Helpers
+
+    private int PageSize { get; } = LimitedResultRequestDto.DefaultMaxResultCount;
+    private int CurrentPage { get; set; }
+    private string CurrentSorting { get; set; }
+    private int TotalCount { get; set; }
+    public IFluentColumn FilterColumnSize { get; set; } = ColumnSize.IsFull.OnMobile.Is3.OnTablet;
+    public IFluentColumn ProductColumnSize { get; set; } = ColumnSize.IsFull.OnMobile.Is9.OnTablet;
+
+    #endregion
+
+    protected override async Task OnInitializedAsync()
+    {
+        ChangeFilterVisibility();
+        await GetProductsAsync();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task GetProductsAsync()
+    {
+        var result = await ProductAppService.GetFilteredListAsync(new ProductRequestDto
+        {
+            MaxResultCount = PageSize,
+            SkipCount = CurrentPage * PageSize,
+            Sorting = CurrentSorting,
+        });
+
+        Products = result.Items;
+        TotalCount = (int)result.TotalCount;
+    }
+
+
+    private async Task ReadProductsAsync()
+    {
+        await GetProductsAsync();
+    }
+
+    private void ChangeFilterVisibility()
+    {
+        if (filterVisible)
+        {
+            filterVisible = false;
+            ProductColumnSize = ColumnSize.IsFull.OnMobile.IsFull.OnTablet;
+        }
+        else
+        {
+            filterVisible = true;
+            ProductColumnSize = ColumnSize.IsFull.OnMobile.Is9.OnTablet;
+        }
+    }
+
+}

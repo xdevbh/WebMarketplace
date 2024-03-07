@@ -1,0 +1,160 @@
+@using WebMarketplace.Localization
+@using Microsoft.Extensions.Localization
+@using WebMarketplace.Common
+@using WebMarketplace.Currencies
+@using WebMarketplace.ProductCategories
+@using WebMarketplace.Vendors
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject IProductCategoryAppService ProductCategoryAppService
+@inject IVendorAppService VendorService
+@inject ICurrencyAppService CurrencyAppService
+
+
+<Div Margin="Margin.Is4.FromBottom">
+    <Heading Size="HeadingSize.Is5">@L["Sorting"]</Heading>
+    <Field>
+        <SelectList TItem="SelectOptionDto"
+                    TValue="string"
+                    Data="@_categories"
+                    TextField="@((item) => item.Text)"
+                    ValueField="@((item) => item.Value)"
+                    @bind-SelectedValue="@selectedProductCategory"
+                    DefaultItemText="@L["SelectSort"]"/>
+    </Field>
+</Div>
+<Div Margin="Margin.Is4.FromBottom">
+    <Heading Size="HeadingSize.Is5">@L["Filtering"]</Heading>
+    <Field>
+        <FieldLabel>@L["SelectCategory"]</FieldLabel>
+        <SelectList TItem="SelectOptionDto"
+                    TValue="string"
+                    Data="@_categories"
+                    TextField="@((item) => item.Text)"
+                    ValueField="@((item) => item.Value)"
+                    @bind-SelectedValue="@selectedProductCategory"
+                    DefaultItemText="@L["SelectCategory"]"/>
+    </Field>
+    <Field>
+        <FieldLabel>@L["SelectVendor"]</FieldLabel>
+        <SelectList TItem="SelectOptionDto"
+                    TValue="string"
+                    Data="@_vendors"
+                    TextField="@((item) => item.Text)"
+                    ValueField="@((item) => item.Value)"
+                    @bind-SelectedValue="@selectedVendor"
+                    DefaultItemText="@L["SelectVendor"]"/>
+    </Field>
+    <Fields>
+        <Text>@L["SelectRating"]</Text>
+        <Field>
+            <Addons>
+                <Addon AddonType="AddonType.Start">
+                    <AddonLabel>@L["Min"]</AddonLabel>
+                </Addon>
+                <Addon AddonType="AddonType.Body">
+                    <NumericPicker TValue="double?" @bind-Value="@MinRating" Min="0" Max="5" Step="0.1m" Decimals="1"/>
+                </Addon>
+            </Addons>
+        </Field>
+        <Field>
+            <Addons>
+                <Addon AddonType="AddonType.Start">
+                    <AddonLabel>@L["Max"]</AddonLabel>
+                </Addon>
+                <Addon AddonType="AddonType.Body">
+                    <NumericPicker TValue="double?" @bind-Value="@MaxRating" Min="0" Max="5" Step="0.1m" Decimals="1"/>
+                </Addon>
+            </Addons>
+        </Field>
+    </Fields>
+    <Fields>
+        <Text>@L["SelectPrice"]</Text>
+        <Field>
+            <Addons>
+                <Addon AddonType="AddonType.Start">
+                    <AddonLabel>@L["Min"]</AddonLabel>
+                </Addon>
+                <Addon AddonType="AddonType.Body">
+                    <NumericPicker TValue="double?"
+                                   @bind-Value="@MinPrice"
+                                   Min="0" Max="5"
+                                   Step="0.1m" Decimals="2"/>
+                </Addon>
+            </Addons>
+        </Field>
+        <Field>
+            <Addons>
+                <Addon AddonType="AddonType.Start">
+                    <AddonLabel>@L["Max"]</AddonLabel>
+                </Addon>
+                <Addon AddonType="AddonType.Body">
+                    <NumericPicker TValue="double?"
+                                   @bind-Value="@MaxPrice"
+                                   Min="0" Max="5"
+                                   Step="0.1m" Decimals="2"/>
+                </Addon>
+            </Addons>
+        </Field>
+    </Fields>
+    <Field>
+        <FieldLabel>@L["SelectCurrency"]</FieldLabel>
+        <SelectList TItem="SelectOptionDto"
+                    TValue="string"
+                    Data="@_currencies"
+                    TextField="@((item) => item.Text)"
+                    ValueField="@((item) => item.Value)"
+                    @bind-SelectedValue="@Currency"
+                    DefaultItemText="@L["SelectCurrency"]"/>
+    </Field>
+    <Button Color="Color.Primary" 
+            Clicked="OnFilterChanged"
+            >
+        <Icon Name="IconName.Filter"/>
+        <Text>@L["ApplyFilter"]</Text>
+    </Button>
+</Div>
+
+@code {
+    [Parameter] public Guid? ProductCategoryId { get; set; }
+    [Parameter] public Guid? VendorId { get; set; }
+    [Parameter] public double? MinRating { get; set; }
+    [Parameter] public double? MaxRating { get; set; }
+    [Parameter] public double? MinPrice { get; set; }
+    [Parameter] public double? MaxPrice { get; set; }
+    [Parameter] public string? Currency { get; set; }
+    [Parameter] public EventCallback OnFilterChanged { get; set; }
+
+    private string? selectedProductCategory = null;
+    private string? selectedVendor = null;
+
+    private IReadOnlyList<SelectOptionDto> _categories = new List<SelectOptionDto>();
+    private IReadOnlyList<SelectOptionDto> _vendors = new List<SelectOptionDto>();
+    private IReadOnlyList<SelectOptionDto> _currencies = new List<SelectOptionDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetVendorsAsync();
+        await GetCategoriesAsync();
+        await GetCurrenciesAsync();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task GetCategoriesAsync()
+    {
+        var result = await ProductCategoryAppService.GetSelectOptionListAsync();
+        _categories = result.Items;
+    }
+
+    private async Task GetVendorsAsync()
+    {
+        var result = await VendorService.GetSelectOptionListAsync();
+        _vendors = result.Items;
+    }
+    
+    private async Task GetCurrenciesAsync()
+    {
+        var result = await CurrencyAppService.GetSelectOptionListAsync();
+        _currencies = result.Items;
+    }
+
+}

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Data;
@@ -42,13 +43,31 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
     {
         if (await _productCategoryRepository.GetCountAsync() <= 0)
         {
-            await _productCategoryRepository.InsertAsync(
-                new ProductCategory
-                {
-                    Name = "Test Category 1"
-                },
-                true
-            );
+            var baseCategories = new List<string>()
+            {
+                "Groceries",
+                "Clothing and Footwear",
+                "Appliances and Electronics",
+                "Cosmetics and Fragrances",
+                "Furniture and Home Decor",
+                "Sporting Goods",
+                "Books and Educational Materials",
+                "Toys and Entertainment",
+                "Household Goods",
+                "Automotive Products"
+            };
+
+            
+            foreach (var category in baseCategories)
+            {
+                await _productCategoryRepository.InsertAsync(
+                    new ProductCategory
+                    {
+                        Name = category
+                    },
+                    true
+                );
+            }
         }
     }
 
@@ -59,8 +78,16 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
             await _vendorRepository.InsertAsync(
                 new Vendor
                 {
-                    Name = "Test vendor 1",
-                    Address = "Test Address 1"
+                    Name = "TechVendor sro",
+                    Address = "Street 123, City, Country"
+                },
+                true
+            );
+            await _vendorRepository.InsertAsync(
+                new Vendor
+                {
+                    Name = "FlowerVendor",
+                    Address = "Street 456, City, Country"
                 },
                 true
             );
@@ -71,16 +98,19 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
     {
         if (await _productRepository.GetCountAsync() <= 0)
         {
-            await _productRepository.InsertAsync(
-                new Product
-                {
-                    Name = "Test Product 1",
-                    Price = 100,
-                    Currency = "USD",
-                    VendorId = (await _vendorRepository.GetListAsync()).First().Id
-                },
-                true
-            );
+            for (int i = 0; i < 10; i++)
+            {
+                await _productRepository.InsertAsync(
+                    new Product
+                    {
+                        Name = "Some laptop " + i,
+                        Price = 100,
+                        Currency = "USD",
+                        VendorId = (await _vendorRepository.GetListAsync()).First().Id, 
+                    },
+                    true
+                );
+            }
         }
     }
     

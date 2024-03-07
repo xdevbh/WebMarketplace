@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using WebMarketplace.Common;
 
 namespace WebMarketplace.Vendors;
 
@@ -19,20 +20,35 @@ public class VendorAppService : CrudAppService
     public async Task<PagedResultDto<VendorDto>> GetFilteredListAsync(VendorRequestDto input)
     {
         var query = await Repository.GetQueryableAsync();
-        
+
         query = ApplyPaging(query, input);
         query = ApplySorting(query, input);
         query = ApplyFilter(query, input);
-        
+
         var items = await AsyncExecuter.ToListAsync(query);
         var totalCount = items.Count;
         var dtos = ObjectMapper.Map<List<Vendor>, List<VendorDto>>(items);
-        
+
         return new PagedResultDto<VendorDto>(
             totalCount,
             dtos
         );
     }
+
+    public async Task<ListResultDto<SelectOptionDto>> GetSelectOptionListAsync()
+    {
+        var vendors = await Repository.ToListAsync();
+
+        var result = vendors
+            .Select(x => new SelectOptionDto
+            {
+                Value = x.Id.ToString(),
+                Text = x.Name
+            }).ToList();
+
+        return new ListResultDto<SelectOptionDto>(result);
+    }
+
 
     public async Task<ListResultDto<VendorDto>> GetAllVendorsAsync()
     {
@@ -45,7 +61,7 @@ public class VendorAppService : CrudAppService
     {
         if (input.Name != null)
         {
-            query= query.Where(x=>x.Name.Contains(input.Name));
+            query = query.Where(x => x.Name.Contains(input.Name));
         }
 
         return query;

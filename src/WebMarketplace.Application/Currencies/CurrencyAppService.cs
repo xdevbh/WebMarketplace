@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Repositories;
+using WebMarketplace.Common;
 using WebMarketplace.Products;
 
 namespace WebMarketplace.Currencies;
@@ -42,6 +43,18 @@ public class CurrencyAppService : WebMarketplaceAppService, ICurrencyAppService
         var dtos = ObjectMapper.Map<List<Currency>, List<CurrencyLookupDto>>(currencies);
         return new ListResultDto<CurrencyLookupDto>(dtos);
     }
-    
-    
+
+    public async Task<ListResultDto<SelectOptionDto>> GetSelectOptionListAsync()
+    {
+        var currencies = await _currencyRepository.GetListAsync();
+
+        var result = currencies
+            .Select(x => new SelectOptionDto
+            {
+                Value = x.Code,
+                Text = x.Code
+            }).ToList();
+
+        return new ListResultDto<SelectOptionDto>(result);
+    }
 }

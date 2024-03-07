@@ -22,8 +22,25 @@ namespace WebMarketplace.Products
             _productRepository = productRepository;
             _userVendorManager = userVendorManager;
         }
-        
 
+        #region Rating
+
+        public async Task UpdateRating(Guid productId, double rating)
+        {
+            var product = await _productRepository.GetAsync(productId);
+            product.AverageRating = rating;
+            await _productRepository.UpdateAsync(product);
+        }
+        
+        public async Task UpdateRating(Product product, double rating)
+        {
+            product.AverageRating = rating;
+            await _productRepository.UpdateAsync(product);
+        }
+
+        #endregion
+        
+        
         public async Task<bool> HasEditPermissionAsync(Product product, Guid? userId)
         {
             if (userId == null)

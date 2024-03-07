@@ -1,0 +1,47 @@
+@using WebMarketplace.Products
+@using WebMarketplace.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<WebMarketplaceResource> L
+
+
+<Card Margin="Margin.Is4.FromBottom"
+      Style="width: 300px; ">
+    <CardImage Source="https://picsum.photos/id/9/200/200"
+               Alt="@Product.Name"  
+               Style="height: 200px"/>
+    <CardBody>
+        <Div>
+            <CardTitle Size="5">@Product.Name</CardTitle>
+            <Rating Color="Color.Warning" 
+                    ReadOnly="true"
+                    @bind-SelectedValue="@RatingValue"/>
+            <CardText>
+                @Product.ShortDescription
+            </CardText>
+            <CardText>
+                @Product.Price @Product.Currency
+            </CardText>
+        </Div>
+    </CardBody>
+    <CardFooter>
+        <Div Flex="Flex.JustifyContent.Between">
+            <Div>
+                <Button>
+                    <Icon Name="IconName.InfoCircle"/>
+                </Button>
+            </Div>
+            <Div>
+                <Button>
+                    <Icon Name="IconName.CartPlus"/>
+                    @L["AddToCart"]
+                </Button>
+            </Div>
+        </Div>
+    </CardFooter>
+</Card>
+
+@code
+{
+    [Parameter] public ProductDto Product { get; set; }
+    int RatingValue { get; set; } = 4;
+}
