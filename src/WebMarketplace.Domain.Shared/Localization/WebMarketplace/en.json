@@ -4,6 +4,15 @@
     "AppName": "WebMarketplace",
     "Menu:Home": "Home",
     "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP framework. For more information visit",
-    "Welcome": "Welcome"
+    "Welcome": "Welcome",
+    "Exception:VendorNameAlreadyExists": "The vendor with name '{Name}' already exists.",
+    "Exception:VendorDisplayNameAlreadyExists": "The vendor with display name '{DisplayName}' already exists.",
+
+    "Permission:WebMarketplace": "WebMarketplace Management",
+    "Permission:Vendors": "Vendor Management",
+    "Permission:Addresses": "Address Management",
+    "Permission:Create": "Create",
+    "Permission:Update": "Edit",
+    "Permission:Delete": "Delete"
   }
 }

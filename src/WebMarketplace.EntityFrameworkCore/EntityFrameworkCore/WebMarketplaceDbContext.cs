@@ -14,6 +14,13 @@ using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using WebMarketplace.Addresses;
+using WebMarketplace.Carts;
+using WebMarketplace.Orders;
+using WebMarketplace.Products;
+using WebMarketplace.Products.ProductReviews;
+using WebMarketplace.Vendors;
+using WebMarketplace.Vendors.VendorUsers;
 
 namespace WebMarketplace.EntityFrameworkCore;
 
@@ -27,6 +34,22 @@ public class WebMarketplaceDbContext :
 {
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
 
+    public DbSet<Address> Addresses { get; set; }
+    
+    public DbSet<Vendor> Vendors { get; set; }
+    public DbSet<VendorUser> VendorUsers { get; set; }
+    
+    //
+    // public DbSet<Product> Products { get; set; }
+    // public DbSet<ProductReview> ProductReviews { get; set; }
+    //
+    // public DbSet<Cart> Carts { get; set; }
+    // public DbSet<CartItem> CartItems { get; set; }
+    //
+    // public DbSet<Order> Orders { get; set; }
+    // public DbSet<OrderItem> OrderItems { get; set; }
+    
+    // public DbSet<Currency> Currencies { get; set; }
 
     #region Entities from the modules
 
@@ -80,12 +103,6 @@ public class WebMarketplaceDbContext :
         builder.ConfigureBlobStoring();
         
         /* Configure your own tables/entities inside here */
-
-        //builder.Entity<YourEntity>(b =>
-        //{
-        //    b.ToTable(WebMarketplaceConsts.DbTablePrefix + "YourEntities", WebMarketplaceConsts.DbSchema);
-        //    b.ConfigureByConvention(); //auto configure for the base class props
-        //    //...
-        //});
+        builder.ConfigureWebMarketplace();
     }
 }
