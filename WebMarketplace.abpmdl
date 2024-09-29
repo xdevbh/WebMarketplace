@@ -1,0 +1,93 @@
+{
+  "template": "app",
+  "imports": {
+    "Volo.Abp.Account": {
+      "version": "8.3.0",
+      "isInstalled": true
+    },
+    "Volo.Abp.OpenIddict": {
+      "version": "8.3.0",
+      "isInstalled": true
+    },
+    "Volo.Abp.Identity": {
+      "version": "8.3.0",
+      "isInstalled": true
+    },
+    "Volo.Abp.TenantManagement": {
+      "version": "8.3.0",
+      "isInstalled": true
+    }
+  },
+  "folders": {
+    "items": {
+      "src": {},
+      "test": {}
+    }
+  },
+  "packages": {
+    "WebMarketplace.Application": {
+      "path": "src/WebMarketplace.Application/WebMarketplace.Application.abppkg",
+      "folder": "src"
+    },
+    "WebMarketplace.Application.Tests": {
+      "path": "test/WebMarketplace.Application.Tests/WebMarketplace.Application.Tests.abppkg",
+      "folder": "test"
+    },
+    "WebMarketplace.Domain.Shared": {
+      "path": "src/WebMarketplace.Domain.Shared/WebMarketplace.Domain.Shared.abppkg",
+      "folder": "src"
+    },
+    "WebMarketplace.Application.Contracts": {
+      "path": "src/WebMarketplace.Application.Contracts/WebMarketplace.Application.Contracts.abppkg",
+      "folder": "src"
+    },
+    "WebMarketplace.HttpApi": {
+      "path": "src/WebMarketplace.HttpApi/WebMarketplace.HttpApi.abppkg",
+      "folder": "src"
+    },
+    "WebMarketplace.HttpApi.Client": {
+      "path": "src/WebMarketplace.HttpApi.Client/WebMarketplace.HttpApi.Client.abppkg",
+      "folder": "src"
+    },
+    "WebMarketplace.EntityFrameworkCore.Tests": {
+      "path": "test/WebMarketplace.EntityFrameworkCore.Tests/WebMarketplace.EntityFrameworkCore.Tests.abppkg",
+      "folder": "test"
+    },
+    "WebMarketplace.EntityFrameworkCore": {
+      "path": "src/WebMarketplace.EntityFrameworkCore/WebMarketplace.EntityFrameworkCore.abppkg",
+      "folder": "src"
+    },
+    "WebMarketplace.TestBase": {
+      "path": "test/WebMarketplace.TestBase/WebMarketplace.TestBase.abppkg",
+      "folder": "test"
+    },
+    "WebMarketplace.Domain.Tests": {
+      "path": "test/WebMarketplace.Domain.Tests/WebMarketplace.Domain.Tests.abppkg",
+      "folder": "test"
+    },
+    "WebMarketplace.HttpApi.Client.ConsoleTestApp": {
+      "path": "test/WebMarketplace.HttpApi.Client.ConsoleTestApp/WebMarketplace.HttpApi.Client.ConsoleTestApp.abppkg",
+      "folder": "test"
+    },
+    "WebMarketplace.DbMigrator": {
+      "path": "src/WebMarketplace.DbMigrator/WebMarketplace.DbMigrator.abppkg",
+      "folder": "src"
+    },
+    "WebMarketplace.HttpApi.Host": {
+      "path": "src/WebMarketplace.HttpApi.Host/WebMarketplace.HttpApi.Host.abppkg",
+      "folder": "src"
+    },
+    "WebMarketplace.Blazor": {
+      "path": "src/WebMarketplace.Blazor/WebMarketplace.Blazor.abppkg",
+      "folder": "src"
+    },
+    "WebMarketplace.Blazor.Client": {
+      "path": "src/WebMarketplace.Blazor.Client/WebMarketplace.Blazor.Client.abppkg",
+      "folder": "src"
+    },
+    "WebMarketplace.Domain": {
+      "path": "src/WebMarketplace.Domain/WebMarketplace.Domain.abppkg",
+      "folder": "src"
+    }
+  }
+}
