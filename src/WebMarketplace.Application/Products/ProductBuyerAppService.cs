@@ -41,26 +41,38 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
 
     public async Task<PagedResultDto<ProductCardDto>> GetProductCardListAsync(ProductCardListFilterDto input)
     {
-        // var query = await _productRepository.GetFilteredQueryableAsync(
-        //     input.VendorId,
-        //     input.Name,
-        //     input.ProductCategory,
-        //     input.ProductType,
-        //     input.MinRating,
-        //     input.MaxRating,
-        //     input.MinPriceAmount,
-        //     input.MaxPriceAmount,
-        //     input.PriceCurrency
-        // );
-        var query = await _productRepository.GetQueryableAsync();
+        var totalCount = await _productRepository.GetFilteredCountAsync(
+            input.VendorId,
+            input.Name,
+            input.ProductCategory,
+            input.ProductType,
+            input.MinRating,
+            input.MaxRating,
+            input.MinPriceAmount,
+            input.MaxPriceAmount,
+            input.PriceCurrency
+        );
 
-        var totalCount = await AsyncExecuter.CountAsync(query);
+        var items = await _productRepository.GetFilteredListAsync(
+            input.Sorting,
+            input.MaxResultCount,
+            input.SkipCount,
+            input.VendorId,
+            input.Name,
+            input.ProductCategory,
+            input.ProductType,
+            input.MinRating,
+            input.MaxRating,
+            input.MinPriceAmount,
+            input.MaxPriceAmount,
+            input.PriceCurrency
+        );
 
-        query = query.OrderBy(input.Sorting.IsNullOrWhiteSpace() ? nameof(Product.Name) : input.Sorting)
-            .PageBy(input);
-
-        var products = await AsyncExecuter.ToListAsync(query);
-        var dtos = ObjectMapper.Map<List<Product>, List<ProductCardDto>>(products);
+        var dtos = items.Select(x =>
+        {
+            var dto = ObjectMapper.Map<Product, ProductCardDto>(x);
+            return dto;
+        }).ToList();
         return new PagedResultDto<ProductCardDto>(totalCount, dtos);
     }
 
@@ -80,7 +92,7 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
             input.ProductId,
             input.MinRating,
             input.MaxRating);
-        
+
         var items = await _productRepository.GetReviewWithAuthorListAsync(
             input.Sorting,
             input.MaxResultCount,
@@ -88,7 +100,7 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
             input.ProductId,
             input.MinRating,
             input.MaxRating);
-        
+
         var dtos = items.Select(x =>
         {
             var dto = ObjectMapper.Map<ProductReview, ProductReviewDto>(x.Review);

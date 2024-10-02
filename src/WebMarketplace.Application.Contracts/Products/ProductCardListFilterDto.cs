@@ -3,7 +3,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace WebMarketplace.Products;
 
-public class ProductCardListFilterDto : ExtensiblePagedAndSortedResultRequestDto
+public class ProductCardListFilterDto : PagedAndSortedResultRequestDto
 {
     public Guid? VendorId { get; set; }
     public string? Name { get; private set; }

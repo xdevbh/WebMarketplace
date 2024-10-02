@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -5,6 +6,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace WebMarketplace.Products;
 
+[Authorize] // todo: admin only
 public class ProductAdminAppService : WebMarketplaceAppService, IProductAdminAppService
 {
     public Task DeleteReview(Guid productId, Guid reviewId)

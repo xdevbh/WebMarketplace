@@ -24,6 +24,8 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
         return (await GetQueryableAsync()).IncludeDetails();
     }
 
+    #region Products
+
     public async Task<IQueryable<Product>> GetFilteredQueryableAsync(
         Guid? vendorId = null,
         string? name = null,
@@ -37,11 +39,97 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
     {
         var dbContext = await GetDbContextAsync();
 
-        // todo: filter data
+        var query = await GetQueryableAsync();
+        query.WhereIf(vendorId != null, x => x.VendorId == vendorId.Value);
+        query.WhereIf(!name.IsNullOrEmpty(), x => x.Name.Contains(name));
+        query.WhereIf(productCategory != null, x => x.ProductCategory == productCategory);
+        query.WhereIf(productType != null, x => x.ProductType == productType);
+        query.WhereIf(minRating != null, x => x.Rating >= minRating);
+        query.WhereIf(maxRating != null, x => x.Rating <= maxRating);
+        query.WhereIf(minPriceAmount != null, x => x.ProductPrice != null && x.ProductPrice.Amount >= minPriceAmount);
+        query.WhereIf(maxPriceAmount != null, x => x.ProductPrice != null && x.ProductPrice.Amount <= maxPriceAmount);
+        query.WhereIf(priceCurrency != null, x => x.ProductPrice != null && x.ProductPrice.Currency == priceCurrency);
 
         var tt = (await GetQueryableAsync()).IncludeDetails();
         return tt;
     }
+
+    public async Task<List<Product>> GetFilteredListAsync(
+        string? sorting = null,
+        int maxResultCount = int.MaxValue,
+        int skipCount = 0,
+        Guid? vendorId = null,
+        string? name = null,
+        ProductCategory? productCategory = null,
+        ProductType? productType = null,
+        double? minRating = null,
+        double? maxRating = null,
+        decimal? minPriceAmount = null,
+        decimal? maxPriceAmount = null,
+        string? priceCurrency = null,
+        CancellationToken cancellationToken = default)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        var query = await GetFilteredQueryableAsync(
+            vendorId,
+            name,
+            productCategory,
+            productType,
+            minRating,
+            maxRating,
+            minPriceAmount,
+            maxPriceAmount,
+            priceCurrency);
+
+        if (sorting.IsNullOrWhiteSpace())
+        {
+            sorting = nameof(Product.CreationTime) + " DESC";
+        }
+        else
+        {
+            sorting = nameof(Product) + "." + sorting;
+        }
+
+        query = query.OrderBy(sorting);
+        query = query.PageBy(skipCount, maxResultCount);
+        var list = await query.ToListAsync(GetCancellationToken(cancellationToken));
+
+        return list;
+    }
+
+    public async Task<long> GetFilteredCountAsync(
+        Guid? vendorId = null,
+        string? name = null,
+        ProductCategory? productCategory = null,
+        ProductType? productType = null,
+        double? minRating = null,
+        double? maxRating = null,
+        decimal? minPriceAmount = null,
+        decimal? maxPriceAmount = null,
+        string? priceCurrency = null,
+        CancellationToken cancellationToken = default)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        var query = await GetFilteredQueryableAsync(
+            vendorId,
+            name,
+            productCategory,
+            productType,
+            minRating,
+            maxRating,
+            minPriceAmount,
+            maxPriceAmount,
+            priceCurrency);
+
+        var count = await query.LongCountAsync(GetCancellationToken(cancellationToken));
+        return count;
+    }
+
+    #endregion 
+
+    #region ProductVendorQueryResultItems
 
     public async Task<IQueryable<ProductVendorQueryResultItem>> GetWithVendorQueryableAsync(
         Guid? vendorId = null,
@@ -61,9 +149,84 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
             join vendor in dbContext.Set<Vendor>() on product.VendorId equals vendor.Id
             select new ProductVendorQueryResultItem(product, vendor);
 
-        // todo: filter data 
+        query.WhereIf(vendorId != null, x => vendorId != null && x.Product.VendorId == vendorId.Value);
+        query.WhereIf(!name.IsNullOrEmpty(), x => x.Product.Name.Contains(name));
+        query.WhereIf(productCategory != null, x => x.Product.ProductCategory == productCategory);
+        query.WhereIf(productType != null, x => x.Product.ProductType == productType);
+        query.WhereIf(minRating != null, x => x.Product.Rating >= minRating);
+        query.WhereIf(maxRating != null, x => x.Product.Rating <= maxRating);
+        query.WhereIf(minPriceAmount != null, x => x.Product.ProductPrice != null && x.Product.ProductPrice.Amount >= minPriceAmount);
+        query.WhereIf(maxPriceAmount != null, x => x.Product.ProductPrice != null && x.Product.ProductPrice.Amount <= maxPriceAmount);
+        query.WhereIf(priceCurrency != null, x => x.Product.ProductPrice != null && x.Product.ProductPrice.Currency == priceCurrency);
 
         return query;
+    }
+
+    public async Task<List<ProductVendorQueryResultItem>> GetWithVendorListAsync(
+        string? sorting = null,
+        int maxResultCount = int.MaxValue,
+        int skipCount = 0,
+        Guid? vendorId = null,
+        string? name = null,
+        ProductCategory? productCategory = null,
+        ProductType? productType = null,
+        double? minRating = null,
+        double? maxRating = null,
+        decimal? minPriceAmount = null,
+        decimal? maxPriceAmount = null,
+        string? priceCurrency = null,
+        CancellationToken cancellationToken = default)
+    {
+        var query = await GetWithVendorQueryableAsync(
+            vendorId,
+            name,
+            productCategory,
+            productType,
+            minRating, maxRating,
+            minPriceAmount,
+            maxPriceAmount,
+            priceCurrency);
+
+        //// todo: fix sorting
+        //if (sorting.IsNullOrWhiteSpace())
+        //{
+        //    sorting = "product.creationTime desc";
+        //}
+        //else
+        //{
+        //    sorting = nameof(Product) + "." + sorting;
+        //}
+
+        query = query.OrderBy(sorting);
+        query = query.PageBy(skipCount, maxResultCount);
+        var list = await query.ToListAsync(GetCancellationToken(cancellationToken));
+        return list;
+    }
+
+    public async Task<long> GetWithVendorCountAsync(
+        Guid? vendorId = null,
+        string? name = null,
+        ProductCategory? productCategory = null,
+        ProductType? productType = null,
+        double? minRating = null,
+        double? maxRating = null,
+        decimal? minPriceAmount = null,
+        decimal? maxPriceAmount = null,
+        string? priceCurrency = null,
+        CancellationToken cancellationToken = default)
+    {
+        var query = await GetWithVendorQueryableAsync(
+            vendorId,
+            name,
+            productCategory,
+            productType,
+            minRating, maxRating,
+            minPriceAmount,
+            maxPriceAmount,
+            priceCurrency);
+
+        var count = await query.LongCountAsync(GetCancellationToken(cancellationToken));
+        return count;
     }
 
     public async Task<ProductVendorQueryResultItem> GetWithVendorAsync(
@@ -80,6 +243,10 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
         var item = await query.FirstOrDefaultAsync(GetCancellationToken(cancellationToken));
         return item;
     }
+
+    #endregion
+
+    #region Reviews
 
     public async Task<IQueryable<ProductReview>> GetFilteredReviewQueryableAsync(
         Guid? productId = null,
@@ -131,10 +298,9 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
             .WhereIf(productId.HasValue, x => x.Review.ProductId == productId.Value)
             .WhereIf(minRating.HasValue, x => x.Review.Rating >= minRating.Value)
             .WhereIf(maxRating.HasValue, x => x.Review.Rating <= maxRating.Value);
-        
+
         return query;
     }
-
 
     public async Task<List<ProductReviewAuthorQueryResultItem>> GetReviewWithAuthorListAsync(
         string sorting = null,
@@ -155,7 +321,7 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
         // {
         //     query = query.OrderByDescending(x => x.Review.CreationTime);  
         // }
-        
+
         query = query.PageBy(skipCount, maxResultCount);
 
         var list = await query.ToListAsync(cancellationToken);
@@ -177,4 +343,6 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
         var count = await query.LongCountAsync(GetCancellationToken(cancellationToken));
         return count;
     }
+
+    #endregion
 }
