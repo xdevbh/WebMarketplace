@@ -7,8 +7,8 @@ namespace WebMarketplace.Vendors;
 
 public class Vendor : FullAuditedAggregateRoot<Guid>
 {
-    public virtual string Name { get; set; }
-    public virtual string DisplayName { get; set; }
+    public virtual string Name { get; private set; }
+    public virtual string DisplayName { get; private set; }
     public virtual Guid AddressId { get; set; }
     
     public virtual string? Description { get; set; }

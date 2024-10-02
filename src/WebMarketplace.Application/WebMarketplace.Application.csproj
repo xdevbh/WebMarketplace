@@ -26,7 +26,6 @@
     <Folder Include="Carts\" />
     <Folder Include="Currencies\" />
     <Folder Include="Orders\" />
-    <Folder Include="Products\ProductReviews\" />
     <Folder Include="Vendors\VendorUsers\" />
   </ItemGroup>
 

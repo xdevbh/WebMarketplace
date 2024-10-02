@@ -6,8 +6,8 @@ namespace WebMarketplace.Vendors.VendorUsers;
 
 public class VendorUser : CreationAuditedAggregateRoot<Guid>
 {
-    public Guid UserId { get; private set; }
-    public Guid VendorId { get; private set; }
+    public virtual Guid UserId { get; private set; }
+    public virtual Guid VendorId { get; private set; }
 
     protected VendorUser()
     {

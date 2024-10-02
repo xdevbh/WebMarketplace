@@ -13,7 +13,13 @@ public interface IProductSellerAppService : IApplicationService
 
     Task<ProductDto> CreateAsync(CreateUpdateProductDto input);
 
-    Task UpdateAsync(Guid id, CreateUpdateProductDto input);
+    Task<ProductDto> UpdateAsync(Guid id, CreateUpdateProductDto input);
 
     Task DeleteAsync(Guid id);
+    
+    Task PublishAsync(Guid id);
+    
+    Task UnpublishAsync(Guid id);
+    
+     Task CreateProductPriceAsync(CreateUpdateProductPriceDto input);
 }

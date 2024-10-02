@@ -7,6 +7,7 @@
     "Welcome": "Welcome",
     "Exception:VendorNameAlreadyExists": "The vendor with name '{Name}' already exists.",
     "Exception:VendorDisplayNameAlreadyExists": "The vendor with display name '{DisplayName}' already exists.",
+    "Exception:ProductReviewUserAlreadyExists": "A review for this product by this user already exists.",
 
     "Permission:WebMarketplace": "WebMarketplace Management",
     "Permission:Vendors": "Vendor Management",

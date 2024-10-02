@@ -18,7 +18,6 @@ using WebMarketplace.Addresses;
 using WebMarketplace.Carts;
 using WebMarketplace.Orders;
 using WebMarketplace.Products;
-using WebMarketplace.Products.ProductReviews;
 using WebMarketplace.Vendors;
 using WebMarketplace.Vendors.VendorUsers;
 
@@ -38,9 +37,9 @@ public class WebMarketplaceDbContext :
     
     public DbSet<Vendor> Vendors { get; set; }
     public DbSet<VendorUser> VendorUsers { get; set; }
-    
+
+    public DbSet<Product> Products { get; set; }
     //
-    // public DbSet<Product> Products { get; set; }
     // public DbSet<ProductReview> ProductReviews { get; set; }
     //
     // public DbSet<Cart> Carts { get; set; }

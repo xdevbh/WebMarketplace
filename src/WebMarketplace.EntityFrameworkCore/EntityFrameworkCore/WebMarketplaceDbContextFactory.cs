@@ -26,7 +26,8 @@ public class WebMarketplaceDbContextFactory : IDesignTimeDbContextFactory<WebMar
     {
         var builder = new ConfigurationBuilder()
             .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../WebMarketplace.DbMigrator/"))
-            .AddJsonFile("appsettings.json", optional: false);
+            .AddJsonFile("appsettings.json", optional: false)
+            .AddJsonFile("appsettings.secrets.json", optional: false);
 
         return builder.Build();
     }

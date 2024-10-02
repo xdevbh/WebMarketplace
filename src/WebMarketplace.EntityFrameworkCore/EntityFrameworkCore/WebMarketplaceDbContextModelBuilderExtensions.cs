@@ -7,7 +7,6 @@ using WebMarketplace.Addresses;
 using WebMarketplace.Carts;
 using WebMarketplace.Orders;
 using WebMarketplace.Products;
-using WebMarketplace.Products.ProductReviews;
 using WebMarketplace.Vendors;
 using WebMarketplace.Vendors.VendorUsers;
 
@@ -21,7 +20,7 @@ public static class WebMarketplaceDbContextModelBuilderExtensions
         
         builder.ConfigureAddresses();
         builder.ConfigureVendors();
-        // builder.ConfigureProducts();
+        builder.ConfigureProducts();
         // builder.ConfigureCarts();
         // builder.ConfigureOrders();
     }
@@ -78,14 +77,26 @@ public static class WebMarketplaceDbContextModelBuilderExtensions
             b.ToTable(WebMarketplaceConsts.DbTablePrefix + "Products", WebMarketplaceConsts.DbSchema);
             b.ConfigureByConvention(); // auto configure for the base class props
             b.HasOne<Vendor>().WithMany().HasForeignKey(x => x.VendorId).IsRequired();
+            b.HasMany(x => x.ProductReviews).WithOne().IsRequired().HasForeignKey(x => x.ProductId);
+            b.HasMany(x => x.ProductPrices).WithOne().IsRequired().HasForeignKey(x => x.ProductId);
+
         });
 
         builder.Entity<ProductReview>(b =>
         {
             b.ToTable(WebMarketplaceConsts.DbTablePrefix + "ProductReviews", WebMarketplaceConsts.DbSchema);
             b.ConfigureByConvention(); // auto configure for the base class props
-            b.HasOne<Product>().WithMany().HasForeignKey(x => x.ProductId).IsRequired();
             b.HasOne<IdentityUser>().WithMany().HasForeignKey(x => x.UserId).IsRequired();
+            b.Property(x => x.Rating).IsRequired();
+        });
+        
+        builder.Entity<ProductPrice>(b =>
+        {
+            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "ProductPrices", WebMarketplaceConsts.DbSchema);
+            b.ConfigureByConvention(); // auto configure for the base class props
+            b.HasKey(x=> new {x.ProductId, x.Date});
+            b.Property(x => x.Currency).IsRequired().HasMaxLength(WebMarketplaceConsts.CurrencyCodeLength);
+            b.Property(x=>x.Amount).HasColumnType("decimal(18,2)").IsRequired();
         });
     }
 
