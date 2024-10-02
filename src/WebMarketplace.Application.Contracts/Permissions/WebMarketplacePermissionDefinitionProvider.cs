@@ -24,7 +24,11 @@ public class WebMarketplacePermissionDefinitionProvider : PermissionDefinitionPr
         addressesPermission.AddChild(WebMarketplacePermissions.Addresses.Update, L("Permission:Update"));
         addressesPermission.AddChild(WebMarketplacePermissions.Addresses.Delete, L("Permission:Delete"));
         
-        
+        var productsPermission = myGroup.AddPermission(WebMarketplacePermissions.Products.Default, L("Permission:Products"));
+        productsPermission.AddChild(WebMarketplacePermissions.Products.Create, L("Permission:Create"));
+        productsPermission.AddChild(WebMarketplacePermissions.Products.Update, L("Permission:Update"));
+        productsPermission.AddChild(WebMarketplacePermissions.Products.Delete, L("Permission:Delete"));
+        productsPermission.AddChild(WebMarketplacePermissions.Products.Publish, L("Permission:Publish"));
     }
 
     private static LocalizableString L(string name)

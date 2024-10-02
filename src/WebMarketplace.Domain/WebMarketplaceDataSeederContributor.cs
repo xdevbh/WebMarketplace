@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Data;
@@ -16,16 +17,18 @@ namespace WebMarketplace;
 public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransientDependency
 {
     private readonly IGuidGenerator _guidGenerator;
+    private readonly IRepository<IdentityRole, Guid> _identityRoleRepository;
     private readonly IRepository<Vendor, Guid> _vendorRepository;
     private readonly VendorManager _vendorManager;
     private readonly IRepository<Address, Guid> _addressRepository;
     private readonly IIdentityUserRepository _identityUserRepository;
-    private readonly IRepository<Product,Guid> _productRepository;
+    private readonly IRepository<Product, Guid> _productRepository;
     private readonly ProductManager _productManager;
-    
-    public WebMarketplaceDataSeederContributor(IGuidGenerator guidGenerator, IRepository<Vendor, Guid> vendorRepository, VendorManager vendorManager, IRepository<Address, Guid> addressRepository, IIdentityUserRepository identityUserRepository, IRepository<Product, Guid> productRepository, ProductManager productManager)
+
+    public WebMarketplaceDataSeederContributor(IGuidGenerator guidGenerator, IRepository<IdentityRole, Guid> identityRoleRepository, IRepository<Vendor, Guid> vendorRepository, VendorManager vendorManager, IRepository<Address, Guid> addressRepository, IIdentityUserRepository identityUserRepository, IRepository<Product, Guid> productRepository, ProductManager productManager)
     {
         _guidGenerator = guidGenerator;
+        _identityRoleRepository = identityRoleRepository;
         _vendorRepository = vendorRepository;
         _vendorManager = vendorManager;
         _addressRepository = addressRepository;
@@ -36,9 +39,23 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
 
     public async Task SeedAsync(DataSeedContext context)
     {
+        await SeedRolesAsync();
         await SeedAddressesAsync();
         await SeedVendorsAsync();
         await SeedProductsAsync();
+    }
+
+    private async Task SeedRolesAsync()
+    {
+        if ((await _identityRoleRepository.GetCountAsync() == 1)
+            && ((await _identityRoleRepository.FirstOrDefaultAsync())?.Name == "admin"))
+        {
+            var roleSeller = new IdentityRole(_guidGenerator.Create(), "seller");
+            var roleBuyer = new IdentityRole(_guidGenerator.Create(), "buyer");
+
+            await _identityRoleRepository.InsertAsync(roleSeller);
+            await _identityRoleRepository.InsertAsync(roleBuyer);
+        }
     }
 
     private async Task SeedAddressesAsync()
@@ -57,7 +74,7 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
                 null,
                 "+420 000 000 000",
                 "mail@mail.com");
-            
+
             await _addressRepository.InsertAsync(address);
         }
     }
@@ -100,9 +117,9 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
                     "Test short description about Test Product 1",
                     "Test full description about Test Product 1. Test full description about Test Product 1. "
                 );
-                
+
                 await _productRepository.InsertAsync(product);
-                
+
                 await _productManager.AddProductPriceAsync(product, DateTime.Now, 100, "CZK");
                 await _productManager.AddProductPriceAsync(product, DateTime.Now.AddDays(-10), 200, "CZK");
 

@@ -11,7 +11,7 @@ using WebMarketplace.Vendors;
 
 namespace WebMarketplace.Vendors;
 
-// [Authorize("AdminOnly")]
+[Authorize("AdminOnly")]
 public class VendorAdminAppService : WebMarketplaceAppService, IVendorAdminAppService
 {
     private readonly IRepository<Vendor, Guid> _vendorRepository;
@@ -31,12 +31,11 @@ public class VendorAdminAppService : WebMarketplaceAppService, IVendorAdminAppSe
     // }
 
     // [Authorize(WebMarketplacePermissions.Vendors.Default)]
-    [Authorize("AdminOnly")]
     public async Task<PagedResultDto<VendorDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
         var vendorList = await _vendorRepository.GetPagedListAsync(input.SkipCount, input.MaxResultCount, input.Sorting);
         var totalCount = await _vendorRepository.GetCountAsync();
-        
+
         return new PagedResultDto<VendorDto>(
             totalCount,
             ObjectMapper.Map<List<Vendor>, List<VendorDto>>(vendorList)
@@ -54,9 +53,9 @@ public class VendorAdminAppService : WebMarketplaceAppService, IVendorAdminAppSe
     // [Authorize(WebMarketplacePermissions.Vendors.Default)]
     public async Task<VendorDto> GetByNameAsync(string name)
     {
-        var vendor = await _vendorRepository.GetAsync(x=>x.Name == name);
+        var vendor = await _vendorRepository.GetAsync(x => x.Name == name);
         var vendorDto = ObjectMapper.Map<Vendor, VendorDto>(vendor);
-        return vendorDto;    
+        return vendorDto;
     }
 
     // [Authorize(WebMarketplacePermissions.Vendors.Update)]
@@ -73,7 +72,7 @@ public class VendorAdminAppService : WebMarketplaceAppService, IVendorAdminAppSe
             input.Website);
 
         await _vendorRepository.UpdateAsync(vendor);
-        
+
         var vendorDto = ObjectMapper.Map<Vendor, VendorDto>(vendor);
         return vendorDto;
     }
@@ -88,7 +87,7 @@ public class VendorAdminAppService : WebMarketplaceAppService, IVendorAdminAppSe
             input.Description,
             input.Website
         );
-        
+
         await _vendorRepository.InsertAsync(vendor);
         var vendorDto = ObjectMapper.Map<Vendor, VendorDto>(vendor);
         return vendorDto;

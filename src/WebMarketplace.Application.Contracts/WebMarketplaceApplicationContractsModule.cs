@@ -33,6 +33,7 @@ public class WebMarketplaceApplicationContractsModule : AbpModule
         {
             options.AddPolicy("SellerOnly", policy => policy.RequireRole("seller"));
             options.AddPolicy("AdminOnly", policy => policy.RequireRole("admin"));
+            options.AddPolicy("Buyer", policy => policy.RequireRole("buyer"));
         });
     }
 }

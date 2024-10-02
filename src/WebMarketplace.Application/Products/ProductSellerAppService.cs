@@ -6,12 +6,13 @@ using Volo.Abp.Authorization;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity.Settings;
 using Volo.Abp.Users;
+using WebMarketplace.Permissions;
 using WebMarketplace.Vendors;
 using WebMarketplace.Vendors.VendorUsers;
 
 namespace WebMarketplace.Products;
 
-[Authorize] // todo: seller only
+[Authorize("SellerOnly")]
 public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerAppService
 {
     private readonly IProductRepository _productRepository;
@@ -103,7 +104,7 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
         await _productRepository.DeleteAsync(id);
     }
 
-    // todo: has perm to publish
+    [Authorize(WebMarketplacePermissions.Products.Publish)]
     public async Task PublishAsync(Guid id)
     {
         var product = await _productRepository.GetAsync(id);
@@ -117,6 +118,7 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
         product.Publish(true);
     }
 
+    [Authorize(WebMarketplacePermissions.Products.Publish)]
     public async Task UnpublishAsync(Guid id)
     {
         var product = await _productRepository.GetAsync(id);

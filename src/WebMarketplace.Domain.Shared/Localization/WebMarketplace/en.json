@@ -12,8 +12,10 @@
     "Permission:WebMarketplace": "WebMarketplace Management",
     "Permission:Vendors": "Vendor Management",
     "Permission:Addresses": "Address Management",
+    "Permission:Products": "Product Management",
     "Permission:Create": "Create",
     "Permission:Update": "Edit",
-    "Permission:Delete": "Delete"
+    "Permission:Delete": "Delete",
+    "Permission:Publish": "Publish"
   }
 }
