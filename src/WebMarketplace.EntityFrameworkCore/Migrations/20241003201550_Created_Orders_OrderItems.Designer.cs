@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 using WebMarketplace.EntityFrameworkCore;
@@ -12,9 +13,11 @@ using WebMarketplace.EntityFrameworkCore;
 namespace WebMarketplace.Migrations
 {
     [DbContext(typeof(WebMarketplaceDbContext))]
-    partial class WebMarketplaceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241003201550_Created_Orders_OrderItems")]
+    partial class Created_Orders_OrderItems
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

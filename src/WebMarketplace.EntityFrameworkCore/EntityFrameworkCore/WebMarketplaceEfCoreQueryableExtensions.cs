@@ -1,5 +1,6 @@
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using WebMarketplace.Orders;
 using WebMarketplace.Products;
 
 namespace WebMarketplace.EntityFrameworkCore;
@@ -16,5 +17,16 @@ public static class WebMarketplaceEfCoreQueryableExtensions
         return queryable
             .Include(x=>x.ProductPrices)
             .Include(x=>x.ProductReviews);
+    }
+    
+    public static IQueryable<Order> IncludeDetails(this IQueryable<Order> queryable, bool include = true)
+    {
+        if (!include)
+        {
+            return queryable;
+        }
+
+        return queryable
+            .Include(x=>x.Items);
     }
 }

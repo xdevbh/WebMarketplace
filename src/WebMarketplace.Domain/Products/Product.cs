@@ -21,6 +21,7 @@ public class Product : AuditedAggregateRoot<Guid>
     public virtual string? FullDescription { get; set; }
 
     public virtual List<ProductReview> ProductReviews { get; set; }
+    
     public virtual double Rating => ProductReviews.Average(x => x.Rating);
 
     public virtual List<ProductPrice> ProductPrices { get; set; }

@@ -26,7 +26,7 @@ public class ProductPrice : Entity
     public ProductPrice SetAmount(decimal amount)
     {
         if (amount < 0)
-            throw new BusinessException(WebMarketplaceDomainErrorCodes.VendorNameAlreadyExists);
+            throw new BusinessException(WebMarketplaceDomainErrorCodes.PriceNotNegative);
         
         Amount = amount;
         return this;

@@ -8,4 +8,7 @@ public static class WebMarketplaceDomainErrorCodes
     
     public const string ProductReviewUserAlreadyExists = "Exception:ProductReviewUserAlreadyExists";
     public const string ProductReviewNotFound = "Exception:ProductReviewNotFound";
+    
+    public const string PriceNotNegative = "Exception:PriceNotNegative"; 
+    public const string CurrencyAlreadySet = "Exception:CurrencyAlreadySet";
 }

@@ -8,14 +8,18 @@
     "Exception:VendorNameAlreadyExists": "The vendor with name '{Name}' already exists.",
     "Exception:VendorDisplayNameAlreadyExists": "The vendor with display name '{DisplayName}' already exists.",
     "Exception:ProductReviewUserAlreadyExists": "A review for this product by this user already exists.",
-
+    "Exception:PriceNotNegative": "Price cannot be negative.",
+    "Exception:CurrencyAlreadySet": "Currency is already set.",
+    
     "Permission:WebMarketplace": "WebMarketplace Management",
     "Permission:Vendors": "Vendor Management",
     "Permission:Addresses": "Address Management",
     "Permission:Products": "Product Management",
+    "Permission:Orders": "Order Management",
     "Permission:Create": "Create",
     "Permission:Update": "Edit",
     "Permission:Delete": "Delete",
-    "Permission:Publish": "Publish"
+    "Permission:Publish": "Publish",
+    "Permission:ChangeStatus": "Change Status"
   }
 }

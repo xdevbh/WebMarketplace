@@ -24,6 +24,8 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
     private readonly IIdentityUserRepository _identityUserRepository;
     private readonly IRepository<Product, Guid> _productRepository;
     private readonly ProductManager _productManager;
+    
+    private const string DemoPrefix = "[DEMO] ";
 
     public WebMarketplaceDataSeederContributor(IGuidGenerator guidGenerator, IRepository<IdentityRole, Guid> identityRoleRepository, IRepository<Vendor, Guid> vendorRepository, VendorManager vendorManager, IRepository<Address, Guid> addressRepository, IIdentityUserRepository identityUserRepository, IRepository<Product, Guid> productRepository, ProductManager productManager)
     {

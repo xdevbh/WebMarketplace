@@ -28,6 +28,15 @@ public static class WebMarketplacePermissions
         public const string Delete = Default + ".Delete";
         public const string Publish = Default + ".Publish";
     }
+    
+    public static class Orders
+    {
+        public const string Default = GroupName + ".Orders";
+        public const string Create = Default + ".Create";
+        public const string Update = Default + ".Edit";
+        public const string Delete = Default + ".Delete";
+        public const string ChangeStatus = Default + ".ChangeStatus";
+    }
 
     //Add your own permission names. Example:
     //public const string MyPermission1 = GroupName + ".MyPermission1";

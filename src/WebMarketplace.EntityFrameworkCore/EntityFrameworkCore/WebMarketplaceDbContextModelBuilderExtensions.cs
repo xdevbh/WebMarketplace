@@ -21,8 +21,8 @@ public static class WebMarketplaceDbContextModelBuilderExtensions
         builder.ConfigureAddresses();
         builder.ConfigureVendors();
         builder.ConfigureProducts();
+        builder.ConfigureOrders();
         // builder.ConfigureCarts();
-        // builder.ConfigureOrders();
     }
     
     private static void ConfigureAddresses([NotNull] this ModelBuilder builder)
@@ -99,6 +99,41 @@ public static class WebMarketplaceDbContextModelBuilderExtensions
             b.Property(x=>x.Amount).HasColumnType("decimal(18,2)").IsRequired();
         });
     }
+    
+    private static void ConfigureOrders([NotNull] this ModelBuilder builder)
+    {
+        Check.NotNull(builder, nameof(builder));
+
+        builder.Entity<Order>(b =>
+        {
+            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "Orders", WebMarketplaceConsts.DbSchema);
+            b.ConfigureByConvention(); //auto configure for the base class props
+            b.HasOne<IdentityUser>().WithMany().HasForeignKey(x => x.BuyerId).IsRequired()
+                .OnDelete(DeleteBehavior.NoAction);
+            b.HasOne<Address>().WithMany().HasForeignKey(x => x.AddressId).IsRequired()
+                .OnDelete(DeleteBehavior.NoAction);
+            b.HasOne<Vendor>().WithMany().HasForeignKey(x => x.VendorId).IsRequired()
+                .OnDelete(DeleteBehavior.NoAction);
+            b.Property(x => x.VendorName).IsRequired();
+            b.Property(x => x.Status).IsRequired();
+            b.Property(x => x.TotalPrice).HasColumnType("decimal(18,2)").IsRequired();
+            b.Property(x => x.Currency).IsRequired();
+            b.HasMany(x => x.Items).WithOne().IsRequired().HasForeignKey(x => x.OrderId);
+        });
+
+        builder.Entity<OrderItem>(b =>
+        {
+            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "OrderItems", WebMarketplaceConsts.DbSchema);
+            b.ConfigureByConvention();
+            b.HasOne<Product>().WithMany().HasForeignKey(x => x.ProductId).IsRequired()
+                .OnDelete(DeleteBehavior.NoAction);
+            b.Property(x => x.ProductName).IsRequired();
+            b.Property(x => x.Quantity).IsRequired();
+            b.Property(x => x.UnitPrice).HasColumnType("decimal(18,2)").IsRequired();
+            b.Property(x => x.TotalPrice).HasColumnType("decimal(18,2)").IsRequired();
+            b.Property(x => x.Currency).IsRequired().HasMaxLength(WebMarketplaceConsts.CurrencyCodeLength);
+        });
+    }
 
     private static void ConfigureCarts([NotNull] this ModelBuilder builder)
     {
@@ -119,22 +154,5 @@ public static class WebMarketplaceDbContextModelBuilderExtensions
         });
     }
 
-    private static void ConfigureOrders([NotNull] this ModelBuilder builder)
-    {
-        Check.NotNull(builder, nameof(builder));
-
-        builder.Entity<Order>(b =>
-        {
-            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "Orders", WebMarketplaceConsts.DbSchema);
-            b.ConfigureByConvention(); //auto configure for the base class props
-        });
-
-        builder.Entity<OrderItem>(b =>
-        {
-            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "OrderItems", WebMarketplaceConsts.DbSchema);
-            b.ConfigureByConvention();
-            b.HasOne<Order>().WithMany().HasForeignKey(x => x.OrderId).IsRequired();
-            b.HasOne<Product>().WithMany().HasForeignKey(x => x.ProductId).IsRequired();
-        });
-    }
+    
 }
