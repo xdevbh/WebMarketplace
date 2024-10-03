@@ -1,13 +1,37 @@
-using System;
-using Volo.Abp.Domain.Entities;
+﻿using System;
+using Volo.Abp;
 
 namespace WebMarketplace.Carts;
 
-public class CartItem : Entity<Guid>
+public class CartItem
 {
-    public Guid CartId { get; set; }
     public Guid ProductId { get; set; }
-    public int Quantity { get; set; }
-    public double Price { get; set; }
-    public string Currency { get; set; }
+    public int Quantity { get; private set; }
+
+    protected CartItem()
+    {
+        
+    }
+    
+    public CartItem(Guid productId, int quantity)
+    {
+        ProductId = productId; 
+        SetQuantity(quantity);
+    }
+    
+    public CartItem SetQuantity(int quantity)
+    {
+        Check.Positive(quantity, nameof(quantity));
+
+        Quantity = quantity;
+        return this;
+    }
+    
+    public CartItem AddQuantity(int quantity)
+    {
+        Check.Positive(Quantity + quantity, nameof(quantity));
+
+        Quantity += quantity;
+        return this;
+    }
 }

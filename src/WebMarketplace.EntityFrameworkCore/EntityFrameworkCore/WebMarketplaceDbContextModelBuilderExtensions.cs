@@ -4,7 +4,6 @@ using Volo.Abp;
 using Volo.Abp.EntityFrameworkCore.Modeling;
 using Volo.Abp.Identity;
 using WebMarketplace.Addresses;
-using WebMarketplace.Carts;
 using WebMarketplace.Orders;
 using WebMarketplace.Products;
 using WebMarketplace.Vendors;
@@ -134,25 +133,4 @@ public static class WebMarketplaceDbContextModelBuilderExtensions
             b.Property(x => x.Currency).IsRequired().HasMaxLength(WebMarketplaceConsts.CurrencyCodeLength);
         });
     }
-
-    private static void ConfigureCarts([NotNull] this ModelBuilder builder)
-    {
-        Check.NotNull(builder, nameof(builder));
-
-        builder.Entity<Cart>(b =>
-        {
-            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "Carts", WebMarketplaceConsts.DbSchema);
-            b.ConfigureByConvention(); //auto configure for the base class props
-        });
-
-        builder.Entity<CartItem>(b =>
-        {
-            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "CartItems", WebMarketplaceConsts.DbSchema);
-            b.ConfigureByConvention();
-            b.HasOne<Cart>().WithMany().HasForeignKey(x => x.CartId).IsRequired();
-            b.HasOne<Product>().WithMany().HasForeignKey(x => x.ProductId).IsRequired();
-        });
-    }
-
-    
 }

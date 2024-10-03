@@ -15,7 +15,6 @@ using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using WebMarketplace.Addresses;
-using WebMarketplace.Carts;
 using WebMarketplace.Orders;
 using WebMarketplace.Products;
 using WebMarketplace.Vendors;

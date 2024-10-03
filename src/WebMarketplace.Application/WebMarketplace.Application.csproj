@@ -23,7 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Carts\" />
     <Folder Include="Currencies\" />
     <Folder Include="Orders\" />
     <Folder Include="Vendors\VendorUsers\" />
