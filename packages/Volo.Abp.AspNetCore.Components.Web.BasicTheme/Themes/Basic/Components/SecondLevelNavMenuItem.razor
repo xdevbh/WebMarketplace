@@ -12,15 +12,13 @@
     }
     else if (MenuItem.Url != null)
     {
-        <BarItem>
-            <BarLink To="@url">
-                @if (MenuItem.Icon != null)
-                {
-                    <BarIcon IconName="@MenuItem.Icon" Margin="Margin.Is1.FromEnd"/>
-                }
-                @MenuItem.DisplayName
-            </BarLink>
-        </BarItem>
+        <BarDropdownItem To="@url">
+            @if (MenuItem.Icon != null)
+            {
+                <BarIcon IconName="@MenuItem.Icon" Margin="Margin.Is1.FromEnd"/>
+            }
+            @MenuItem.DisplayName
+        </BarDropdownItem>
     }
 }
 else
@@ -31,22 +29,20 @@ else
     }
     else
     {
-        <BarItem>
-            <BarDropdown>
-                <BarDropdownToggle>
-                    @if (MenuItem.Icon != null)
-                    {
-                        <BarIcon IconName="@MenuItem.Icon" Margin="Margin.Is1.FromEnd"/>
-                    }
-                    @MenuItem.DisplayName
-                </BarDropdownToggle>
-                <BarDropdownMenu>
-                    @foreach (var childMenuItem in MenuItem.Items)
-                    {
-                        <SecondLevelNavMenuItem MenuItem="childMenuItem"/>
-                    }
-                </BarDropdownMenu>
-            </BarDropdown>
-        </BarItem>
+        <BarDropdown>
+            <BarDropdownToggle>
+                @if (MenuItem.Icon != null)
+                {
+                    <BarIcon IconName="@MenuItem.Icon" Margin="Margin.Is1.FromEnd"/>
+                }
+                @MenuItem.DisplayName
+            </BarDropdownToggle>
+            <BarDropdownMenu>
+                @foreach (var childMenuItem in MenuItem.Items)
+                {
+                    <SecondLevelNavMenuItem MenuItem="childMenuItem"/>
+                }
+            </BarDropdownMenu>
+        </BarDropdown>
     }
 }
