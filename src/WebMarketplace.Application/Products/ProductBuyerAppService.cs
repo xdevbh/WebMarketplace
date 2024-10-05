@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Repositories;
-using WebMarketplace.Vendors;
+using WebMarketplace.Companies;
 
 namespace WebMarketplace.Products;
 
@@ -15,23 +15,23 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
 {
     private readonly IProductRepository _productRepository;
     private readonly ProductManager _productManager;
-    private readonly IRepository<Vendor, Guid> _vendorRepository;
+    private readonly IRepository<Company, Guid> _companyRepository;
 
     public ProductBuyerAppService(IProductRepository productRepository, ProductManager productManager,
-        IRepository<Vendor, Guid> vendorRepository)
+        IRepository<Company, Guid> companyRepository)
     {
         _productRepository = productRepository;
         _productManager = productManager;
-        _vendorRepository = vendorRepository;
+        _companyRepository = companyRepository;
     }
 
     #region ProductDetails
 
     public async Task<ProductDetailDto> GetProductDetailAsync(Guid id)
     {
-        var item = await _productRepository.GetWithVendorAsync(id);
+        var item = await _productRepository.GetWithCompanyAsync(id);
         var productDetailDto = ObjectMapper.Map<Product, ProductDetailDto>(item.Product);
-        productDetailDto.VendorName = item.Vendor.DisplayName;
+        productDetailDto.CompanyName = item.Company.DisplayName;
         return productDetailDto;
     }
 
@@ -42,7 +42,7 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
     public async Task<PagedResultDto<ProductCardDto>> GetProductCardListAsync(ProductCardListFilterDto input)
     {
         var totalCount = await _productRepository.GetFilteredCountAsync(
-            input.VendorId,
+            input.CompanyId,
             input.Name,
             input.ProductCategory,
             input.ProductType,
@@ -57,7 +57,7 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
             input.Sorting,
             input.MaxResultCount,
             input.SkipCount,
-            input.VendorId,
+            input.CompanyId,
             input.Name,
             input.ProductCategory,
             input.ProductType,
@@ -114,12 +114,12 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
 
     #region Mappers
 
-    private ProductDetailDto Map(Product product, Vendor vendor)
+    private ProductDetailDto Map(Product product, Company company)
     {
         var productDetailDto = new ProductDetailDto();
 
         productDetailDto.Id = product.Id;
-        productDetailDto.VendorId = product.VendorId;
+        productDetailDto.CompanyId = product.CompanyId;
         productDetailDto.Name = product.Name;
         productDetailDto.ProductCategory = product.ProductCategory;
         productDetailDto.ProductType = product.ProductType;
@@ -127,7 +127,7 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
         productDetailDto.FullDescription = product.FullDescription;
         productDetailDto.Rating = product.Rating;
 
-        productDetailDto.VendorName = vendor.Name;
+        productDetailDto.CompanyName = company.Name;
         productDetailDto.PriceAmount = product.ProductPrice?.Amount ?? 0;
         productDetailDto.PriceCurrency = product.ProductPrice?.Currency ?? string.Empty;
 

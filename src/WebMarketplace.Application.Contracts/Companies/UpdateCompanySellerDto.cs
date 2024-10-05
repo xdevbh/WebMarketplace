@@ -1,6 +1,6 @@
-namespace WebMarketplace.Vendors;
+namespace WebMarketplace.Companies;
 
-public class UpdateVendorSellerDto
+public class UpdateCompanySellerDto
 {
     public string? Description { get; set; }
     public string? Website { get; set; }

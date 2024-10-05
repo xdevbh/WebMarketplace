@@ -5,7 +5,7 @@ namespace WebMarketplace.Products;
 
 public class ProductCardListFilterDto : PagedAndSortedResultRequestDto
 {
-    public Guid? VendorId { get; set; }
+    public Guid? CompanyId { get; set; }
     public string? Name { get; private set; }
     public ProductCategory? ProductCategory { get; set; }
     public ProductType? ProductType { get; set; }

@@ -23,7 +23,7 @@
   
   <ItemGroup>
     <Folder Include="Currencies\" />
-    <Folder Include="Vendors\VendorUsers\" />
+    <Folder Include="Companies\VendorUsers\" />
   </ItemGroup>
 
 </Project>

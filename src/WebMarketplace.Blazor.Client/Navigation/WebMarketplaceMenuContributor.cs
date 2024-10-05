@@ -83,7 +83,7 @@ public class WebMarketplaceMenuContributor : IMenuContributor
         context.Menu.AddItem(new ApplicationMenuItem(
             WebMarketplaceMenus.Companies,
             l["Menu:Companies"],
-            "/vendor/list",
+            "/company/list",
             icon: "fa fa-building",
             order: 1
         ));

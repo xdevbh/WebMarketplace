@@ -14,10 +14,10 @@ public class WebMarketplacePermissionDefinitionProvider : PermissionDefinitionPr
         //Define your own permissions here. Example:
         //myGroup.AddPermission(WebMarketplacePermissions.MyPermission1, L("Permission:MyPermission1"));
         
-        var vendorsPermission = myGroup.AddPermission(WebMarketplacePermissions.Vendors.Default, L("Permission:Vendors"));
-        vendorsPermission.AddChild(WebMarketplacePermissions.Vendors.Create, L("Permission:Create"));
-        vendorsPermission.AddChild(WebMarketplacePermissions.Vendors.Update, L("Permission:Update"));
-        vendorsPermission.AddChild(WebMarketplacePermissions.Vendors.Delete, L("Permission:Delete"));
+        var companiesPermission = myGroup.AddPermission(WebMarketplacePermissions.Companies.Default, L("Permission:Companies"));
+        companiesPermission.AddChild(WebMarketplacePermissions.Companies.Create, L("Permission:Create"));
+        companiesPermission.AddChild(WebMarketplacePermissions.Companies.Update, L("Permission:Update"));
+        companiesPermission.AddChild(WebMarketplacePermissions.Companies.Delete, L("Permission:Delete"));
         
         var addressesPermission = myGroup.AddPermission(WebMarketplacePermissions.Addresses.Default, L("Permission:Addresses"));
         addressesPermission.AddChild(WebMarketplacePermissions.Addresses.Create, L("Permission:Create"));

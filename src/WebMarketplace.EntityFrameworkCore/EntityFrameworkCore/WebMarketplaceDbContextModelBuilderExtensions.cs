@@ -6,8 +6,8 @@ using Volo.Abp.Identity;
 using WebMarketplace.Addresses;
 using WebMarketplace.Orders;
 using WebMarketplace.Products;
-using WebMarketplace.Vendors;
-using WebMarketplace.Vendors.VendorUsers;
+using WebMarketplace.Companies;
+using WebMarketplace.Companies.VendorUsers;
 
 namespace WebMarketplace.EntityFrameworkCore;
 
@@ -18,7 +18,7 @@ public static class WebMarketplaceDbContextModelBuilderExtensions
         Check.NotNull(builder, nameof(builder));
         
         builder.ConfigureAddresses();
-        builder.ConfigureVendors();
+        builder.ConfigureCompanies();
         builder.ConfigureProducts();
         builder.ConfigureOrders();
         // builder.ConfigureCarts();
@@ -42,13 +42,13 @@ public static class WebMarketplaceDbContextModelBuilderExtensions
         });
     }
     
-    private static void ConfigureVendors([NotNull] this ModelBuilder builder)
+    private static void ConfigureCompanies([NotNull] this ModelBuilder builder)
     {
         Check.NotNull(builder, nameof(builder));
 
-        builder.Entity<Vendor>(b =>
+        builder.Entity<Company>(b =>
         {
-            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "Vendors", WebMarketplaceConsts.DbSchema);
+            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "Companies", WebMarketplaceConsts.DbSchema);
             b.Property(x => x.Name).IsRequired();
             b.HasIndex(x=>x.Name).IsUnique();
             b.Property(x => x.DisplayName).IsRequired();
@@ -61,9 +61,9 @@ public static class WebMarketplaceDbContextModelBuilderExtensions
         {
             b.ToTable(WebMarketplaceConsts.DbTablePrefix + "VendorUsers", WebMarketplaceConsts.DbSchema);
             b.ConfigureByConvention();
-            b.HasOne<Vendor>().WithMany().HasForeignKey(x => x.VendorId).IsRequired();
+            b.HasOne<Company>().WithMany().HasForeignKey(x => x.CompanyId).IsRequired();
             b.HasOne<IdentityUser>().WithMany().HasForeignKey(x => x.UserId).IsRequired();
-            b.HasIndex(x => new { x.VendorId, x.UserId }).IsUnique();
+            b.HasIndex(x => new { x.CompanyId, x.UserId }).IsUnique();
         });
     }
     
@@ -75,7 +75,7 @@ public static class WebMarketplaceDbContextModelBuilderExtensions
         {
             b.ToTable(WebMarketplaceConsts.DbTablePrefix + "Products", WebMarketplaceConsts.DbSchema);
             b.ConfigureByConvention(); // auto configure for the base class props
-            b.HasOne<Vendor>().WithMany().HasForeignKey(x => x.VendorId).IsRequired();
+            b.HasOne<Company>().WithMany().HasForeignKey(x => x.CompanyId).IsRequired();
             b.HasMany(x => x.ProductReviews).WithOne().IsRequired().HasForeignKey(x => x.ProductId);
             b.HasMany(x => x.ProductPrices).WithOne().IsRequired().HasForeignKey(x => x.ProductId);
 
@@ -111,9 +111,9 @@ public static class WebMarketplaceDbContextModelBuilderExtensions
                 .OnDelete(DeleteBehavior.NoAction);
             b.HasOne<Address>().WithMany().HasForeignKey(x => x.AddressId).IsRequired()
                 .OnDelete(DeleteBehavior.NoAction);
-            b.HasOne<Vendor>().WithMany().HasForeignKey(x => x.VendorId).IsRequired()
+            b.HasOne<Company>().WithMany().HasForeignKey(x => x.CompanyId).IsRequired()
                 .OnDelete(DeleteBehavior.NoAction);
-            b.Property(x => x.VendorName).IsRequired();
+            b.Property(x => x.CompanyName).IsRequired();
             b.Property(x => x.Status).IsRequired();
             b.Property(x => x.TotalPrice).HasColumnType("decimal(18,2)").IsRequired();
             b.Property(x => x.Currency).IsRequired();

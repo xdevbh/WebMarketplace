@@ -19,5 +19,5 @@ public class ProductAdminAppService : WebMarketplaceAppService, IProductAdminApp
         throw new NotImplementedException();
     }
     
-    // can edit product with vendor ID
+    // can edit product with Company ID
 }

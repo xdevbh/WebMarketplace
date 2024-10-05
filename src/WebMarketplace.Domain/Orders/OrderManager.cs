@@ -19,16 +19,16 @@ namespace WebMarketplace.Orders
         public async Task<Order> CreateAsync(
             Guid buyerId,
             Guid addressId,
-            Guid vendorId,
-            string vendorName,
+            Guid companyId,
+            string companyName,
             List<(Guid productId, string productName, int quantity, decimal unitPrice, string currency)> orderItems)
         {
             var order = new Order(
                 GuidGenerator.Create(),
                 buyerId,
                 addressId,
-                vendorId,
-                vendorName
+                companyId,
+                companyName
             );
 
             foreach (var orderItem in orderItems)

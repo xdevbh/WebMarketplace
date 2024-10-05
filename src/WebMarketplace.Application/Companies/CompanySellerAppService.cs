@@ -5,57 +5,56 @@ using Microsoft.AspNetCore.Authorization;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Repositories;
 using WebMarketplace.Permissions;
-using WebMarketplace.Vendors;
 
-namespace WebMarketplace.Vendors;
+namespace WebMarketplace.Companies;
 
 [Authorize("SellerOnly")]
-public class VendorSellerAppService : WebMarketplaceAppService, IVendorSellerAppService
+public class CompanySellerAppService : WebMarketplaceAppService, ICompanySellerAppService
 {
-    private readonly IRepository<Vendor, Guid> _vendorRepository;
+    private readonly IRepository<Company, Guid> _vendorRepository;
 
-    public VendorSellerAppService(IRepository<Vendor, Guid> vendorRepository)
+    public CompanySellerAppService(IRepository<Company, Guid> vendorRepository)
     {
         _vendorRepository = vendorRepository;
     }
 
-    // public async Task<ListResultDto<VendorDto>> GetAllAsync()
+    // public async Task<ListResultDto<CompanyDto>> GetAllAsync()
     // {
     //     var vendorList = await _vendorRepository.GetListAsync();
-    //     var vendorListDto = ObjectMapper.Map<List<Vendor>, List<VendorDto>>(vendorList);
-    //     return new ListResultDto<VendorDto>(vendorListDto);
+    //     var vendorListDto = ObjectMapper.Map<List<Vendor>, List<CompanyDto>>(vendorList);
+    //     return new ListResultDto<CompanyDto>(vendorListDto);
     // }
 
     // [Authorize(WebMarketplacePermissions.Vendors.Default)]
-    public async Task<PagedResultDto<VendorDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    public async Task<PagedResultDto<CompanyDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
         var vendorList = await _vendorRepository.GetPagedListAsync(input.SkipCount, input.MaxResultCount, input.Sorting);
         var totalCount = await _vendorRepository.GetCountAsync();
         
-        return new PagedResultDto<VendorDto>(
+        return new PagedResultDto<CompanyDto>(
             totalCount,
-            ObjectMapper.Map<List<Vendor>, List<VendorDto>>(vendorList)
+            ObjectMapper.Map<List<Company>, List<CompanyDto>>(vendorList)
         );
     }
 
     // [Authorize(WebMarketplacePermissions.Vendors.Default)]
-    public async Task<VendorDto> GetAsync(Guid id)
+    public async Task<CompanyDto> GetAsync(Guid id)
     {
         var vendor = await _vendorRepository.GetAsync(id);
-        var vendorDto = ObjectMapper.Map<Vendor, VendorDto>(vendor);
+        var vendorDto = ObjectMapper.Map<Company, CompanyDto>(vendor);
         return vendorDto;
     }
 
     // [Authorize(WebMarketplacePermissions.Vendors.Default)]
-    public async Task<VendorDto> GetByNameAsync(string name)
+    public async Task<CompanyDto> GetByNameAsync(string name)
     {
         var vendor = await _vendorRepository.GetAsync(x=>x.Name == name);
-        var vendorDto = ObjectMapper.Map<Vendor, VendorDto>(vendor);
+        var vendorDto = ObjectMapper.Map<Company, CompanyDto>(vendor);
         return vendorDto;    
     }
 
     // [Authorize(WebMarketplacePermissions.Vendors.Update)]
-    public async Task<VendorDto> UpdateAsync(Guid id, UpdateVendorSellerDto input)
+    public async Task<CompanyDto> UpdateAsync(Guid id, UpdateCompanySellerDto input)
     {
         var vendor = await _vendorRepository.GetAsync(id);
 
@@ -64,7 +63,7 @@ public class VendorSellerAppService : WebMarketplaceAppService, IVendorSellerApp
 
         await _vendorRepository.UpdateAsync(vendor);
         
-        var vendorDto = ObjectMapper.Map<Vendor, VendorDto>(vendor);
+        var vendorDto = ObjectMapper.Map<Company, CompanyDto>(vendor);
         return vendorDto;
     }
 }

@@ -11,37 +11,37 @@ namespace WebMarketplace.Addresses;
 [Authorize(WebMarketplacePermissions.Addresses.Default)]
 public class AddressAppService : WebMarketplaceAppService, IAddressAppService
 {
-    private readonly IRepository<Address, Guid> _vendorRepository;
+    private readonly IRepository<Address, Guid> _addressRepository;
 
-    public AddressAppService(IRepository<Address, Guid> vendorRepository)
+    public AddressAppService(IRepository<Address, Guid> addressRepository)
     {
-        _vendorRepository = vendorRepository;
+        _addressRepository = addressRepository;
     }
 
     public async Task<PagedResultDto<AddressDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
-        var vendorList = await _vendorRepository.GetPagedListAsync(input.SkipCount, input.MaxResultCount, input.Sorting);
-        var totalCount = await _vendorRepository.GetCountAsync();
+        var addresses = await _addressRepository.GetPagedListAsync(input.SkipCount, input.MaxResultCount, input.Sorting);
+        var totalCount = await _addressRepository.GetCountAsync();
         
         return new PagedResultDto<AddressDto>(
             totalCount,
-            ObjectMapper.Map<List<Address>, List<AddressDto>>(vendorList)
+            ObjectMapper.Map<List<Address>, List<AddressDto>>(addresses)
         );
     }
 
     public async Task<AddressDto> GetAsync(Guid id)
     {
-        var vendor = await _vendorRepository.GetAsync(id);
-        var vendorDto = ObjectMapper.Map<Address, AddressDto>(vendor);
-        return vendorDto;
+        var address = await _addressRepository.GetAsync(id);
+        var addressDto = ObjectMapper.Map<Address, AddressDto>(address);
+        return addressDto;
     }
 
     [Authorize(WebMarketplacePermissions.Addresses.Update)]
     public async Task<AddressDto> UpdateAsync(Guid id, CreateUpdateAddressDto input)
     {
-        var address = await _vendorRepository.GetAsync(id);
+        var address = await _addressRepository.GetAsync(id);
         address = ObjectMapper.Map<CreateUpdateAddressDto, Address>(input);
-        await _vendorRepository.UpdateAsync(address);
+        await _addressRepository.UpdateAsync(address);
         
         var addressDto = ObjectMapper.Map<Address, AddressDto>(address);
         return addressDto;
@@ -51,7 +51,7 @@ public class AddressAppService : WebMarketplaceAppService, IAddressAppService
     public async Task<AddressDto> CreateAsync(CreateUpdateAddressDto input)
     {
         var address = ObjectMapper.Map<CreateUpdateAddressDto, Address>(input);
-        await _vendorRepository.InsertAsync(address);
+        await _addressRepository.InsertAsync(address);
         
         var addressDto = ObjectMapper.Map<Address, AddressDto>(address);
         return addressDto;
@@ -60,6 +60,6 @@ public class AddressAppService : WebMarketplaceAppService, IAddressAppService
     [Authorize(WebMarketplacePermissions.Addresses.Delete)]
     public async  Task DeleteAsync(Guid id)
     {
-        await _vendorRepository.DeleteAsync(id);
+        await _addressRepository.DeleteAsync(id);
     }
 }

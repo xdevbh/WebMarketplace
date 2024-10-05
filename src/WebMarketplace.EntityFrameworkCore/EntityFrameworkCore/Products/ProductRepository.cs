@@ -9,7 +9,7 @@ using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.Identity;
 using WebMarketplace.Products;
-using WebMarketplace.Vendors;
+using WebMarketplace.Companies;
 
 namespace WebMarketplace.EntityFrameworkCore.Products;
 
@@ -27,7 +27,7 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
     #region Products
 
     public async Task<IQueryable<Product>> GetFilteredQueryableAsync(
-        Guid? vendorId = null,
+        Guid? companyId = null,
         string? name = null,
         ProductCategory? productCategory = null,
         ProductType? productType = null,
@@ -40,7 +40,7 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
         var dbContext = await GetDbContextAsync();
 
         var query = await GetQueryableAsync();
-        query.WhereIf(vendorId != null, x => x.VendorId == vendorId.Value);
+        query.WhereIf(companyId != null, x => x.CompanyId == companyId.Value);
         query.WhereIf(!name.IsNullOrEmpty(), x => x.Name.Contains(name));
         query.WhereIf(productCategory != null, x => x.ProductCategory == productCategory);
         query.WhereIf(productType != null, x => x.ProductType == productType);
@@ -58,7 +58,7 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
         string? sorting = null,
         int maxResultCount = int.MaxValue,
         int skipCount = 0,
-        Guid? vendorId = null,
+        Guid? companyId = null,
         string? name = null,
         ProductCategory? productCategory = null,
         ProductType? productType = null,
@@ -72,7 +72,7 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
         var dbContext = await GetDbContextAsync();
 
         var query = await GetFilteredQueryableAsync(
-            vendorId,
+            companyId,
             name,
             productCategory,
             productType,
@@ -99,7 +99,7 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
     }
 
     public async Task<long> GetFilteredCountAsync(
-        Guid? vendorId = null,
+        Guid? companyId = null,
         string? name = null,
         ProductCategory? productCategory = null,
         ProductType? productType = null,
@@ -113,7 +113,7 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
         var dbContext = await GetDbContextAsync();
 
         var query = await GetFilteredQueryableAsync(
-            vendorId,
+            companyId,
             name,
             productCategory,
             productType,
@@ -129,10 +129,10 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
 
     #endregion 
 
-    #region ProductVendorQueryResultItems
+    #region ProductCompanyQueryResultItems
 
-    public async Task<IQueryable<ProductVendorQueryResultItem>> GetWithVendorQueryableAsync(
-        Guid? vendorId = null,
+    public async Task<IQueryable<ProductWithCompanyQueryResultItem>> GetWithCompanyQueryableAsync(
+        Guid? companyId = null,
         string? name = null,
         ProductCategory? productCategory = null,
         ProductType? productType = null,
@@ -146,10 +146,10 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
 
         var query =
             from product in dbContext.Set<Product>().IncludeDetails()
-            join vendor in dbContext.Set<Vendor>() on product.VendorId equals vendor.Id
-            select new ProductVendorQueryResultItem(product, vendor);
+            join company in dbContext.Set<Company>() on product.CompanyId equals company.Id
+            select new ProductWithCompanyQueryResultItem(product, company);
 
-        query.WhereIf(vendorId != null, x => vendorId != null && x.Product.VendorId == vendorId.Value);
+        query.WhereIf(companyId != null, x => companyId != null && x.Product.CompanyId == companyId.Value);
         query.WhereIf(!name.IsNullOrEmpty(), x => x.Product.Name.Contains(name));
         query.WhereIf(productCategory != null, x => x.Product.ProductCategory == productCategory);
         query.WhereIf(productType != null, x => x.Product.ProductType == productType);
@@ -162,11 +162,11 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
         return query;
     }
 
-    public async Task<List<ProductVendorQueryResultItem>> GetWithVendorListAsync(
+    public async Task<List<ProductWithCompanyQueryResultItem>> GetWithCompanyListAsync(
         string? sorting = null,
         int maxResultCount = int.MaxValue,
         int skipCount = 0,
-        Guid? vendorId = null,
+        Guid? companyId = null,
         string? name = null,
         ProductCategory? productCategory = null,
         ProductType? productType = null,
@@ -177,8 +177,8 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
         string? priceCurrency = null,
         CancellationToken cancellationToken = default)
     {
-        var query = await GetWithVendorQueryableAsync(
-            vendorId,
+        var query = await GetWithCompanyQueryableAsync(
+            companyId,
             name,
             productCategory,
             productType,
@@ -203,8 +203,8 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
         return list;
     }
 
-    public async Task<long> GetWithVendorCountAsync(
-        Guid? vendorId = null,
+    public async Task<long> GetWithCompanyCountAsync(
+        Guid? companyId = null,
         string? name = null,
         ProductCategory? productCategory = null,
         ProductType? productType = null,
@@ -215,8 +215,8 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
         string? priceCurrency = null,
         CancellationToken cancellationToken = default)
     {
-        var query = await GetWithVendorQueryableAsync(
-            vendorId,
+        var query = await GetWithCompanyQueryableAsync(
+            companyId,
             name,
             productCategory,
             productType,
@@ -229,16 +229,16 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
         return count;
     }
 
-    public async Task<ProductVendorQueryResultItem> GetWithVendorAsync(
+    public async Task<ProductWithCompanyQueryResultItem> GetWithCompanyAsync(
         Guid id,
         CancellationToken cancellationToken = default)
     {
         var dbContext = await GetDbContextAsync();
         var query =
             from product in dbContext.Set<Product>().IncludeDetails()
-            join vendor in dbContext.Set<Vendor>() on product.VendorId equals vendor.Id
+            join company in dbContext.Set<Company>() on product.CompanyId equals company.Id
             where product.Id == id
-            select new ProductVendorQueryResultItem(product, vendor);
+            select new ProductWithCompanyQueryResultItem(product, company);
 
         var item = await query.FirstOrDefaultAsync(GetCancellationToken(cancellationToken));
         return item;

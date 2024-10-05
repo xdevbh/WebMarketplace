@@ -11,8 +11,8 @@ public class Order : FullAuditedAggregateRoot<Guid>
 {
     public virtual Guid BuyerId { get; set; }
     public virtual Guid AddressId { get; set; }
-    public virtual Guid VendorId { get; set; }
-    public virtual string VendorName { get; private set; }
+    public virtual Guid CompanyId { get; set; }
+    public virtual string CompanyName { get; private set; }
     public virtual OrderStatus Status { get; private set; }
     public virtual List<OrderItem> Items { get; private set; }
     public decimal TotalPrice { get; private set; }
@@ -28,27 +28,27 @@ public class Order : FullAuditedAggregateRoot<Guid>
         Guid id,
         Guid buyerId, 
         Guid addressId, 
-        Guid vendorId, 
-        string vendorName, 
+        Guid companyId, 
+        string companyName, 
         decimal? totalPrice = null, 
         string? currency = null)
     : base(id)
     {
         BuyerId = buyerId;
         AddressId = addressId;
-        VendorId = vendorId;
-        SetVendorName(vendorName);
+        CompanyId = companyId;
+        SetCompanyName(companyName);
         Status = OrderStatus.New;
         Items = new();
         SetTotalPrice(totalPrice);
         SetCurrency(currency);
     }
 
-    public Order SetVendorName(string vendorName)
+    public Order SetCompanyName(string companyName)
     {
-        Check.NotNull(vendorName, nameof(vendorName));
+        Check.NotNull(companyName, nameof(companyName));
 
-        VendorName = vendorName;
+        CompanyName = companyName;
         return this;
     }
 

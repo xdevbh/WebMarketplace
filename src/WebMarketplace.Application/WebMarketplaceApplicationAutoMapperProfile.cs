@@ -6,7 +6,7 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.AutoMapper;
 using WebMarketplace.Addresses;
 using WebMarketplace.Products;
-using WebMarketplace.Vendors;
+using WebMarketplace.Companies;
 
 namespace WebMarketplace;
 
@@ -18,15 +18,15 @@ public class WebMarketplaceApplicationAutoMapperProfile : Profile
          * Alternatively, you can split your mapping configurations
          * into multiple profile classes for a better organization. */
 
-        CreateMap<Vendor, VendorDto>();
+        CreateMap<Company, CompanyDto>();
 
         CreateMap<Address, AddressDto>();
         CreateMap<CreateUpdateAddressDto, Address>();
 
         CreateMap<Product, ProductDto>()
-            .Ignore(x => x.VendorName);
+            .Ignore(x => x.CompanyName);
         CreateMap<Product, ProductDetailDto>()
-            .Ignore(x => x.VendorName)
+            .Ignore(x => x.CompanyName)
             .ForMember(dest => dest.PriceCurrency,
                 opt => opt.MapFrom(src => src.ProductPrice != null ? src.ProductPrice.Currency : string.Empty))
             .ForMember(dest => dest.PriceAmount,

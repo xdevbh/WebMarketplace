@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
-using WebMarketplace.Vendors;
+using WebMarketplace.Companies;
 
 namespace WebMarketplace.Products
 {
@@ -28,7 +28,7 @@ namespace WebMarketplace.Products
         #endregion
 
         public async Task<Product> CreateAsync(
-            Guid vendorId,
+            Guid companyId,
             string name,
             ProductCategory productCategory,
             ProductType productType,
@@ -37,7 +37,7 @@ namespace WebMarketplace.Products
         {
             var product = new Product(
                 GuidGenerator.Create(),
-                vendorId,
+                companyId,
                 name,
                 productCategory,
                 productType,

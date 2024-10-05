@@ -3,9 +3,9 @@ using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
 using WebMarketplace.Addresses;
 
-namespace WebMarketplace.Vendors;
+namespace WebMarketplace.Companies;
 
-public class Vendor : FullAuditedAggregateRoot<Guid>
+public class Company : FullAuditedAggregateRoot<Guid>
 {
     public virtual string Name { get; private set; }
     public virtual string DisplayName { get; private set; }
@@ -16,9 +16,9 @@ public class Vendor : FullAuditedAggregateRoot<Guid>
 
     // todo: add contact information as list with ContactInformationType: mail, phone ... 
 
-    protected Vendor() { }
+    protected Company() { }
 
-    public Vendor(
+    public Company(
         Guid id, 
         string name, 
         string displayName, 
@@ -34,13 +34,13 @@ public class Vendor : FullAuditedAggregateRoot<Guid>
         Website = website;
     }
 
-    public Vendor SetName(string name)
+    public Company SetName(string name)
     {
         Name = Check.NotNullOrWhiteSpace(name, nameof(name));
         return this;
     }
     
-    public Vendor SetDisplayName(string displayName)
+    public Company SetDisplayName(string displayName)
     {
         DisplayName = Check.NotNullOrWhiteSpace(displayName, nameof(displayName));
         return this;

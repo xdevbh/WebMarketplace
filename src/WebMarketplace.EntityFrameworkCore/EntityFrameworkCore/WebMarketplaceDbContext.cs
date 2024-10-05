@@ -17,8 +17,8 @@ using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using WebMarketplace.Addresses;
 using WebMarketplace.Orders;
 using WebMarketplace.Products;
-using WebMarketplace.Vendors;
-using WebMarketplace.Vendors.VendorUsers;
+using WebMarketplace.Companies;
+using WebMarketplace.Companies.VendorUsers;
 
 namespace WebMarketplace.EntityFrameworkCore;
 
@@ -34,7 +34,7 @@ public class WebMarketplaceDbContext :
 
     public DbSet<Address> Addresses { get; set; }
     
-    public DbSet<Vendor> Vendors { get; set; }
+    public DbSet<Company> Companies { get; set; }
     public DbSet<VendorUser> VendorUsers { get; set; }
 
     public DbSet<Product> Products { get; set; }

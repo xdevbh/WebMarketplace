@@ -1,9 +1,9 @@
 using System;
 using Volo.Abp.Application.Dtos;
 
-namespace WebMarketplace.Vendors;
+namespace WebMarketplace.Companies;
 
-public class VendorDto : EntityDto<Guid>
+public class CompanyDto : EntityDto<Guid>
 {
     public  string Name { get; set; }
     public  string DisplayName { get; set; }

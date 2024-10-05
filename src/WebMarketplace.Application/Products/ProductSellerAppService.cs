@@ -7,8 +7,8 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity.Settings;
 using Volo.Abp.Users;
 using WebMarketplace.Permissions;
-using WebMarketplace.Vendors;
-using WebMarketplace.Vendors.VendorUsers;
+using WebMarketplace.Companies;
+using WebMarketplace.Companies.VendorUsers;
 
 namespace WebMarketplace.Products;
 
@@ -17,24 +17,24 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
 {
     private readonly IProductRepository _productRepository;
     private readonly ProductManager _productManager;
-    private readonly IRepository<Vendor, Guid> _vendorRepository;
+    private readonly IRepository<Company, Guid> _companyRepository;
     private readonly IRepository<VendorUser, Guid> _vendorUserRepository;
 
-    public ProductSellerAppService(IProductRepository productRepository, ProductManager productManager, IRepository<Vendor, Guid> vendorRepository, IRepository<VendorUser, Guid> vendorUserRepository)
+    public ProductSellerAppService(IProductRepository productRepository, ProductManager productManager, IRepository<Company, Guid> companyRepository, IRepository<VendorUser, Guid> vendorUserRepository)
     {
         _productRepository = productRepository;
         _productManager = productManager;
-        _vendorRepository = vendorRepository;
+        _companyRepository = companyRepository;
         _vendorUserRepository = vendorUserRepository;
     }
 
     public async Task<ProductDto> GetAsync(Guid id)
     {
        var product = await _productRepository.GetAsync(id);
-       var vendor = await _vendorRepository.GetAsync(product.VendorId);
+       var company = await _companyRepository.GetAsync(product.CompanyId);
        
        var productDto = ObjectMapper.Map<Product, ProductDto>(product);
-       productDto.VendorName = vendor.Name;
+       productDto.CompanyName = company.Name;
        
        return productDto;
     }
@@ -55,7 +55,7 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
         }
         
         var product = await _productManager.CreateAsync(
-            vendorUser.VendorId,
+            vendorUser.CompanyId,
             input.Name,
             input.ProductCategory,
             input.ProductType,
@@ -96,7 +96,7 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
         var vendorUser = await _vendorUserRepository.GetAsync(x=>x.UserId == userId);
         var product = await _productRepository.GetAsync(id);
         
-        if (vendorUser == null || product.VendorId != vendorUser.VendorId)
+        if (vendorUser == null || product.CompanyId != vendorUser.CompanyId)
         {
             throw new AbpAuthorizationException();
         }
@@ -154,7 +154,7 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
         var userId = CurrentUser.GetId();
         var vendorUser = await _vendorUserRepository.FindAsync(x=>x.UserId == userId);
     
-        if (vendorUser != null && product.VendorId == vendorUser.VendorId)
+        if (vendorUser != null && product.CompanyId == vendorUser.CompanyId)
         {
             return true;
         }

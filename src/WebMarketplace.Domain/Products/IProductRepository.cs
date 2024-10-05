@@ -10,7 +10,7 @@ namespace WebMarketplace.Products;
 public interface IProductRepository : IRepository<Product, Guid>
 {
     Task<IQueryable<Product>> GetFilteredQueryableAsync(
-        Guid? vendorId = null,
+        Guid? companyId = null,
         string? name = null,
         ProductCategory? productCategory = null,
         ProductType? productType = null,
@@ -24,7 +24,7 @@ public interface IProductRepository : IRepository<Product, Guid>
         string? sorting = null,
         int maxResultCount = int.MaxValue,
         int skipCount = 0,
-        Guid? vendorId = null,
+        Guid? companyId = null,
         string? name = null,
         ProductCategory? productCategory = null,
         ProductType? productType = null,
@@ -36,7 +36,7 @@ public interface IProductRepository : IRepository<Product, Guid>
         CancellationToken cancellationToken = default);
 
     Task<long> GetFilteredCountAsync(
-        Guid? vendorId = null,
+        Guid? companyId = null,
         string? name = null,
         ProductCategory? productCategory = null,
         ProductType? productType = null,
@@ -48,8 +48,8 @@ public interface IProductRepository : IRepository<Product, Guid>
         CancellationToken cancellationToken = default);
 
 
-    Task<IQueryable<ProductVendorQueryResultItem>> GetWithVendorQueryableAsync(
-        Guid? vendorId = null,
+    Task<IQueryable<ProductWithCompanyQueryResultItem>> GetWithCompanyQueryableAsync(
+        Guid? companyId = null,
         string? name = null,
         ProductCategory? productCategory = null,
         ProductType? productType = null,
@@ -59,11 +59,11 @@ public interface IProductRepository : IRepository<Product, Guid>
         decimal? maxPriceAmount = null,
         string priceCurrency = null);
 
-    Task<List<ProductVendorQueryResultItem>> GetWithVendorListAsync(
+    Task<List<ProductWithCompanyQueryResultItem>> GetWithCompanyListAsync(
         string? sorting = null,
         int maxResultCount = int.MaxValue,
         int skipCount = 0,
-        Guid? vendorId = null,
+        Guid? companyId = null,
         string? name = null,
         ProductCategory? productCategory = null,
         ProductType? productType = null,
@@ -74,8 +74,8 @@ public interface IProductRepository : IRepository<Product, Guid>
         string? priceCurrency = null,
         CancellationToken cancellationToken = default);
 
-    Task<long> GetWithVendorCountAsync(
-        Guid? vendorId = null,
+    Task<long> GetWithCompanyCountAsync(
+        Guid? companyId = null,
         string? name = null,
         ProductCategory? productCategory = null,
         ProductType? productType = null,
@@ -86,7 +86,7 @@ public interface IProductRepository : IRepository<Product, Guid>
         string? priceCurrency = null,
         CancellationToken cancellationToken = default);
 
-    Task<ProductVendorQueryResultItem> GetWithVendorAsync(
+    Task<ProductWithCompanyQueryResultItem> GetWithCompanyAsync(
         Guid id, 
         CancellationToken cancellationToken = default);
 

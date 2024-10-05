@@ -1,9 +1,9 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace WebMarketplace.Vendors;
+namespace WebMarketplace.Companies;
 
-public class CreateUpdateVendorAdminDto
+public class CreateUpdateCompanyAdminDto
 {
     [Required]
     public string Name { get; set; }

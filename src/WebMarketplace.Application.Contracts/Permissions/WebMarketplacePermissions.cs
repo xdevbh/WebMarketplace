@@ -4,9 +4,9 @@ public static class WebMarketplacePermissions
 {
     public const string GroupName = "WebMarketplace";
 
-    public static class Vendors
+    public static class Companies
     {
-        public const string Default = GroupName + ".Vendors";
+        public const string Default = GroupName + ".Companies";
         public const string Create = Default + ".Create";
         public const string Update = Default + ".Edit";
         public const string Delete = Default + ".Delete";

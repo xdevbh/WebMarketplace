@@ -8,7 +8,7 @@ namespace WebMarketplace.Products;
 
 public class Product : AuditedAggregateRoot<Guid>
 {
-    public virtual Guid VendorId { get; set; }
+    public virtual Guid CompanyId { get; set; }
 
     public virtual string Name { get; private set; }
 
@@ -37,7 +37,7 @@ public class Product : AuditedAggregateRoot<Guid>
 
     public Product(
         Guid id,
-        Guid vendorId,
+        Guid companyId,
         string name,
         ProductCategory productCategory,
         ProductType productType,
@@ -45,7 +45,7 @@ public class Product : AuditedAggregateRoot<Guid>
         string? fullDescription)
         : base(id)
     {
-        VendorId = vendorId;
+        CompanyId = companyId;
         SetName(name);
         ProductCategory = productCategory;
         ProductType = productType;

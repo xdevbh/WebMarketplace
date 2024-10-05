@@ -10,7 +10,7 @@ using Volo.Abp.Identity;
 using Volo.Abp.Users;
 using WebMarketplace.Addresses;
 using WebMarketplace.Products;
-using WebMarketplace.Vendors;
+using WebMarketplace.Companies;
 
 namespace WebMarketplace;
 
@@ -18,8 +18,8 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
 {
     private readonly IGuidGenerator _guidGenerator;
     private readonly IRepository<IdentityRole, Guid> _identityRoleRepository;
-    private readonly IRepository<Vendor, Guid> _vendorRepository;
-    private readonly VendorManager _vendorManager;
+    private readonly IRepository<Company, Guid> _companyRepository;
+    private readonly CompanyManager _companyManager;
     private readonly IRepository<Address, Guid> _addressRepository;
     private readonly IIdentityUserRepository _identityUserRepository;
     private readonly IRepository<Product, Guid> _productRepository;
@@ -28,15 +28,15 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
     private const string DemoPrefix = "[DEMO] ";
 
     public WebMarketplaceDataSeederContributor(IGuidGenerator guidGenerator,
-        IRepository<IdentityRole, Guid> identityRoleRepository, IRepository<Vendor, Guid> vendorRepository,
-        VendorManager vendorManager, IRepository<Address, Guid> addressRepository,
+        IRepository<IdentityRole, Guid> identityRoleRepository, IRepository<Company, Guid> companyRepository,
+        CompanyManager companyManager, IRepository<Address, Guid> addressRepository,
         IIdentityUserRepository identityUserRepository, IRepository<Product, Guid> productRepository,
         ProductManager productManager)
     {
         _guidGenerator = guidGenerator;
         _identityRoleRepository = identityRoleRepository;
-        _vendorRepository = vendorRepository;
-        _vendorManager = vendorManager;
+        _companyRepository = companyRepository;
+        _companyManager = companyManager;
         _addressRepository = addressRepository;
         _identityUserRepository = identityUserRepository;
         _productRepository = productRepository;
@@ -47,7 +47,7 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
     {
         await SeedRolesAsync();
         await SeedAddressesAsync();
-        await SeedVendorsAsync();
+        await SeedCompaniesAsync();
         await SeedProductsAsync();
     }
 
@@ -88,9 +88,9 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
         }
     }
 
-    private async Task SeedVendorsAsync()
+    private async Task SeedCompaniesAsync()
     {
-        if (await _vendorRepository.GetCountAsync() <= 0)
+        if (await _companyRepository.GetCountAsync() <= 0)
         {
             for (int i = 1; i <= 5; i++)
             {
@@ -98,18 +98,18 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
 
                 if (address == null)
                 {
-                    Console.WriteLine($"Address not found for Name {i}. Skipping vendor creation. Run again to seed addresses first.");
+                    Console.WriteLine($"Address not found for Name {i}. Skipping company creation. Run again to seed addresses first.");
                     continue; 
                 }
 
-                var vendor = await _vendorManager.CreateAsync(
-                    DemoPrefix + "Test Vendor " + i,
-                    "Test Vendor " + i,
+                var company = await _companyManager.CreateAsync(
+                    DemoPrefix + "Test Company " + i,
+                    "Test Company " + i,
                     address.Id,
-                    "Text about Test Vendor " + i,
-                    $"www.testvendor{i}.com"
+                    "Text about Test Company " + i,
+                    $"www.testcompany{i}.com"
                 );
-                await _vendorRepository.InsertAsync(vendor);
+                await _companyRepository.InsertAsync(company);
             }
         }
     }
@@ -119,13 +119,13 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
         if (await _productRepository.GetCountAsync() <= 0)
         {
             var user = (await _identityUserRepository.GetListAsync()).FirstOrDefault();
-            var vendor = (await _vendorRepository.GetListAsync()).FirstOrDefault();
+            var company = (await _companyRepository.GetListAsync()).FirstOrDefault();
 
-            if (user != null && vendor != null)
+            if (user != null && company != null)
             {
                 var product = new Product(
                     user.Id,
-                    vendor.Id,
+                    company.Id,
                     DemoPrefix + "Test Product 1",
                     ProductCategory.Undefined,
                     ProductType.Goods,
