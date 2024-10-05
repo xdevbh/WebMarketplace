@@ -24,10 +24,14 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
     private readonly IIdentityUserRepository _identityUserRepository;
     private readonly IRepository<Product, Guid> _productRepository;
     private readonly ProductManager _productManager;
-    
+
     private const string DemoPrefix = "[DEMO] ";
 
-    public WebMarketplaceDataSeederContributor(IGuidGenerator guidGenerator, IRepository<IdentityRole, Guid> identityRoleRepository, IRepository<Vendor, Guid> vendorRepository, VendorManager vendorManager, IRepository<Address, Guid> addressRepository, IIdentityUserRepository identityUserRepository, IRepository<Product, Guid> productRepository, ProductManager productManager)
+    public WebMarketplaceDataSeederContributor(IGuidGenerator guidGenerator,
+        IRepository<IdentityRole, Guid> identityRoleRepository, IRepository<Vendor, Guid> vendorRepository,
+        VendorManager vendorManager, IRepository<Address, Guid> addressRepository,
+        IIdentityUserRepository identityUserRepository, IRepository<Product, Guid> productRepository,
+        ProductManager productManager)
     {
         _guidGenerator = guidGenerator;
         _identityRoleRepository = identityRoleRepository;
@@ -64,20 +68,23 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
     {
         if (await _addressRepository.GetCountAsync() <= 0)
         {
-            var address = new Address(
-                _guidGenerator.Create(),
-                "Name",
-                "Country",
-                "State",
-                "City",
-                "Steet 1",
-                null,
-                "10000",
-                null,
-                "+420 000 000 000",
-                "mail@mail.com");
+            for (int i = 1; i < 10; i++)
+            {
+                var address = new Address(
+                    _guidGenerator.Create(),
+                    DemoPrefix + "Name " + i,
+                    "Country " + i,
+                    "State " + i,
+                    "City " + i,
+                    "Street " + i,
+                    null,
+                    $"{i}{i + 1}0000",
+                    null,
+                    "+420 000 000 000",
+                    $"mail{i}{i}@mail.com");
 
-            await _addressRepository.InsertAsync(address);
+                await _addressRepository.InsertAsync(address);
+            }
         }
     }
 
@@ -85,12 +92,18 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
     {
         if (await _vendorRepository.GetCountAsync() <= 0)
         {
-            var address = await _addressRepository.FirstOrDefaultAsync(x => x != null);
-
             for (int i = 1; i <= 5; i++)
             {
+                var address = await _addressRepository.FirstOrDefaultAsync(x => x.FullName == DemoPrefix + "Name " + i);
+
+                if (address == null)
+                {
+                    Console.WriteLine($"Address not found for Name {i}. Skipping vendor creation. Run again to seed addresses first.");
+                    continue; 
+                }
+
                 var vendor = await _vendorManager.CreateAsync(
-                    "Test Vendor " + i,
+                    DemoPrefix + "Test Vendor " + i,
                     "Test Vendor " + i,
                     address.Id,
                     "Text about Test Vendor " + i,
@@ -113,7 +126,7 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
                 var product = new Product(
                     user.Id,
                     vendor.Id,
-                    "Test Product 1",
+                    DemoPrefix + "Test Product 1",
                     ProductCategory.Undefined,
                     ProductType.Goods,
                     "Test short description about Test Product 1",
@@ -126,7 +139,6 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
                 await _productManager.AddProductPriceAsync(product, DateTime.Now.AddDays(-10), 200, "CZK");
 
                 await _productManager.AddProductReviewAsync(product, user.Id, 4, "Test review about Test Product 1");
-
             }
         }
     }
