@@ -5,6 +5,10 @@ VisualStudioVersion = 17.3.32611.2
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebMarketplace.Domain", "src\WebMarketplace.Domain\WebMarketplace.Domain.csproj", "{554AD327-6DBA-4F8F-96F8-81CE7A0C863F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Volo.Abp.AspNetCore.Components.Web.BasicTheme", "packages\Volo.Abp.AspNetCore.Components.Web.BasicTheme\\Volo.Abp.AspNetCore.Components.Web.BasicTheme.csproj", "{AC8C2982-2469-420A-BB6D-8335B3F8F3AA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Volo.Abp.AspNetCore.Components.WebAssembly.BasicTheme", "packages\Volo.Abp.AspNetCore.Components.WebAssembly.BasicTheme\\Volo.Abp.AspNetCore.Components.WebAssembly.BasicTheme.csproj", "{C9FEA04C-9E94-4ECF-BA74-BC8255F08CED}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebMarketplace.Application", "src\WebMarketplace.Application\WebMarketplace.Application.csproj", "{1A94A50E-06DC-43C1-80B5-B662820EC3EB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebMarketplace.EntityFrameworkCore", "src\WebMarketplace.EntityFrameworkCore\WebMarketplace.EntityFrameworkCore.csproj", "{C956DD76-69C8-4A9C-83EA-D17DF83340FD}"
@@ -49,12 +53,22 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "web", "web", "{ED727E98-052
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infrastructure", "infrastructure", "{A51D3966-E630-458B-9DDB-960FA8E73B56}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "theme", "theme", "{946644AE-8D3E-4080-B537-3EC5ED59CA72}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ac8c2982-2469-420a-bb6d-8335b3f8f3aa}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ac8c2982-2469-420a-bb6d-8335b3f8f3aa}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ac8c2982-2469-420a-bb6d-8335b3f8f3aa}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ac8c2982-2469-420a-bb6d-8335b3f8f3aa}.Release|Any CPU.Build.0 = Release|Any CPU
+		{c9fea04c-9e94-4ecf-ba74-bc8255f08ced}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{c9fea04c-9e94-4ecf-ba74-bc8255f08ced}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{c9fea04c-9e94-4ecf-ba74-bc8255f08ced}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{c9fea04c-9e94-4ecf-ba74-bc8255f08ced}.Release|Any CPU.Build.0 = Release|Any CPU
 		{554AD327-6DBA-4F8F-96F8-81CE7A0C863F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{554AD327-6DBA-4F8F-96F8-81CE7A0C863F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{554AD327-6DBA-4F8F-96F8-81CE7A0C863F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -124,6 +138,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{ac8c2982-2469-420a-bb6d-8335b3f8f3aa} = {CA9AC87F-097E-4F15-8393-4BC07735A5B0}
+		{c9fea04c-9e94-4ecf-ba74-bc8255f08ced} = {CA9AC87F-097E-4F15-8393-4BC07735A5B0}
 		{50B2631D-129C-47B3-A587-029CCD6099BC} = {04DBDB01-70F4-4E06-B468-8F87850B22BE}
 		{1FE30EB9-74A9-47F5-A9F6-7B1FAB672D81} = {04DBDB01-70F4-4E06-B468-8F87850B22BE}
 		{91853F21-9CD9-4132-BC29-A7D5D84FFFE7} = {04DBDB01-70F4-4E06-B468-8F87850B22BE}
@@ -146,6 +162,9 @@ Global
 		{70680696-BB1E-4383-BCB2-42C3767171FB} = {A51D3966-E630-458B-9DDB-960FA8E73B56}
 		{C956DD76-69C8-4A9C-83EA-D17DF83340FD} = {A51D3966-E630-458B-9DDB-960FA8E73B56}
 		{9DF63919-581A-488B-BFE3-0622A500A56C} = {ED727E98-0520-41D7-B134-4E0488E6DC66}
+		{946644AE-8D3E-4080-B537-3EC5ED59CA72} = {CA9AC87F-097E-4F15-8393-4BC07735A5B0}
+		{AC8C2982-2469-420A-BB6D-8335B3F8F3AA} = {946644AE-8D3E-4080-B537-3EC5ED59CA72}
+		{C9FEA04C-9E94-4ECF-BA74-BC8255F08CED} = {946644AE-8D3E-4080-B537-3EC5ED59CA72}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {28315BFD-90E7-4E14-A2EA-F3D23AF4126F}

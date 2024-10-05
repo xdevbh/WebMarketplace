@@ -3,6 +3,9 @@
   "Texts": {
     "AppName": "WebMarketplace",
     "Menu:Home": "Home",
+    "Menu:Products": "Products",
+    "Menu:Companies": "Companies",
+    "Menu:Management": "Management",
     "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP framework. For more information visit",
     "Welcome": "Welcome",
     "Exception:VendorNameAlreadyExists": "The vendor with name '{Name}' already exists.",

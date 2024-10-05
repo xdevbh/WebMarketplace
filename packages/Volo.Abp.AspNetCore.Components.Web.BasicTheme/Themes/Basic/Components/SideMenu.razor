@@ -1,0 +1,24 @@
+﻿<Bar @bind-Visible="@topbarVisible"
+     Breakpoint="Breakpoint.Desktop"
+     NavigationBreakpoint="Breakpoint.Tablet"
+     Background="Background.Light"
+     ThemeContrast="ThemeContrast.Light"
+     Mode="BarMode.VerticalInline"
+     CollapseMode="BarCollapseMode.Small"
+     MenuToggleBehavior=BarMenuToggleBehavior.AllowSingleMenu>
+    <BarToggler/>
+    <BarMenu>
+        <BarStart>
+
+        </BarStart>
+
+        <BarEnd>
+
+        </BarEnd>
+    </BarMenu>
+</Bar>
+
+@code {
+    private bool topbarVisible = false;
+
+}

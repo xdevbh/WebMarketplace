@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.Http;
 using Blazorise.Bootstrap5;
 using Blazorise.Icons.FontAwesome;
@@ -20,6 +20,7 @@ using Volo.Abp.AspNetCore.Components.WebAssembly.BasicTheme;
 using Volo.Abp.SettingManagement.Blazor.WebAssembly;
 using Volo.Abp.TenantManagement.Blazor.WebAssembly;
 using Volo.Abp.Identity.Blazor.WebAssembly;
+using Volo.Abp.AspNetCore.Components.Web.BasicTheme;
 
 namespace WebMarketplace.Blazor.Client;
 
@@ -31,7 +32,8 @@ namespace WebMarketplace.Blazor.Client;
     typeof(AbpTenantManagementBlazorWebAssemblyModule),
     typeof(WebMarketplaceHttpApiClientModule)
 )]
-public class WebMarketplaceBlazorClientModule : AbpModule
+[DependsOn(typeof(AbpAspNetCoreComponentsWebBasicThemeModule))]
+    public class WebMarketplaceBlazorClientModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {

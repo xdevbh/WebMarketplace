@@ -1,0 +1,31 @@
+﻿@using Volo.Abp.Ui.LayoutHooks
+@using Volo.Abp.AspNetCore.Components.Web.Theming.Components.LayoutHooks
+@using Volo.Abp.AspNetCore.Components.Web.Theming.Components
+@using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
+@using Volo.Abp.AspNetCore.Components.Web.BasicTheme.Themes.Basic.Components
+@inherits LayoutComponentBase
+
+<Layout>
+    <LayoutHeader Fixed>
+        <TopMenu/>
+    </LayoutHeader>
+    <Layout Sider>
+        <LayoutSider>
+            <LayoutSiderContent>
+                @* <SideMenu /> *@
+            </LayoutSiderContent>
+        </LayoutSider>
+        <Layout>
+            <LayoutContent Padding="Padding.Is4.OnAll">
+                <PageAlert />
+                <LayoutHook Name="@LayoutHooks.Body.First" Layout="@StandardLayouts.Application" />
+                @Body
+                <LayoutHook Name="@LayoutHooks.Body.Last" Layout="@StandardLayouts.Application" />
+                <DynamicLayoutComponent />
+                <UiMessageAlert />
+                <UiNotificationAlert />
+                <UiPageProgress />
+            </LayoutContent>
+        </Layout>
+    </Layout>
+</Layout>

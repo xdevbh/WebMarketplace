@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <Import Project="..\..\common.props" />
 
@@ -16,6 +16,7 @@
     <PackageReference Include="Blazorise.Components" Version="1.5.2" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.4" />
+    <ProjectReference Include="..\..\packages\Volo.Abp.AspNetCore.Components.Web.BasicTheme\Volo.Abp.AspNetCore.Components.Web.BasicTheme.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.AspNetCore.Components.WebAssembly.BasicTheme" Version="8.3.0" />
+    <ProjectReference Include="..\..\packages\Volo.Abp.AspNetCore.Components.WebAssembly.BasicTheme\Volo.Abp.AspNetCore.Components.WebAssembly.BasicTheme.csproj" />
   </ItemGroup>
 
   <ItemGroup>

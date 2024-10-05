@@ -1,0 +1,16 @@
+@using Volo.Abp.Ui.Branding
+@inject IBrandingProvider BrandingProvider
+
+<BarItem>
+    <BarLink To="">
+        @if (!BrandingProvider.LogoUrl.IsNullOrWhiteSpace())
+        {
+            <img src="@BrandingProvider.LogoUrl.TrimStart('/', '~')" alt="@BrandingProvider.AppName">
+        }
+        else
+        {
+            <BarIcon IconName="IconName.ShoppingCart" Margin="Margin.Is2.FromEnd"/>
+        }
+        @BrandingProvider.AppName
+    </BarLink>
+</BarItem>

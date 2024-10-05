@@ -35,13 +35,24 @@ public class WebMarketplaceMenuContributor : IMenuContributor
         }
     }
 
+    #region Main Menu
+    
     private static async Task ConfigureMainMenuAsync(MenuConfigurationContext context)
     {
         var l = context.GetLocalizer<WebMarketplaceResource>();
         
+        await ConfigureHomeMenuAsync(context);
+        await ConfigureProductsMenuAsync(context);
+        await ConfigureCompaniesMenuAsync(context);
+        await ConfigureManagementMenuAsync(context);
+
         //Administration
-        var administration = context.Menu.GetAdministration();
-        administration.Order = 5;
+        await ConfigureAdministrationMenuAsync(context);
+    }
+
+    private static async Task ConfigureHomeMenuAsync(MenuConfigurationContext context)
+    {
+        var l = context.GetLocalizer<WebMarketplaceResource>();
 
         context.Menu.AddItem(new ApplicationMenuItem(
             WebMarketplaceMenus.Home,
@@ -50,6 +61,54 @@ public class WebMarketplaceMenuContributor : IMenuContributor
             icon: "fas fa-home",
             order: 1
         ));
+    }
+    
+    private static async Task ConfigureProductsMenuAsync(MenuConfigurationContext context)
+    {
+        var l = context.GetLocalizer<WebMarketplaceResource>();
+
+        context.Menu.AddItem(new ApplicationMenuItem(
+            WebMarketplaceMenus.Products,
+            l["Menu:Products"],
+            "/product/list",
+            icon: "fa fa-book",
+            order: 1
+        ));
+    }
+    
+    private static async Task ConfigureCompaniesMenuAsync(MenuConfigurationContext context)
+    {
+        var l = context.GetLocalizer<WebMarketplaceResource>();
+
+        context.Menu.AddItem(new ApplicationMenuItem(
+            WebMarketplaceMenus.Companies,
+            l["Menu:Companies"],
+            "/vendor/list",
+            icon: "fa fa-building",
+            order: 1
+        ));
+    }
+    
+    private static async Task ConfigureManagementMenuAsync(MenuConfigurationContext context)
+    {
+        var l = context.GetLocalizer<WebMarketplaceResource>();
+
+        context.Menu.AddItem(new ApplicationMenuItem(
+            WebMarketplaceMenus.Management,
+            l["Menu:Management"],
+            "/management/",
+            icon: "fa fa-cog",
+            order: 1
+        ));
+    }
+
+    private static async Task ConfigureAdministrationMenuAsync(MenuConfigurationContext context)
+    {
+        var l = context.GetLocalizer<WebMarketplaceResource>();
+
+        var administration = context.Menu.GetAdministration();
+        administration.Order = 5;
+        
         if (MultiTenancyConsts.IsEnabled)
         {
             administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 1);
@@ -62,6 +121,10 @@ public class WebMarketplaceMenuContributor : IMenuContributor
         administration.SetSubItemOrder(IdentityMenuNames.GroupName, 2);
         administration.SetSubItemOrder(SettingManagementMenus.GroupName, 3);
     }
+    
+    #endregion
+
+    #region User Menu
 
     private async Task ConfigureUserMenuAsync(MenuConfigurationContext context)
     {
@@ -72,10 +135,13 @@ public class WebMarketplaceMenuContributor : IMenuContributor
             "Account.Manage",
             accountStringLocalizer["MyAccount"],
             $"{authServerUrl.EnsureEndsWith('/')}Account/Manage",
-            icon: "fa fa-cog",
+            icon: "fa fa-user-circle-o",
             order: 1000,
             target: "_blank").RequireAuthenticated());
 
         await Task.CompletedTask;
     }
+    
+    
+    #endregion
 }

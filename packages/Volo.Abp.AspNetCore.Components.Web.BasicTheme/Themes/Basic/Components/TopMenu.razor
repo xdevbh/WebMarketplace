@@ -1,0 +1,29 @@
+﻿
+<Bar @bind-Visible="@topbarVisible"
+     Breakpoint="Breakpoint.Desktop"
+     Background="Background.Light"
+     Shadow="Shadow.Default"
+     ThemeContrast="ThemeContrast.Light" 
+     Padding="Padding.Is4.OnX">
+
+    <BarBrand>
+        <Branding/>
+    </BarBrand>
+
+    <BarToggler/>
+
+    <BarMenu>
+        <BarStart>
+            <NavMenu />
+        </BarStart>
+        <BarEnd>
+            <NavToolbar/>
+        </BarEnd>
+    </BarMenu>
+
+</Bar>
+
+@code {
+    private bool topbarVisible = false;
+
+}
