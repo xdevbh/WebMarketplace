@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.BlobStoring;
+using Volo.Abp.Content;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
 using WebMarketplace.Companies;
@@ -116,42 +117,43 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
 
     #region Images
 
-    public async Task<ProductImageDto> GetDefaultImageAsync(Guid productId)
+    public async Task<IRemoteStreamContent> GetDefaultImageAsync(Guid productId)
     {
         var product = await _productRepository.GetAsync(productId);
-    
         if (product != null || product.DefaultImage == null)
         {
             return null; 
         }
+        
+        var imageContent = await _productBlobContainer.GetOrNullAsync(product.DefaultImage.BlobName);
+        if (imageContent == null)
+        {
+            return null;
+        }
 
-        var blob = await _productBlobContainer.GetAllBytesOrNullAsync(product.DefaultImage.BlobName);
-        var dto = ObjectMapper.Map<ProductImage, ProductImageDto>(product.DefaultImage);
-        dto.Content = blob;
-        return dto;
+        return new RemoteStreamContent(imageContent);
     }
 
-    public async Task<ListResultDto<ProductImageDto>> GetAllImagesAsync(Guid productId)
+    public async Task<ListResultDto<IRemoteStreamContent>> GetAllImagesAsync(Guid productId)
     {
         var product = await _productRepository.GetAsync(productId);
 
         if (product == null || product.Images == null || !product.Images.Any())
         {
-            return new ListResultDto<ProductImageDto>();
+            return new ListResultDto<IRemoteStreamContent>();
         }
 
-        var imageDtos = new List<ProductImageDto>();
-
+        var imageContentList = new List<IRemoteStreamContent>();
         foreach (var image in product.Images)
         {
-            var blob = await _productBlobContainer.GetAllBytesOrNullAsync(image.BlobName);
-            var dto = ObjectMapper.Map<ProductImage, ProductImageDto>(image);
-            dto.Content = blob;
-            imageDtos.Add(dto);
+            var imageContent = await _productBlobContainer.GetOrNullAsync(image.BlobName);
+            var tt = new RemoteStreamContent(imageContent);
+            imageContentList.Add(tt);
         }
 
-        return new ListResultDto<ProductImageDto>(imageDtos);
+        return new ListResultDto<IRemoteStreamContent>(imageContentList);
     }
+    
     #endregion
 
     #region Mappers

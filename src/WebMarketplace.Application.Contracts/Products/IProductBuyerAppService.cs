@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Content;
 
 namespace WebMarketplace.Products;
 
@@ -16,6 +17,6 @@ public interface IProductBuyerAppService : IApplicationService
     Task<PagedResultDto<ProductReviewDto>> GetReviewListAsync(ProductReviewListFilterDto input); 
     
     // images
-    Task<ProductImageDto> GetDefaultImageAsync(Guid productId);
-    Task <ListResultDto<ProductImageDto>> GetAllImagesAsync(Guid productId);
+    Task<IRemoteStreamContent> GetDefaultImageAsync(Guid productId);
+    Task <ListResultDto<IRemoteStreamContent>> GetAllImagesAsync(Guid productId);
 }

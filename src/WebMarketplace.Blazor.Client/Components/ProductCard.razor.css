@@ -1,9 +1,24 @@
-﻿.card {
+﻿.product-card {
     width: 300px;
-    min-height: 400px; /* Минимальная высота карточки */
+    min-height: 400px;
 }
 
-.card img {
+.product-card img {
     max-height: 200px;
     object-fit: cover;
+}
+
+.description-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 4.5em;
+    line-height: 1.5em;
+    height: 4.5em;
+}
+
+.product-card-wrapper {
+    margin: 15px;
 }
