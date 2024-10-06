@@ -8,4 +8,9 @@ public class ProductReviewListFilterDto : PagedAndSortedResultRequestDto
     public Guid ProductId { get; set; }
     public double? MinRating { get; set; }
     public double? MaxRating { get; set; }
+
+    public ProductReviewListFilterDto(Guid productId)
+    {
+        ProductId = productId;
+    }
 }

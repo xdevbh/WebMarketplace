@@ -24,7 +24,9 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
     private readonly IRepository<VendorUser, Guid> _vendorUserRepository;
     private readonly IBlobContainer _productBlobContainer;
 
-    public ProductSellerAppService(IProductRepository productRepository, ProductManager productManager, IRepository<Company, Guid> companyRepository, IRepository<VendorUser, Guid> vendorUserRepository, IBlobContainer productBlobContainer)
+    public ProductSellerAppService(IProductRepository productRepository, ProductManager productManager,
+        IRepository<Company, Guid> companyRepository, IRepository<VendorUser, Guid> vendorUserRepository,
+        IBlobContainer productBlobContainer)
     {
         _productRepository = productRepository;
         _productManager = productManager;
@@ -46,9 +48,47 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
         return productDto;
     }
 
-    public async Task<List<ProductDto>> GetListAsync()
+    public async Task<PagedResultDto<ProductCardDto>> GetListAsync(ProductCardListFilterDto input)
     {
-        throw new NotImplementedException();
+        var totalCount = await _productRepository.GetProductDetailCountAsync(
+            input.CompanyId,
+            false,
+            input.Name,
+            input.ProductCategory,
+            input.ProductType,
+            input.MinRating,
+            input.MaxRating,
+            input.MinPriceAmount,
+            input.MaxPriceAmount,
+            input.PriceCurrency
+        );
+
+        var items = await _productRepository.GetProductDetailListAsync(
+            input.Sorting,
+            input.MaxResultCount,
+            input.SkipCount,
+            input.CompanyId,
+            false,
+            input.Name,
+            input.ProductCategory,
+            input.ProductType,
+            input.MinRating,
+            input.MaxRating,
+            input.MinPriceAmount,
+            input.MaxPriceAmount,
+            input.PriceCurrency
+        );
+
+        var dtos = new List<ProductCardDto>();
+        foreach (var item in items)
+        {
+            var dto = ObjectMapper.Map<ProductDetailQueryRequestItem, ProductCardDto>(item);
+            dto.PriceAmount = item.CurrentPrice.Amount;
+            dto.PriceCurrency = item.CurrentPrice.Currency;
+            dtos.Add(dto);
+        }
+
+        return new PagedResultDto<ProductCardDto>(totalCount, dtos);
     }
 
     public async Task<ProductDto> CreateAsync(CreateUpdateProductDto input)
@@ -110,7 +150,7 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
 
         await _productRepository.DeleteAsync(id);
     }
-    
+
     #endregion
 
     #region Publish
@@ -144,16 +184,16 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
     }
 
     #endregion
-    
+
     #region Prices
-    
+
     public async Task<ProductImageDto> GetDefaultImageAsync(Guid productId)
     {
         var product = await _productRepository.GetAsync(productId);
-    
+
         if (product != null || product.DefaultImage == null)
         {
-            return null; 
+            return null;
         }
 
         var blob = await _productBlobContainer.GetAllBytesOrNullAsync(product.DefaultImage.BlobName);
@@ -200,7 +240,7 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
             input.Amount,
             input.Currency);
     }
-    
+
     #endregion
 
     #region Images
@@ -214,10 +254,10 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
         {
             throw new AbpAuthorizationException();
         }
-        
+
         var blobName = GuidGenerator.Create().ToString();
         product.AddImage(blobName, input.IsDefault);
-        
+
         await _productBlobContainer.SaveAsync(blobName, input.Content);
     }
 
@@ -230,16 +270,15 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
         {
             throw new AbpAuthorizationException();
         }
-        
+
         product.RemoveImage(input.BlobName);
         await _productBlobContainer.DeleteAsync(input.BlobName);
     }
 
     #endregion
 
-
     #region Helpers
-    
+
     private async Task<bool> UserHasAccessToProduct(Product product)
     {
         var userId = CurrentUser.GetId();
@@ -252,6 +291,6 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
 
         return false;
     }
-    
+
     #endregion
 }

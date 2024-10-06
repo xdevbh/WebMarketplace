@@ -1,14 +1,14 @@
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.Auditing;
 
 namespace WebMarketplace.Products;
 
 public class ProductDto : AuditedEntityDto<Guid>
 {
     public Guid CompanyId { get; set; }
-
-    public string CompanyName { get; set; }
+    public String CompanyName { get; set; }
 
     public string Name { get;  set; }
 
@@ -20,12 +20,11 @@ public class ProductDto : AuditedEntityDto<Guid>
 
     public string? FullDescription { get; set; }
 
+    public bool IsPublished { get;  set; }
+    
     public double Rating { get; set; }
-
-    public bool IsPublished { get; private set; }
     
-    // public decimal PriceAmount { get; set; }
-    
-    // public string PriceCurrency { get; set; }
+    public decimal PriceAmount { get; set; }
+    public string PriceCurrency { get; set; }
 
 }

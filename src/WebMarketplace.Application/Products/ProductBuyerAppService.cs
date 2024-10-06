@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.BlobStoring;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.ObjectMapping;
 using WebMarketplace.Companies;
 
 namespace WebMarketplace.Products;
@@ -28,24 +29,22 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
         _productBlobContainer = productBlobContainer;
     }
 
-    #region ProductDetails
+    #region Products
 
     public async Task<ProductDetailDto> GetProductDetailAsync(Guid id)
     {
-        var item = await _productRepository.GetWithCompanyAsync(id);
-        var productDetailDto = ObjectMapper.Map<Product, ProductDetailDto>(item.Product);
-        productDetailDto.CompanyName = item.Company.DisplayName;
-        return productDetailDto;
+        var item = await _productRepository.GetProductDetailAsync(id);
+        var dto = ObjectMapper.Map<ProductDetailQueryRequestItem, ProductDetailDto>(item);
+        dto.PriceAmount = item.CurrentPrice.Amount;
+        dto.PriceCurrency = item.CurrentPrice.Currency;
+        return dto;
     }
-
-    #endregion
-
-    #region ProductCards
 
     public async Task<PagedResultDto<ProductCardDto>> GetProductCardListAsync(ProductCardListFilterDto input)
     {
-        var totalCount = await _productRepository.GetFilteredCountAsync(
+        var totalCount = await _productRepository.GetProductDetailCountAsync(
             input.CompanyId,
+            false,
             input.Name,
             input.ProductCategory,
             input.ProductType,
@@ -56,12 +55,13 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
             input.PriceCurrency
         );
 
-        var items = await _productRepository.GetFilteredListAsync(
+        var items = await _productRepository.GetProductDetailListAsync(
             input.Sorting,
             input.MaxResultCount,
             input.SkipCount,
             input.CompanyId,
-            input.Name,
+            false,
+            input.Name, 
             input.ProductCategory,
             input.ProductType,
             input.MinRating,
@@ -71,11 +71,15 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
             input.PriceCurrency
         );
 
-        var dtos = items.Select(x =>
+        var dtos = new List<ProductCardDto>();
+        foreach (var item in items)
         {
-            var dto = ObjectMapper.Map<Product, ProductCardDto>(x);
-            return dto;
-        }).ToList();
+            var dto = ObjectMapper.Map<ProductDetailQueryRequestItem, ProductCardDto>(item);
+            dto.PriceAmount = item.CurrentPrice.Amount;
+            dto.PriceCurrency = item.CurrentPrice.Currency;
+            dtos.Add(dto);
+        }
+        
         return new PagedResultDto<ProductCardDto>(totalCount, dtos);
     }
 
@@ -91,12 +95,12 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
 
     public async Task<PagedResultDto<ProductReviewDto>> GetReviewListAsync(ProductReviewListFilterDto input)
     {
-        var totalCount = await _productRepository.GetReviewWithAuthorCountAsync(
+        var totalCount = await _productRepository.GetReviewDetailCountAsync(
             input.ProductId,
             input.MinRating,
             input.MaxRating);
 
-        var items = await _productRepository.GetReviewWithAuthorListAsync(
+        var items = await _productRepository.GetReviewDetailListAsync(
             input.Sorting,
             input.MaxResultCount,
             input.SkipCount,
@@ -104,12 +108,7 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
             input.MinRating,
             input.MaxRating);
 
-        var dtos = items.Select(x =>
-        {
-            var dto = ObjectMapper.Map<ProductReview, ProductReviewDto>(x.Review);
-            dto.UserName = x.User.Name ?? x.User.UserName;
-            return dto;
-        }).ToList();
+        var dtos = ObjectMapper.Map<List<ProductReviewDetailQueryResultItem>, List<ProductReviewDto>>(items);
         return new PagedResultDto<ProductReviewDto>(totalCount, dtos);
     }
 
@@ -157,24 +156,20 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
 
     #region Mappers
 
-    private ProductDetailDto Map(Product product, Company company)
+    private async Task<ProductDto> Map(ProductDetailQueryRequestItem item)
     {
-        var productDetailDto = new ProductDetailDto();
-
-        productDetailDto.Id = product.Id;
-        productDetailDto.CompanyId = product.CompanyId;
-        productDetailDto.Name = product.Name;
-        productDetailDto.ProductCategory = product.ProductCategory;
-        productDetailDto.ProductType = product.ProductType;
-        productDetailDto.ShortDescription = product.ShortDescription;
-        productDetailDto.FullDescription = product.FullDescription;
-        productDetailDto.Rating = product.Rating;
-
-        productDetailDto.CompanyName = company.Name;
-        productDetailDto.PriceAmount = product.CurrentPrice?.Amount ?? 0;
-        productDetailDto.PriceCurrency = product.CurrentPrice?.Currency ?? string.Empty;
-
-        return productDetailDto;
+        var productDto = new ProductDto();
+        productDto = ObjectMapper.Map<ProductDetailQueryRequestItem, ProductDto>(item);
+        productDto.PriceAmount = item.CurrentPrice.Amount;
+        productDto.PriceCurrency = item.CurrentPrice.Currency;
+        
+        // var reviews = await GetReviewListAsync(new ProductReviewListFilterDto(item.Id));
+        // productDto.Reviews = reviews;
+        //
+        // var images = await GetAllImagesAsync(item.Id);
+        // productDto.Images = images;
+        
+        return productDto;
     }
 
     #endregion

@@ -1,9 +1,10 @@
 using System;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.Auditing;
 
 namespace WebMarketplace.Products;
 
-public class ProductDetailDto: EntityDto<Guid>
+public class ProductDetailDto: EntityDto<Guid>, IHasCreationTime
 {
     public Guid CompanyId { get; set; }
     
@@ -22,9 +23,7 @@ public class ProductDetailDto: EntityDto<Guid>
     public double Rating { get; set; }
 
     public decimal PriceAmount { get; set; }
-    
     public string PriceCurrency { get; set; }
     
-    // public  PagedResultDto<ProductReviewDto> ProductReviews { get; set; }
-
+    public DateTime CreationTime { get; set; }
 }
