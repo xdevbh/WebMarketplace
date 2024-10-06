@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.Authorization;
+using Volo.Abp.BlobStoring;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity.Settings;
 using Volo.Abp.Users;
@@ -19,24 +22,28 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
     private readonly ProductManager _productManager;
     private readonly IRepository<Company, Guid> _companyRepository;
     private readonly IRepository<VendorUser, Guid> _vendorUserRepository;
+    private readonly IBlobContainer _productBlobContainer;
 
-    public ProductSellerAppService(IProductRepository productRepository, ProductManager productManager, IRepository<Company, Guid> companyRepository, IRepository<VendorUser, Guid> vendorUserRepository)
+    public ProductSellerAppService(IProductRepository productRepository, ProductManager productManager, IRepository<Company, Guid> companyRepository, IRepository<VendorUser, Guid> vendorUserRepository, IBlobContainer productBlobContainer)
     {
         _productRepository = productRepository;
         _productManager = productManager;
         _companyRepository = companyRepository;
         _vendorUserRepository = vendorUserRepository;
+        _productBlobContainer = productBlobContainer;
     }
+
+    #region Product
 
     public async Task<ProductDto> GetAsync(Guid id)
     {
-       var product = await _productRepository.GetAsync(id);
-       var company = await _companyRepository.GetAsync(product.CompanyId);
-       
-       var productDto = ObjectMapper.Map<Product, ProductDto>(product);
-       productDto.CompanyName = company.Name;
-       
-       return productDto;
+        var product = await _productRepository.GetAsync(id);
+        var company = await _companyRepository.GetAsync(product.CompanyId);
+
+        var productDto = ObjectMapper.Map<Product, ProductDto>(product);
+        productDto.CompanyName = company.Name;
+
+        return productDto;
     }
 
     public async Task<List<ProductDto>> GetListAsync()
@@ -47,13 +54,13 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
     public async Task<ProductDto> CreateAsync(CreateUpdateProductDto input)
     {
         var user = CurrentUser.GetId();
-        var vendorUser = await _vendorUserRepository.GetAsync(x=>x.UserId == user); // can be null
+        var vendorUser = await _vendorUserRepository.GetAsync(x => x.UserId == user); // can be null
 
         if (vendorUser == null)
         {
             throw new AbpAuthorizationException();
         }
-        
+
         var product = await _productManager.CreateAsync(
             vendorUser.CompanyId,
             input.Name,
@@ -76,13 +83,13 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
         {
             throw new AbpAuthorizationException();
         }
-            
+
         await _productManager.EditAsync(
-            product, 
-            input.Name, 
+            product,
+            input.Name,
             input.ProductCategory,
-            input.ProductType, 
-            input.ShortDescription, 
+            input.ProductType,
+            input.ShortDescription,
             input.FullDescription);
 
         await _productRepository.UpdateAsync(product);
@@ -93,16 +100,20 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
     public async Task DeleteAsync(Guid id)
     {
         var userId = CurrentUser.GetId();
-        var vendorUser = await _vendorUserRepository.GetAsync(x=>x.UserId == userId);
+        var vendorUser = await _vendorUserRepository.GetAsync(x => x.UserId == userId);
         var product = await _productRepository.GetAsync(id);
-        
+
         if (vendorUser == null || product.CompanyId != vendorUser.CompanyId)
         {
             throw new AbpAuthorizationException();
         }
-        
+
         await _productRepository.DeleteAsync(id);
     }
+    
+    #endregion
+
+    #region Publish
 
     [Authorize(WebMarketplacePermissions.Products.Publish)]
     public async Task PublishAsync(Guid id)
@@ -114,7 +125,7 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
         {
             throw new AbpAuthorizationException();
         }
-        
+
         product.Publish(true);
     }
 
@@ -127,9 +138,50 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
         if (!hasAccess)
         {
             throw new AbpAuthorizationException();
-        }    
-        
+        }
+
         product.Publish(false);
+    }
+
+    #endregion
+    
+    #region Prices
+    
+    public async Task<ProductImageDto> GetDefaultImageAsync(Guid productId)
+    {
+        var product = await _productRepository.GetAsync(productId);
+    
+        if (product != null || product.DefaultImage == null)
+        {
+            return null; 
+        }
+
+        var blob = await _productBlobContainer.GetAllBytesOrNullAsync(product.DefaultImage.BlobName);
+        var dto = ObjectMapper.Map<ProductImage, ProductImageDto>(product.DefaultImage);
+        dto.Content = blob;
+        return dto;
+    }
+
+    public async Task<ListResultDto<ProductImageDto>> GetAllImagesAsync(Guid productId)
+    {
+        var product = await _productRepository.GetAsync(productId);
+
+        if (product == null || product.Images == null || !product.Images.Any())
+        {
+            return new ListResultDto<ProductImageDto>();
+        }
+
+        var imageDtos = new List<ProductImageDto>();
+
+        foreach (var image in product.Images)
+        {
+            var blob = await _productBlobContainer.GetAllBytesOrNullAsync(image.BlobName);
+            var dto = ObjectMapper.Map<ProductImage, ProductImageDto>(image);
+            dto.Content = blob;
+            imageDtos.Add(dto);
+        }
+
+        return new ListResultDto<ProductImageDto>(imageDtos);
     }
 
     public async Task CreateProductPriceAsync(CreateUpdateProductPriceDto input)
@@ -141,24 +193,65 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
         {
             throw new AbpAuthorizationException();
         }
-        
+
         await _productManager.AddProductPriceAsync(
             product,
             input.Date,
             input.Amount,
             input.Currency);
     }
+    
+    #endregion
 
+    #region Images
+
+    public async Task CreateProductImageAsync(CreateProductImageDto input)
+    {
+        var product = await _productRepository.GetAsync(input.ProductId);
+
+        var hasAccess = await UserHasAccessToProduct(product);
+        if (!hasAccess)
+        {
+            throw new AbpAuthorizationException();
+        }
+        
+        var blobName = GuidGenerator.Create().ToString();
+        product.AddImage(blobName, input.IsDefault);
+        
+        await _productBlobContainer.SaveAsync(blobName, input.Content);
+    }
+
+    public async Task DeleteProductImageAsync(DeleteProductImageDto input)
+    {
+        var product = await _productRepository.GetAsync(input.ProductId);
+
+        var hasAccess = await UserHasAccessToProduct(product);
+        if (!hasAccess)
+        {
+            throw new AbpAuthorizationException();
+        }
+        
+        product.RemoveImage(input.BlobName);
+        await _productBlobContainer.DeleteAsync(input.BlobName);
+    }
+
+    #endregion
+
+
+    #region Helpers
+    
     private async Task<bool> UserHasAccessToProduct(Product product)
     {
         var userId = CurrentUser.GetId();
-        var vendorUser = await _vendorUserRepository.FindAsync(x=>x.UserId == userId);
-    
+        var vendorUser = await _vendorUserRepository.FindAsync(x => x.UserId == userId);
+
         if (vendorUser != null && product.CompanyId == vendorUser.CompanyId)
         {
             return true;
         }
-    
+
         return false;
     }
+    
+    #endregion
 }

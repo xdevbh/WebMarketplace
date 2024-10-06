@@ -5,6 +5,7 @@ using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.BlobStoring;
 using Volo.Abp.Domain.Repositories;
 using WebMarketplace.Companies;
 
@@ -16,13 +17,15 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
     private readonly IProductRepository _productRepository;
     private readonly ProductManager _productManager;
     private readonly IRepository<Company, Guid> _companyRepository;
+    private readonly IBlobContainer<ProductImageContainer> _productBlobContainer;
 
-    public ProductBuyerAppService(IProductRepository productRepository, ProductManager productManager,
-        IRepository<Company, Guid> companyRepository)
+
+    public ProductBuyerAppService(IProductRepository productRepository, ProductManager productManager, IRepository<Company, Guid> companyRepository, IBlobContainer<ProductImageContainer> productBlobContainer)
     {
         _productRepository = productRepository;
         _productManager = productManager;
         _companyRepository = companyRepository;
+        _productBlobContainer = productBlobContainer;
     }
 
     #region ProductDetails
@@ -112,6 +115,46 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
 
     #endregion
 
+    #region Images
+
+    public async Task<ProductImageDto> GetDefaultImageAsync(Guid productId)
+    {
+        var product = await _productRepository.GetAsync(productId);
+    
+        if (product != null || product.DefaultImage == null)
+        {
+            return null; 
+        }
+
+        var blob = await _productBlobContainer.GetAllBytesOrNullAsync(product.DefaultImage.BlobName);
+        var dto = ObjectMapper.Map<ProductImage, ProductImageDto>(product.DefaultImage);
+        dto.Content = blob;
+        return dto;
+    }
+
+    public async Task<ListResultDto<ProductImageDto>> GetAllImagesAsync(Guid productId)
+    {
+        var product = await _productRepository.GetAsync(productId);
+
+        if (product == null || product.Images == null || !product.Images.Any())
+        {
+            return new ListResultDto<ProductImageDto>();
+        }
+
+        var imageDtos = new List<ProductImageDto>();
+
+        foreach (var image in product.Images)
+        {
+            var blob = await _productBlobContainer.GetAllBytesOrNullAsync(image.BlobName);
+            var dto = ObjectMapper.Map<ProductImage, ProductImageDto>(image);
+            dto.Content = blob;
+            imageDtos.Add(dto);
+        }
+
+        return new ListResultDto<ProductImageDto>(imageDtos);
+    }
+    #endregion
+
     #region Mappers
 
     private ProductDetailDto Map(Product product, Company company)
@@ -128,8 +171,8 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
         productDetailDto.Rating = product.Rating;
 
         productDetailDto.CompanyName = company.Name;
-        productDetailDto.PriceAmount = product.ProductPrice?.Amount ?? 0;
-        productDetailDto.PriceCurrency = product.ProductPrice?.Currency ?? string.Empty;
+        productDetailDto.PriceAmount = product.CurrentPrice?.Amount ?? 0;
+        productDetailDto.PriceCurrency = product.CurrentPrice?.Currency ?? string.Empty;
 
         return productDetailDto;
     }

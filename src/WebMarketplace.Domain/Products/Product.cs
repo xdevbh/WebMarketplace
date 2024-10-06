@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Volo.Abp;
+using Volo.Abp.Auditing;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace WebMarketplace.Products;
@@ -19,18 +20,22 @@ public class Product : AuditedAggregateRoot<Guid>
     public virtual string? ShortDescription { get; set; }
 
     public virtual string? FullDescription { get; set; }
-
-    public virtual List<ProductReview> ProductReviews { get; set; }
     
-    public virtual double Rating => ProductReviews.Average(x => x.Rating);
-
-    public virtual List<ProductPrice> ProductPrices { get; set; }
-
-    public virtual ProductPrice? ProductPrice => ProductPrices.OrderByDescending(x => x.Date).FirstOrDefault();
-
     public virtual bool IsPublished { get; private set; }
 
 
+    public virtual List<ProductReview> Reviews { get; set; }
+    
+    public virtual double Rating => Reviews.Average(x => x.Rating);
+
+    public virtual List<ProductPrice> Prices { get; set; }
+
+    public virtual ProductPrice? CurrentPrice => Prices.OrderByDescending(x => x.Date).FirstOrDefault();
+    
+    public virtual List<ProductImage> Images { get; set; }
+    
+    public virtual ProductImage? DefaultImage => Images.Where(x => x.IsDefault).FirstOrDefault();
+    
     protected Product()
     {
     }
@@ -53,8 +58,9 @@ public class Product : AuditedAggregateRoot<Guid>
         FullDescription = fullDescription;
         IsPublished = false;
 
-        ProductPrices = new List<ProductPrice>();
-        ProductReviews = new List<ProductReview>();
+        Prices = new List<ProductPrice>();
+        Reviews = new List<ProductReview>();
+        Images = new List<ProductImage>();
     }
 
     public Product SetName(string name)
@@ -67,7 +73,7 @@ public class Product : AuditedAggregateRoot<Guid>
 
     public Product Publish(bool isPublish)
     {
-        if (ProductPrices.Any() && isPublish)
+        if (Prices.Any() && isPublish)
         {
             IsPublished = isPublish;
         }
@@ -87,13 +93,13 @@ public class Product : AuditedAggregateRoot<Guid>
         double rating,
         string? comment)
     {
-        if (ProductReviews.Any(x => x.UserId == userId))
+        if (Reviews.Any(x => x.UserId == userId))
         {
             throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductReviewUserAlreadyExists);
         }
 
         var review = new ProductReview(reviewId, userId, this.Id, rating, comment);
-        ProductReviews.Add(review);
+        Reviews.Add(review);
         return this;
     }
 
@@ -102,7 +108,7 @@ public class Product : AuditedAggregateRoot<Guid>
         double rating,
         string? comment)
     {
-        var review = ProductReviews.FirstOrDefault(x => x.Id == reviewId);
+        var review = Reviews.FirstOrDefault(x => x.Id == reviewId);
         if (review is null)
         {
             throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductReviewNotFound);
@@ -115,13 +121,13 @@ public class Product : AuditedAggregateRoot<Guid>
 
     public Product RemoveReview(Guid reviewId)
     {
-        var review = ProductReviews.FirstOrDefault(x => x.CreatorId == reviewId);
+        var review = Reviews.FirstOrDefault(x => x.CreatorId == reviewId);
         if (review is null)
         {
             throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductReviewNotFound);
         }
 
-        ProductReviews.Remove(review);
+        Reviews.Remove(review);
         return this;
     }
 
@@ -134,13 +140,51 @@ public class Product : AuditedAggregateRoot<Guid>
         decimal amount,
         string currency)
     {
-        if (ProductPrices.Any(x => x.Date == date))
+        if (Prices.Any(x => x.Date == date))
         {
             throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductReviewUserAlreadyExists);
         }
 
         var price = new ProductPrice(this.Id, date, amount, currency);
-        ProductPrices.Add(price);
+        Prices.Add(price);
+        return this;
+    }
+
+    #endregion
+
+    #region Images
+
+    public Product AddImage(
+        string blobName,
+        bool isDefault)
+    {
+        var defaultImage = Images.FirstOrDefault(x => x.IsDefault);
+        if (defaultImage is not null && isDefault)
+        {
+            defaultImage.IsDefault = false;
+        }
+
+        var image = new ProductImage(this.Id, blobName, isDefault);  
+        Images.Add(image);
+        return this;
+    }
+    
+    public Product RemoveImage(string blobName)
+    {
+        var image = Images.FirstOrDefault(x => x.BlobName == blobName);
+        if (image is null)
+        {
+            throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductImageNotFound);
+        }
+        else
+        {
+            if (image.IsDefault)
+            {
+                throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductImageDefaultRemoveNotAllowed);
+            }
+        }
+
+        Images.Remove(image);
         return this;
     }
 

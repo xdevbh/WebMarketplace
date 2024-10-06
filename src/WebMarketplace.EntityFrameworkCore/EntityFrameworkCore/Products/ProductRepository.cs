@@ -46,9 +46,9 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
         query.WhereIf(productType != null, x => x.ProductType == productType);
         query.WhereIf(minRating != null, x => x.Rating >= minRating);
         query.WhereIf(maxRating != null, x => x.Rating <= maxRating);
-        query.WhereIf(minPriceAmount != null, x => x.ProductPrice != null && x.ProductPrice.Amount >= minPriceAmount);
-        query.WhereIf(maxPriceAmount != null, x => x.ProductPrice != null && x.ProductPrice.Amount <= maxPriceAmount);
-        query.WhereIf(priceCurrency != null, x => x.ProductPrice != null && x.ProductPrice.Currency == priceCurrency);
+        query.WhereIf(minPriceAmount != null, x => x.CurrentPrice != null && x.CurrentPrice.Amount >= minPriceAmount);
+        query.WhereIf(maxPriceAmount != null, x => x.CurrentPrice != null && x.CurrentPrice.Amount <= maxPriceAmount);
+        query.WhereIf(priceCurrency != null, x => x.CurrentPrice != null && x.CurrentPrice.Currency == priceCurrency);
 
         var tt = (await GetQueryableAsync()).IncludeDetails();
         return tt;
@@ -155,9 +155,9 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
         query.WhereIf(productType != null, x => x.Product.ProductType == productType);
         query.WhereIf(minRating != null, x => x.Product.Rating >= minRating);
         query.WhereIf(maxRating != null, x => x.Product.Rating <= maxRating);
-        query.WhereIf(minPriceAmount != null, x => x.Product.ProductPrice != null && x.Product.ProductPrice.Amount >= minPriceAmount);
-        query.WhereIf(maxPriceAmount != null, x => x.Product.ProductPrice != null && x.Product.ProductPrice.Amount <= maxPriceAmount);
-        query.WhereIf(priceCurrency != null, x => x.Product.ProductPrice != null && x.Product.ProductPrice.Currency == priceCurrency);
+        query.WhereIf(minPriceAmount != null, x => x.Product.CurrentPrice != null && x.Product.CurrentPrice.Amount >= minPriceAmount);
+        query.WhereIf(maxPriceAmount != null, x => x.Product.CurrentPrice != null && x.Product.CurrentPrice.Amount <= maxPriceAmount);
+        query.WhereIf(priceCurrency != null, x => x.Product.CurrentPrice != null && x.Product.CurrentPrice.Currency == priceCurrency);
 
         return query;
     }

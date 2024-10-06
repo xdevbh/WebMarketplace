@@ -69,7 +69,7 @@ public class CartAppService : WebMarketplaceAppService, ICartAppService
             cartItemDto.ProductId = product.Id;
             cartItemDto.ProductName = product.Name;
             cartItemDto.Quantity = item.Quantity;
-            cartItemDto.TotalPrice = item.Quantity * product.ProductPrice?.Amount ?? 0;
+            cartItemDto.TotalPrice = item.Quantity * product.CurrentPrice?.Amount ?? 0;
             dto.Items.Add(cartItemDto);
         }
         

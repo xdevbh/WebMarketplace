@@ -28,21 +28,24 @@ public class WebMarketplaceApplicationAutoMapperProfile : Profile
         CreateMap<Product, ProductDetailDto>()
             .Ignore(x => x.CompanyName)
             .ForMember(dest => dest.PriceCurrency,
-                opt => opt.MapFrom(src => src.ProductPrice != null ? src.ProductPrice.Currency : string.Empty))
+                opt => opt.MapFrom(src => src.CurrentPrice != null ? src.CurrentPrice.Currency : string.Empty))
             .ForMember(dest => dest.PriceAmount,
-                opt => opt.MapFrom(src => src.ProductPrice != null ? src.ProductPrice.Amount : 0));
+                opt => opt.MapFrom(src => src.CurrentPrice != null ? src.CurrentPrice.Amount : 0));
         ;
         CreateMap<CreateUpdateProductDto, Product>();
         CreateMap<Product, ProductCardDto>()
             .ForMember(dest => dest.Rating,
                 opt => opt.MapFrom(src => src.Rating))
             .ForMember(dest => dest.PriceCurrency,
-                opt => opt.MapFrom(src => src.ProductPrice != null ? src.ProductPrice.Currency : string.Empty))
+                opt => opt.MapFrom(src => src.CurrentPrice != null ? src.CurrentPrice.Currency : string.Empty))
             .ForMember(dest => dest.PriceAmount,
-                opt => opt.MapFrom(src => src.ProductPrice != null ? src.ProductPrice.Amount : 0));
+                opt => opt.MapFrom(src => src.CurrentPrice != null ? src.CurrentPrice.Amount : 0));
 
         CreateMap<ProductReview, ProductReviewDto>()
             .Ignore(x => x.UserName);
         CreateMap<CreateUpdateProductReviewDto, ProductReviewDto>();
+
+        CreateMap<ProductImage, ProductImageDto>()
+            .Ignore(x => x.Content);
     }
 }

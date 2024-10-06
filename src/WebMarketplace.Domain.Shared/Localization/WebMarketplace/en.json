@@ -17,8 +17,11 @@
     "Exception:CompanyNameAlreadyExists": "The company with name '{Name}' already exists.",
     "Exception:CompanyDisplayNameAlreadyExists": "The company with display name '{DisplayName}' already exists.",
     "Exception:ProductReviewUserAlreadyExists": "A review for this product by this user already exists.",
+    "Exception:ProductReviewNotFound": "Product review not found.",
     "Exception:PriceNotNegative": "Price cannot be negative.",
     "Exception:CurrencyAlreadySet": "Currency is already set.",
+    "Exception:ProductImageNotFound": "Product image not found.",
+    "Exception:ProductImageDefaultRemoveNotAllowed": "Default image cannot be removed.",
     
     "Permission:WebMarketplace": "WebMarketplace Management",
     "Permission:Companies": "Company Management",
