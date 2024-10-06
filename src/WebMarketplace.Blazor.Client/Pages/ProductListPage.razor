@@ -1,9 +1,23 @@
 ﻿@page "/product/list"
+@using Volo.Abp.Application.Dtos
 @using WebMarketplace.Products
 @inject IProductBuyerAppService ProductBuyerAppService
 
-<ProductCardDeck/>
+<ProductCardDeck Products="@Products"/>
 
 @code {
     
+    public List<ProductCardDto> Products { get; set; } = new List<ProductCardDto>();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var input = new ProductCardListFilterDto();
+        var result = await ProductBuyerAppService.GetProductCardListAsync(input);
+        Products = result.Items.ToList();
+        for (int i = 1; i <= 100; i++)
+        {
+            Products.AddRange(result.Items);
+            // var item = result.Items.FirstOrDefault();
+        }
+    }
 }

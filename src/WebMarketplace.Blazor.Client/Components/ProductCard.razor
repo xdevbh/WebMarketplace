@@ -1,25 +1,31 @@
-﻿<Card Class="product-card">
+﻿@using WebMarketplace.Products
+@inject NavigationManager NavigationManager
+
+<Card IsClickable="true" Class="product-card" @onclick="OpenProductPage">
+    <CardImage Src="@ProductImageUrl"/>
     <CardBody>
-        <CardImage Class="product-image" Source="https://picsum.photos/200" Alt="">
-        </CardImage>
-        <CardTitle Size="5" Class="product-name">Card title</CardTitle>
-        <CardText Class="product-price">
-            1000 EUR
-        </CardText>
-        <CardText>
-            <Small TextColor="TextColor.Muted">Last updated 3 mins ago</Small>
-        </CardText>
+        <CardTitle>@Product.Name</CardTitle>
+        <CardSubtitle>@Product.PriceAmount.ToString("C") @Product.PriceCurrency</CardSubtitle>
+        <CardText Class="description-text">@Product.ShortDescription</CardText>
     </CardBody>
-    <CardFooter Class="product-actions">
-        <Button Color="Color.Primary"  >Add DataSet</Button>
-        <Button Color="Color.Secondary"  >Add DataSet</Button>
+    <CardFooter>
+        <Button Color="Color.Primary" @onclick="AddToCart">Добавить в корзину</Button>
     </CardFooter>
 </Card>
 
-
 @code {
-    private string GetStars(int rating)
+    [Parameter] public ProductCardDto Product { get; set; }
+
+    private string ProductImageUrl => "https://via.placeholder.com/300"; 
+
+    private void OpenProductPage()
     {
-        return new string('★', rating) + new string('☆', 5 - rating);
+        NavigationManager.NavigateTo($"/product/{Product.Id}");
     }
+
+    private void AddToCart()
+    {
+        Console.WriteLine($"Товар {Product.Name} добавлен в корзину.");
+    }
+
 }

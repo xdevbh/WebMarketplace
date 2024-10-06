@@ -1,10 +1,16 @@
-﻿<CardDeck Class="product-card-deck">
-    @for (int i = 1; i <= 50; i++)
+﻿@using WebMarketplace.Products
+@inject IProductBuyerAppService ProductBuyerAppService
+
+<CardDeck Class="d-flex justify-content-center flex-wrap">
+    @foreach (var product in Products)
     {
-        <ProductCard/>
+        <div class="m-3">
+            <ProductCard Product="product" />
+        </div>
     }
 </CardDeck>
 
 @code {
-
+    [Parameter]
+    public List<ProductCardDto> Products { get; set; }
 }
