@@ -1,0 +1,25 @@
+﻿<Card Class="product-card">
+    <CardBody>
+        <CardImage Class="product-image" Source="https://picsum.photos/200" Alt="">
+        </CardImage>
+        <CardTitle Size="5" Class="product-name">Card title</CardTitle>
+        <CardText Class="product-price">
+            1000 EUR
+        </CardText>
+        <CardText>
+            <Small TextColor="TextColor.Muted">Last updated 3 mins ago</Small>
+        </CardText>
+    </CardBody>
+    <CardFooter Class="product-actions">
+        <Button Color="Color.Primary"  >Add DataSet</Button>
+        <Button Color="Color.Secondary"  >Add DataSet</Button>
+    </CardFooter>
+</Card>
+
+
+@code {
+    private string GetStars(int rating)
+    {
+        return new string('★', rating) + new string('☆', 5 - rating);
+    }
+}

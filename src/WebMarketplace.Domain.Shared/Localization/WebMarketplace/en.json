@@ -5,7 +5,13 @@
     "Menu:Home": "Home",
     "Menu:Products": "Products",
     "Menu:Companies": "Companies",
+    "Menu:Company": "Company",
+    "Menu:Cart": "Cart",
+    "Menu:Orders": "Orders",
     "Menu:Management": "Management",
+    "Menu:Dashboard": "Dashboard",
+    "Menu:Customers": "Customers",
+    
     "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP framework. For more information visit",
     "Welcome": "Welcome",
     "Exception:CompanyNameAlreadyExists": "The company with name '{Name}' already exists.",

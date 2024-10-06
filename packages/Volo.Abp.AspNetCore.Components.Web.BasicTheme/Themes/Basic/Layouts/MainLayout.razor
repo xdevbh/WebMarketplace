@@ -6,26 +6,19 @@
 @inherits LayoutComponentBase
 
 <Layout>
-    <LayoutHeader Fixed>
+    <LayoutHeader>
         <TopMenu/>
     </LayoutHeader>
-    <Layout Sider>
-        <LayoutSider>
-            <LayoutSiderContent>
-                @* <SideMenu /> *@
-            </LayoutSiderContent>
-        </LayoutSider>
-        <Layout>
-            <LayoutContent Padding="Padding.Is4.OnAll">
-                <PageAlert />
-                <LayoutHook Name="@LayoutHooks.Body.First" Layout="@StandardLayouts.Application" />
-                @Body
-                <LayoutHook Name="@LayoutHooks.Body.Last" Layout="@StandardLayouts.Application" />
-                <DynamicLayoutComponent />
-                <UiMessageAlert />
-                <UiNotificationAlert />
-                <UiPageProgress />
-            </LayoutContent>
-        </Layout>
-    </Layout>
+
+    <LayoutContent Padding="Padding.Is4.OnAll">
+        <PageAlert/>
+        <LayoutHook Name="@LayoutHooks.Body.First" Layout="@StandardLayouts.Application"/>
+        @Body
+        <LayoutHook Name="@LayoutHooks.Body.Last" Layout="@StandardLayouts.Application"/>
+        <DynamicLayoutComponent/>
+        <UiMessageAlert/>
+        <UiNotificationAlert/>
+        <UiPageProgress/>
+    </LayoutContent>
+
 </Layout>

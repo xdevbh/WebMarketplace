@@ -1,0 +1,13 @@
+﻿@using Microsoft.Extensions.Localization
+@using WebMarketplace.Localization
+@inject IStringLocalizer<WebMarketplaceResource> L
+
+<BarLink To="/cart">
+    <Icon Name="IconName.Cart"/>
+        @L["Menu:Cart"]
+</BarLink>
+
+@code {
+
+
+}
