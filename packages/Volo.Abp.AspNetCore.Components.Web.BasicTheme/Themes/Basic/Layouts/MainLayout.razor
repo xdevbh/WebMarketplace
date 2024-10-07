@@ -3,6 +3,7 @@
 @using Volo.Abp.AspNetCore.Components.Web.Theming.Components
 @using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
 @using Volo.Abp.AspNetCore.Components.Web.BasicTheme.Themes.Basic.Components
+@using BreadcrumbItem = Volo.Abp.BlazoriseUI.BreadcrumbItem
 @inherits LayoutComponentBase
 
 <Layout>
@@ -11,14 +12,33 @@
     </LayoutHeader>
 
     <LayoutContent Padding="Padding.Is4.OnAll">
-        <PageAlert/>
-        <LayoutHook Name="@LayoutHooks.Body.First" Layout="@StandardLayouts.Application"/>
-        @Body
-        <LayoutHook Name="@LayoutHooks.Body.Last" Layout="@StandardLayouts.Application"/>
-        <DynamicLayoutComponent/>
-        <UiMessageAlert/>
-        <UiNotificationAlert/>
-        <UiPageProgress/>
+        <Container>
+            <PageHeader ></PageHeader>
+            <PageAlert/>
+            <LayoutHook Name="@LayoutHooks.Body.First" Layout="@StandardLayouts.Application"/>
+            @Body
+            <LayoutHook Name="@LayoutHooks.Body.Last" Layout="@StandardLayouts.Application"/>
+            <DynamicLayoutComponent/>
+            <UiMessageAlert/>
+            <UiNotificationAlert/>
+            <UiPageProgress/>
+        </Container>
     </LayoutContent>
 
 </Layout>
+
+@code
+{
+    protected List<BreadcrumbItem> BreadcrumbItems { get; set; } = new();
+
+    protected override Task OnInitializedAsync()
+    {
+        SetBreadcrumbItemsAsync();
+        return base.OnInitializedAsync();
+    }
+
+    protected Task SetBreadcrumbItemsAsync()
+    {
+        return Task.CompletedTask;
+    }
+}

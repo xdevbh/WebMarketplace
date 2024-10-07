@@ -8,10 +8,12 @@
 @inject IStringLocalizer<AbpUiResource> UiLocalizer
 @inject IOptions<AuthenticationOptions> AuthenticationOptions
 @inject IOptions<AbpAspNetCoreComponentsWebOptions> AbpAspNetCoreComponentsWebOptions
+
 <AuthorizeView>
     <Authorized>
-        <Dropdown RightAligned="true">
-            <DropdownToggle Color="Color.Default">
+        <BarDropdown>
+            <BarDropdownToggle>
+                <BarIcon IconName="IconName.User" Margin="Margin.Is1.FromEnd"/>
                 @if (CurrentTenant.Name != null)
                 {
                     <span><i>@CurrentTenant.Name</i>\@CurrentUser.UserName</span>
@@ -20,21 +22,30 @@
                 {
                     <span>@CurrentUser.UserName</span>
                 }
-            </DropdownToggle>
-            <DropdownMenu>
+            </BarDropdownToggle>
+            <BarDropdownMenu>
                 @if (Menu != null)
                 {
                     @foreach (var menuItem in Menu.Items)
                     {
-                        <DropdownItem Clicked="@(() => NavigateToAsync(menuItem.Url, menuItem.Target))">@menuItem.DisplayName</DropdownItem>
+                        <BarDropdownItem Clicked="@(() => NavigateToAsync(menuItem.Url, menuItem.Target))">
+                            @if (menuItem.Icon != null)
+                            {
+                                <BarIcon IconName="@menuItem.Icon" Margin="Margin.Is1.FromEnd"/>
+                            }
+                            @menuItem.DisplayName
+                        </BarDropdownItem>
                     }
                 }
-                <DropdownDivider />
-                <DropdownItem Clicked="BeginSignOut">@UiLocalizer["Logout"]</DropdownItem>
-            </DropdownMenu>
-        </Dropdown>
+                <BarDropdownDivider/>
+                <BarDropdownItem Clicked="BeginSignOut">
+                    <BarIcon IconName="@("fa fa-power-off")" Margin="Margin.Is1.FromEnd"/>
+                    @UiLocalizer["Logout"]
+                </BarDropdownItem>
+            </BarDropdownMenu>
+        </BarDropdown>
     </Authorized>
     <NotAuthorized>
-        <a class="nav-link" href="@AuthenticationOptions.Value.LoginUrl">@UiLocalizer["Login"]</a>
+        <BarLink To="@AuthenticationOptions.Value.LoginUrl">@UiLocalizer["Login"]</BarLink>
     </NotAuthorized>
 </AuthorizeView>

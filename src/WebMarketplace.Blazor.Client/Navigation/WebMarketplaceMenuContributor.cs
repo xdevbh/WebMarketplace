@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Blazorise;
 using Microsoft.Extensions.Configuration;
 using WebMarketplace.Localization;
 using WebMarketplace.Permissions;
@@ -197,7 +198,7 @@ public class WebMarketplaceMenuContributor : IMenuContributor
             WebMarketplaceMenus.AccountManage,
             accountStringLocalizer["MyAccount"],
             $"{authServerUrl.EnsureEndsWith('/')}Account/Manage",
-            icon: "fa fa-circle-user",
+            icon: "fa fa-cog",     
             order: 1000,
             target: "_blank").RequireAuthenticated());
 
