@@ -68,7 +68,7 @@ public interface IProductRepository : IRepository<Product, Guid>
         double? maxRating = null);
 
     Task<List<ProductReviewDetailQueryResultItem>> GetReviewDetailListAsync(
-        string sorting = null,
+        string? sorting = null,
         int maxResultCount = int.MaxValue,
         int skipCount = 0,
         Guid? productId = null,

@@ -1,0 +1,172 @@
+﻿@page "/administration/company/list"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Components.Messages
+@using Volo.Abp.AspNetCore.Components.Web
+@using WebMarketplace.Companies
+@using WebMarketplace.Localization
+@using WebMarketplace.Permissions
+@using WebMarketplace.Products
+@attribute [Authorize("AdminOnly")]
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject AbpBlazorMessageLocalizerHelper<WebMarketplaceResource> LH
+@inject IAuthorizationService AuthorizationService
+@inject NavigationManager NavigationManager
+@inject ICompanyAdminAppService CompanyAdminAppService
+@inject IUiMessageService UiMessageService
+
+<PageTitle>@PageTitle</PageTitle>
+<Div Flex="Flex.JustifyContent.Between"
+     Margin="Margin.Is3.FromBottom">
+    <Heading Size="HeadingSize.Is3"
+             Flex="Flex.Fill">
+        @L["Header:Companies"]
+    </Heading>
+    <Div Float="Float.End" Flex="Flex.ReverseRow">
+        @if (CanCreateCompany)
+        {
+            <Button Color="Color.Primary"
+                    Margin="Margin.Is2.FromEnd"
+                    Clicked="() => OpenCreate()">
+                <Icon Name="IconName.Add"
+                      Margin="Margin.Is1.FromEnd"/>
+                @L["Action:New"]
+            </Button>
+        }
+    </Div>`
+</Div>
+
+<Accordion Margin="Margin.Is3.FromBottom">
+    <Collapse>
+        <CollapseHeader>
+            <Heading Size="HeadingSize.Is3">
+                <AccordionToggle>@L["Header:Search"]</AccordionToggle>
+            </Heading>
+        </CollapseHeader>
+        <CollapseBody>
+            <Fields>
+                <Field>
+                    <FieldLabel>@L["Field:Id"]</FieldLabel>
+                    <Addons>
+                        <Addon AddonType="AddonType.Start">
+                            <AddonLabel>
+                                <Icon Name="IconName.Pen"></Icon>
+                            </AddonLabel>
+                        </Addon>
+                        <Addon AddonType="AddonType.Body">
+                            <TextEdit Placeholder="@L["Placeholder:Write"]"
+                                      @bind-Text="@SelectedId"/>
+                        </Addon>
+                    </Addons>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["Field:CompanyIdentificationNumber"]</FieldLabel>
+                    <Addons>
+                        <Addon AddonType="AddonType.Start">
+                            <AddonLabel>
+                                <Icon Name="IconName.Pen"></Icon>
+                            </AddonLabel>
+                        </Addon>
+                        <Addon AddonType="AddonType.Body">
+                            <TextEdit Placeholder="@L["Placeholder:Write"]"
+                                      @bind-Text="@SelectedIdentificationNumber"/>
+                        </Addon>
+                    </Addons>
+                </Field>
+            </Fields>
+            <Fields>
+                <Field>
+                    <FieldLabel>@L["Field:Name"]</FieldLabel>
+                    <Addons>
+                        <Addon AddonType="AddonType.Start">
+                            <AddonLabel>
+                                <Icon Name="IconName.Pen"></Icon>
+                            </AddonLabel>
+                        </Addon>
+                        <Addon AddonType="AddonType.Body">
+                            <TextEdit Placeholder="@L["Placeholder:Write"]"
+                                      @bind-Text="@SelectedName"/>
+                        </Addon>
+                    </Addons>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["Field:DisplayName"]</FieldLabel>
+                    <Addons>
+                        <Addon AddonType="AddonType.Start">
+                            <AddonLabel>
+                                <Icon Name="IconName.Pen"></Icon>
+                            </AddonLabel>
+                        </Addon>
+                        <Addon AddonType="AddonType.Body">
+                            <TextEdit Placeholder="@L["Placeholder:Write"]"
+                                      @bind-Text="@SelectedDisplayName"/>
+                        </Addon>
+                    </Addons>
+                </Field>
+            </Fields>
+        </CollapseBody>
+    </Collapse>
+</Accordion>
+
+<Card>
+    <CardBody>
+        <DataGrid TItem="CompanyDto"
+                  Data="Companies"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  ShowPageSizes="true"
+                  PageSize="PageSize"
+                  Filterable="false">
+            <DataGridColumns>
+                <DataGridColumn TItem="CompanyDto"
+                                Filterable="false">
+                    <DisplayTemplate>
+                        <Dropdown>
+                            <DropdownToggle Color="Color.Primary">
+                                <Icon Name="IconName.MoreHorizontal" Margin="Margin.Is1.FromEnd"/>
+                                @L["Action:Actions"]
+                            </DropdownToggle>
+                            <DropdownMenu>
+                                @if (CanEditCompany)
+                                {
+                                    <DropdownItem Clicked="() => OpenMembership(context)">
+                                        <Icon Name="IconName.UserTie" Margin="Margin.Is1.FromEnd"/>
+                                        @L["Action:Membership"]
+                                    </DropdownItem>
+                                }
+                                <Divider/>
+                                @if (CanEditCompany)
+                                {
+                                    <DropdownItem Clicked="() => OpenEdit(context)">
+                                        <Icon Name="IconName.Edit" Margin="Margin.Is1.FromEnd"/>
+                                        @L["Action:Edit"]
+                                    </DropdownItem>
+                                }
+                                @if (CanDeleteCompany)
+                                {
+                                    <DropdownItem Clicked="() => DeleteAsync(context)">
+                                        <Icon Name="IconName.Delete" Margin="Margin.Is1.FromEnd"/>
+                                        @L["Action:Delete"]
+                                    </DropdownItem>
+                                }
+                            </DropdownMenu>
+                        </Dropdown>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="CompanyDto"
+                                Field="@nameof(CompanyDto.Id)"
+                                Caption="@L["Field:Id"]"/>
+                <DataGridColumn TItem="CompanyDto"
+                                Field="@nameof(CompanyDto.CompanyIdentificationNumber)"
+                                Caption="@L["Field:CompanyIdentificationNumber"]"/>
+                <DataGridColumn TItem="CompanyDto"
+                                Field="@nameof(CompanyDto.Name)"
+                                Caption="@L["Field:Name"]"/>
+                <DataGridColumn TItem="CompanyDto"
+                                Field="@nameof(CompanyDto.DisplayName)"
+                                Caption="@L["Field:DisplayName"]"/>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>

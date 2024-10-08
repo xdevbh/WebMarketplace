@@ -8,7 +8,7 @@ using Volo.Abp.Authorization;
 using Volo.Abp.BlobStoring;
 using Volo.Abp.Domain.Repositories;
 using WebMarketplace.Companies;
-using WebMarketplace.Companies.VendorUsers;
+using WebMarketplace.Companies.Memberships;
 
 namespace WebMarketplace.Products;
 
@@ -18,10 +18,10 @@ public class ProductAdminAppService : WebMarketplaceAppService, IProductAdminApp
     private readonly IProductRepository _productRepository;
     private readonly ProductManager _productManager;
     private readonly IRepository<Company, Guid> _companyRepository;
-    private readonly IRepository<VendorUser, Guid> _vendorUserRepository;
+    private readonly IRepository<CompanyMembership, Guid> _vendorUserRepository;
     private readonly IBlobContainer _productBlobContainer;
 
-    public ProductAdminAppService(IProductRepository productRepository, ProductManager productManager, IRepository<Company, Guid> companyRepository, IRepository<VendorUser, Guid> vendorUserRepository, IBlobContainer productBlobContainer)
+    public ProductAdminAppService(IProductRepository productRepository, ProductManager productManager, IRepository<Company, Guid> companyRepository, IRepository<CompanyMembership, Guid> vendorUserRepository, IBlobContainer productBlobContainer)
     {
         _productRepository = productRepository;
         _productManager = productManager;

@@ -26,6 +26,7 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
     private readonly ProductManager _productManager;
 
     private const string DemoPrefix = "[DEMO] ";
+    private Random random = new Random();
 
     public WebMarketplaceDataSeederContributor(IGuidGenerator guidGenerator,
         IRepository<IdentityRole, Guid> identityRoleRepository, IRepository<Company, Guid> companyRepository,
@@ -68,7 +69,7 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
     {
         if (await _addressRepository.GetCountAsync() <= 0)
         {
-            for (int i = 1; i < 10; i++)
+            for (int i = 1; i <= 50; i++)
             {
                 var address = new Address(
                     _guidGenerator.Create(),
@@ -92,7 +93,7 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
     {
         if (await _companyRepository.GetCountAsync() <= 0)
         {
-            for (int i = 1; i <= 5; i++)
+            for (int i = 1; i <= 50; i++)
             {
                 var address = await _addressRepository.FirstOrDefaultAsync(x => x.FullName == DemoPrefix + "Name " + i);
 
@@ -102,11 +103,14 @@ public class WebMarketplaceDataSeederContributor : IDataSeedContributor, ITransi
                     continue; 
                 }
 
+                string cin = (100000000 + i).ToString();
                 var company = await _companyManager.CreateAsync(
+                    cin,                 
                     DemoPrefix + "Test Company " + i,
                     "Test Company " + i,
                     address.Id,
                     "Text about Test Company " + i,
+                    "Long text about Test Company " + i,
                     $"www.testcompany{i}.com"
                 );
                 await _companyRepository.InsertAsync(company);

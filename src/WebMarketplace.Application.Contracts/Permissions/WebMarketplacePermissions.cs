@@ -12,6 +12,14 @@ public static class WebMarketplacePermissions
         public const string Delete = Default + ".Delete";
     }
     
+    public static class CompanyMemberships
+    {
+        public const string Default = GroupName + ".CompanyMemberships";
+        public const string Create = Default + ".Create";
+        public const string Update = Default + ".Edit";
+        public const string Delete = Default + ".Delete";
+    }
+    
     public static class Addresses
     {
         public const string Default = GroupName + ".Addresses";

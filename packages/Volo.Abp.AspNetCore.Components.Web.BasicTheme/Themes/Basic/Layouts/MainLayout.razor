@@ -3,7 +3,6 @@
 @using Volo.Abp.AspNetCore.Components.Web.Theming.Components
 @using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
 @using Volo.Abp.AspNetCore.Components.Web.BasicTheme.Themes.Basic.Components
-@using BreadcrumbItem = Volo.Abp.BlazoriseUI.BreadcrumbItem
 @inherits LayoutComponentBase
 
 <Layout>
@@ -26,19 +25,3 @@
     </LayoutContent>
 
 </Layout>
-
-@code
-{
-    protected List<BreadcrumbItem> BreadcrumbItems { get; set; } = new();
-
-    protected override Task OnInitializedAsync()
-    {
-        SetBreadcrumbItemsAsync();
-        return base.OnInitializedAsync();
-    }
-
-    protected Task SetBreadcrumbItemsAsync()
-    {
-        return Task.CompletedTask;
-    }
-}

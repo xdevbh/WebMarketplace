@@ -1,0 +1,237 @@
+﻿@page "/administration/company/edit/{id:guid}"
+@attribute [Authorize("AdminOnly")]
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Components.Messages
+@using Volo.Abp.AspNetCore.Components.Web
+@using WebMarketplace.Addresses
+@using WebMarketplace.Companies
+@using WebMarketplace.Localization
+@using WebMarketplace.Permissions
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject AbpBlazorMessageLocalizerHelper<WebMarketplaceResource> LH
+@inject IAuthorizationService AuthorizationService
+@inject NavigationManager NavigationManager
+@inject ICompanyAdminAppService CompanyAdminAppService
+@inject IAddressAppService AddressAppService
+@inject IUiMessageService UiMessageService
+
+<PageTitle>@PageTitle</PageTitle>
+
+<Div Flex="Flex.JustifyContent.Between"
+     Margin="Margin.Is3.FromBottom">
+    <Heading Size="HeadingSize.Is3"
+             Flex="Flex.Fill">
+        @L["Header:CreateCompany"]
+    </Heading>
+    <Div Float="Float.End" Flex="Flex.ReverseRow">
+        @if (CanCreateCompany)
+        {
+            <Button Color="Color.Primary"
+                    Margin="Margin.Is2.FromEnd"
+                    Clicked="() => CreateAsync()">
+                <Icon Name="IconName.Save"
+                      Margin="Margin.Is1.FromEnd"/>
+                @L["Action:Save"]
+            </Button>
+        }
+        <Button Color="Color.Danger"
+                Margin="Margin.Is2.FromEnd"
+                Clicked="() => GoToList()">
+            <Icon Name="IconName.Times"
+                  Margin="Margin.Is1.FromEnd"/>
+            @L["Action:Cancel"]
+        </Button>
+    </Div>`
+</Div>
+
+<Accordion Margin="Margin.Is3.FromBottom">
+    <AccordionItem Visible="true">
+        <AccordionHeader>
+            <Heading Size="HeadingSize.Is3">
+                <AccordionToggle>@L["Header:BasicInfo"]</AccordionToggle>
+            </Heading>
+        </AccordionHeader>
+        <AccordionBody>
+            <Validations @ref="@CompanyValidationsRef" Model="@Company" ValidateOnLoad="false">
+                <Validation MessageLocalizer="@LH.Localize">
+                    <Field>
+                        <FieldLabel>@L["Field:CompanyIdentificationNumber"]</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.Pen"/>
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <TextEdit Placeholder="@L["Placeholder:Write"]"
+                                          @bind-Text="@Company.CompanyIdentificationNumber"/>
+                            </Addon>
+                        </Addons>
+                    </Field>
+                </Validation>
+                <Validation MessageLocalizer="@LH.Localize">
+                    <Field>
+                        <FieldLabel>@L["Field:Name"]</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.Pen"/>
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <TextEdit Placeholder="@L["Placeholder:Write"]"
+                                          @bind-Text="@Company.Name"/>
+                            </Addon>
+                        </Addons>
+                    </Field>
+                </Validation>
+                <Validation MessageLocalizer="@LH.Localize">
+                    <Field>
+                        <FieldLabel>@L["Field:DisplayName"]</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.Pen"/>
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <TextEdit Placeholder="@L["Placeholder:Write"]"
+                                          @bind-Text="@Company.DisplayName"/>
+                            </Addon>
+                        </Addons>
+                    </Field>
+                </Validation>
+                <Validation MessageLocalizer="@LH.Localize">
+                    <Field>
+                        <FieldLabel>@L["Field:ShortDescription"]</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.Pen"/>
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <MemoEdit @bind-Text="@Company.ShortDescription"/>
+                            </Addon>
+                        </Addons>
+                    </Field>
+                </Validation>
+                <Validation MessageLocalizer="@LH.Localize">
+                    <Field>
+                        <FieldLabel>@L["Field:Website"]</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.Pen"/>
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <TextEdit Placeholder="@L["Placeholder:Write"]"
+                                          @bind-Text="@Company.Website"/>
+                            </Addon>
+                        </Addons>
+                    </Field>
+                </Validation>
+            </Validations>
+        </AccordionBody>
+    </AccordionItem>
+</Accordion>
+
+<Accordion Margin="Margin.Is3.FromBottom">
+    <AccordionItem Visible="true">
+        <AccordionHeader>
+            <Heading Size="HeadingSize.Is3">
+                <AccordionToggle>@L["Header:FullDescription"]</AccordionToggle>
+            </Heading>
+        </AccordionHeader>
+        <AccordionBody>
+            // todo: full description rich text editor
+        </AccordionBody>
+    </AccordionItem>
+</Accordion>
+
+<Accordion Margin="Margin.Is3.FromBottom">
+    <AccordionItem>
+        <AccordionHeader>
+            <Heading Size="HeadingSize.Is3">
+                <AccordionToggle>@L["Header:Address"]</AccordionToggle>
+            </Heading>
+        </AccordionHeader>
+        <AccordionBody>
+            <AddressComponent @ref="AddressComponentRef"
+                              Address="Address"
+                              ReadOnly="false">
+            </AddressComponent>
+        </AccordionBody>
+    </AccordionItem>
+</Accordion>
+
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private string PageTitle { get; set; } = string.Empty;
+    private bool CanCreateCompany { get; set; }
+    public Validations CompanyValidationsRef { get; set; }
+    private CreateUpdateCompanyAdminDto Company = new CreateUpdateCompanyAdminDto();
+    private CreateUpdateAddressDto Address = new CreateUpdateAddressDto();
+    private AddressComponent AddressComponentRef;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await SetPermissionsAsync();
+        await GetAsync();
+        PageTitle = L["Page:AdministrationCreateCompany"];
+    }
+
+    protected async Task GetAsync()
+    {
+        var oldCompany = await CompanyAdminAppService.GetAsync(Id);
+        Company.CompanyIdentificationNumber = oldCompany.CompanyIdentificationNumber;
+        Company.Name = oldCompany.Name;
+        Company.DisplayName = oldCompany.DisplayName;
+        Company.ShortDescription = oldCompany.ShortDescription;
+        Company.FullDescription = oldCompany.FullDescription;
+        Company.Website = oldCompany.Website;
+        Company.AddressId = oldCompany.AddressId;
+        
+        var oldAddress = await AddressAppService.GetAsync(oldCompany.AddressId);
+        Address.FullName = oldAddress.FullName;
+        Address.Country = oldAddress.Country;
+        Address.State = oldAddress.State;
+        Address.City = oldAddress.City;
+        Address.Line1 = oldAddress.Line1;
+        Address.Line2 = oldAddress.Line2;
+        Address.ZipCode = oldAddress.ZipCode;
+        Address.Note = oldAddress.Note;
+        Address.PhoneNumber = oldAddress.PhoneNumber;
+        Address.Email = oldAddress.Email;
+    }
+
+    protected async Task SetPermissionsAsync()
+    {
+        CanCreateCompany = await AuthorizationService
+            .IsGrantedAsync(WebMarketplacePermissions.Companies.Create);
+    }
+
+    protected async Task CreateAsync()
+    {
+        if (await AddressComponentRef.ValidateAll() && await CompanyValidationsRef.ValidateAll())
+        {
+            var addressDto = await AddressAppService.UpdateAsync(Company.AddressId, Address);
+
+            Company.AddressId = addressDto.Id;
+            // Company.FullDescription = // todo: full description rich text editor
+
+            var companyDto = await CompanyAdminAppService.UpdateAsync(Id, Company);
+            await GoToList();
+        }
+    }
+
+    protected async Task GoToList()
+    {
+        NavigationManager.NavigateTo("/administration/company/list");
+    }
+
+}

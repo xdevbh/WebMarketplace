@@ -1980,6 +1980,10 @@ namespace WebMarketplace.Migrations
                     b.Property<Guid>("AddressId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("CompanyIdentificationNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .IsRequired()
@@ -2003,9 +2007,6 @@ namespace WebMarketplace.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("DeletionTime");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("DisplayName")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -2014,6 +2015,9 @@ namespace WebMarketplace.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("ExtraProperties");
+
+                    b.Property<string>("FullDescription")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -2033,12 +2037,18 @@ namespace WebMarketplace.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("ShortDescription")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Website")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AddressId");
+
+                    b.HasIndex("CompanyIdentificationNumber")
+                        .IsUnique();
 
                     b.HasIndex("DisplayName")
                         .IsUnique();
@@ -2049,7 +2059,7 @@ namespace WebMarketplace.Migrations
                     b.ToTable("AppCompanies", (string)null);
                 });
 
-            modelBuilder.Entity("WebMarketplace.Companies.VendorUsers.VendorUser", b =>
+            modelBuilder.Entity("WebMarketplace.Companies.Memberships.CompanyMembership", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -2087,7 +2097,7 @@ namespace WebMarketplace.Migrations
                     b.HasIndex("CompanyId", "UserId")
                         .IsUnique();
 
-                    b.ToTable("AppVendorUsers", (string)null);
+                    b.ToTable("AppCompanyMemberships", (string)null);
                 });
 
             modelBuilder.Entity("WebMarketplace.Orders.Order", b =>
@@ -2538,7 +2548,7 @@ namespace WebMarketplace.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WebMarketplace.Companies.VendorUsers.VendorUser", b =>
+            modelBuilder.Entity("WebMarketplace.Companies.Memberships.CompanyMembership", b =>
                 {
                     b.HasOne("WebMarketplace.Companies.Company", null)
                         .WithMany()

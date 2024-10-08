@@ -1,0 +1,192 @@
+﻿@using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Components.Web
+@using WebMarketplace.Addresses
+@using WebMarketplace.Localization
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject AbpBlazorMessageLocalizerHelper<WebMarketplaceResource> LH
+
+
+<Validations @ref="@ValidationsRef" Model="@Address" ValidateOnLoad="false">
+    <Validation MessageLocalizer="@LH.Localize">
+        <Field>
+            <FieldLabel>@L["Field:FullName"]</FieldLabel>
+            <Addons>
+                <Addon AddonType="AddonType.Start">
+                    <AddonLabel>
+                        <Icon Name="IconName.UserTie"/>
+                    </AddonLabel>
+                </Addon>
+                <Addon AddonType="AddonType.Body">
+                    <TextEdit Placeholder="@L["Placeholder:Write"]"
+                              @bind-Text="@Address.FullName"
+                              ReadOnly="@ReadOnly"/>
+                </Addon>
+            </Addons>
+        </Field>
+    </Validation>
+    <Validation MessageLocalizer="@LH.Localize">
+        <Field>
+            <FieldLabel>@L["Field:Country"]</FieldLabel>
+            <Addons>
+                <Addon AddonType="AddonType.Start">
+                    <AddonLabel>
+                        <Icon Name="IconName.Globe"/>
+                    </AddonLabel>
+                </Addon>
+                <Addon AddonType="AddonType.Body">
+                    <TextEdit Placeholder="@L["Placeholder:Write"]"
+                              @bind-Text="@Address.Country"
+                              ReadOnly="@ReadOnly"/>
+                </Addon>
+            </Addons>
+        </Field>
+    </Validation>
+    <Validation MessageLocalizer="@LH.Localize">
+        <Field>
+            <FieldLabel>@L["Field:State"]</FieldLabel>
+            <Addons>
+                <Addon AddonType="AddonType.Start">
+                    <AddonLabel>
+                        <Icon Name="IconName.City"/>
+                    </AddonLabel>
+                </Addon>
+                <Addon AddonType="AddonType.Body">
+                    <TextEdit Placeholder="@L["Placeholder:Write"]"
+                              @bind-Text="@Address.State"
+                              ReadOnly="@ReadOnly"/>
+                </Addon>
+            </Addons>
+        </Field>
+    </Validation>
+    <Validation MessageLocalizer="@LH.Localize">
+        <Field>
+            <FieldLabel>@L["Field:City"]</FieldLabel>
+            <Addons>
+                <Addon AddonType="AddonType.Start">
+                    <AddonLabel>
+                        <Icon Name="IconName.City"/>
+                    </AddonLabel>
+                </Addon>
+                <Addon AddonType="AddonType.Body">
+                    <TextEdit Placeholder="@L["Placeholder:Write"]"
+                              @bind-Text="@Address.City"
+                              ReadOnly="@ReadOnly"/>
+                </Addon>
+            </Addons>
+        </Field>
+    </Validation>
+    <Validation MessageLocalizer="@LH.Localize">
+        <Field>
+            <FieldLabel>@L["Field:Line1"]</FieldLabel>
+            <Addons>
+                <Addon AddonType="AddonType.Start">
+                    <AddonLabel>
+                        <Icon Name="IconName.Home"/>
+                    </AddonLabel>
+                </Addon>
+                <Addon AddonType="AddonType.Body">
+                    <TextEdit Placeholder="@L["Placeholder:Write"]"
+                              @bind-Text="@Address.Line1"
+                              ReadOnly="@ReadOnly"/>
+                </Addon>
+            </Addons>
+        </Field>
+    </Validation>
+    <Validation MessageLocalizer="@LH.Localize">
+        <Field>
+            <FieldLabel>@L["Field:Line2"]</FieldLabel>
+            <Addons>
+                <Addon AddonType="AddonType.Start">
+                    <AddonLabel>
+                        <Icon Name="IconName.Home"/>
+                    </AddonLabel>
+                </Addon>
+                <Addon AddonType="AddonType.Body">
+                    <TextEdit Placeholder="@L["Placeholder:Write"]"
+                              @bind-Text="@Address.Line2"
+                              ReadOnly="@ReadOnly"/>
+                </Addon>
+            </Addons>
+        </Field>
+    </Validation>
+    <Validation MessageLocalizer="@LH.Localize">
+        <Field>
+            <FieldLabel>@L["Field:ZipCode"]</FieldLabel>
+            <Addons>
+                <Addon AddonType="AddonType.Start">
+                    <AddonLabel>
+                        <Icon Name="IconName.City"/>
+                    </AddonLabel>
+                </Addon>
+                <Addon AddonType="AddonType.Body">
+                    <TextEdit Placeholder="@L["Placeholder:Write"]"
+                              @bind-Text="@Address.ZipCode"
+                              ReadOnly="@ReadOnly"/>
+                </Addon>
+            </Addons>
+        </Field>
+    </Validation>
+    <Validation MessageLocalizer="@LH.Localize">
+        <Field>
+            <FieldLabel>@L["Field:PhoneNumber"]</FieldLabel>
+            <Addons>
+                <Addon AddonType="AddonType.Start">
+                    <AddonLabel>
+                        <Icon Name="IconName.Phone"/>
+                    </AddonLabel>
+                </Addon>
+                <Addon AddonType="AddonType.Body">
+                    <TextEdit Placeholder="@L["Placeholder:Write"]"
+                              @bind-Text="@Address.PhoneNumber"
+                              ReadOnly="@ReadOnly"/>
+                </Addon>
+            </Addons>
+        </Field>
+    </Validation>
+    <Validation MessageLocalizer="@LH.Localize">
+        <Field>
+            <FieldLabel>@L["Field:Email"]</FieldLabel>
+            <Addons>
+                <Addon AddonType="AddonType.Start">
+                    <AddonLabel>
+                        <Icon Name="IconName.Mail"/>
+                    </AddonLabel>
+                </Addon>
+                <Addon AddonType="AddonType.Body">
+                    <TextEdit Placeholder="@L["Placeholder:Write"]"
+                              @bind-Text="@Address.Email"
+                              ReadOnly="@ReadOnly"/>
+                </Addon>
+            </Addons>
+        </Field>
+    </Validation>
+    <Validation MessageLocalizer="@LH.Localize">
+        <Field>
+            <FieldLabel>@L["Field:Note"]</FieldLabel>
+            <Addons>
+                <Addon AddonType="AddonType.Start">
+                    <AddonLabel>
+                        <Icon Name="IconName.Clipboard"/>
+                    </AddonLabel>
+                </Addon>
+                <Addon AddonType="AddonType.Body">
+                    <TextEdit Placeholder="@L["Placeholder:Write"]"
+                              @bind-Text="@Address.Note"
+                              ReadOnly="@ReadOnly"/>
+                </Addon>
+            </Addons>
+        </Field>
+    </Validation>
+</Validations>
+
+@code {
+    [Parameter] public CreateUpdateAddressDto Address { get; set; }
+    [Parameter] public bool ReadOnly { get; set; } = false;
+    [Parameter] public Validations ValidationsRef { get; set; }
+    
+    public async Task<bool> ValidateAll()
+    {
+        var isValid = await ValidationsRef.ValidateAll();
+        return isValid;
+    }
+}

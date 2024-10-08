@@ -214,7 +214,7 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
     }
 
     public async Task<List<ProductReviewDetailQueryResultItem>> GetReviewDetailListAsync(
-        string sorting = null,
+        string? sorting = null,
         int maxResultCount = int.MaxValue,
         int skipCount = 0,
         Guid? productId = null,

@@ -7,6 +7,7 @@ using Volo.Abp.AutoMapper;
 using WebMarketplace.Addresses;
 using WebMarketplace.Products;
 using WebMarketplace.Companies;
+using WebMarketplace.Companies.Memberships;
 
 namespace WebMarketplace;
 
@@ -19,6 +20,9 @@ public class WebMarketplaceApplicationAutoMapperProfile : Profile
          * into multiple profile classes for a better organization. */
 
         CreateMap<Company, CompanyDto>();
+        CreateMap<CompanyMembershipDetailQueryResultItem, CompanyMembershipDto>();
+        CreateMap<CreateCompanyMembershipDto, CompanyMembership>();
+        CreateMap<CompanyDto, CreateUpdateCompanyAdminDto>();
 
         CreateMap<Address, AddressDto>();
         CreateMap<CreateUpdateAddressDto, Address>();

@@ -1,0 +1,163 @@
+﻿@page "/administration/company/{companyId:guid}/membership/list"
+@attribute [Authorize("AdminOnly")]
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Components.Messages
+@using WebMarketplace.Companies
+@using WebMarketplace.Companies.Memberships
+@using WebMarketplace.Localization
+@using WebMarketplace.Permissions
+@using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
+@inherits DataGridPageBase
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject IAuthorizationService AuthorizationService
+@inject NavigationManager NavigationManager
+@inject ICompanyMembershipAdminAppService CompanyMembershipAdminAppService
+@inject ICompanyAdminAppService CompanyAdminAppService
+@inject IUiMessageService UiMessageService
+
+<PageTitle>@PageTitle</PageTitle>
+@* <PageHeader BreadcrumbItems="@BreadcrumbItems"></PageHeader> *@
+
+<Div Flex="Flex.JustifyContent.Between" Margin="Margin.Is3.FromBottom">
+    <Heading Size="HeadingSize.Is3" Flex="Flex.Fill">@PageHeader</Heading>
+    <Div Float="Float.End" Flex="Flex.ReverseRow">
+        @if (CanCreate)
+        {
+            <Button Color="Color.Primary" Margin="Margin.Is2.FromEnd" Clicked="Create">
+                <Icon Name="IconName.Add" Margin="Margin.Is1.FromEnd" />
+                @L["Action:New"]
+            </Button>
+        }
+    </Div>
+</Div>
+
+<Card>
+    <CardBody>
+        <DataGrid TItem="CompanyMembershipDto"
+                  Data="Memberships"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  ShowPageSizes="true"
+                  PageSize="PageSize"
+                  Filterable="false"
+                  Responsive="true"
+                  Resizable="true">
+            <DataGridColumns>
+                <DataGridColumn TItem="CompanyMembershipDto" Filterable="false">
+                    <DisplayTemplate>
+                        <Dropdown>
+                            <DropdownToggle Color="Color.Primary">
+                                <Icon Name="IconName.MoreHorizontal" Margin="Margin.Is1.FromEnd" />
+                                @L["Action:Actions"]
+                            </DropdownToggle>
+                            <DropdownMenu>
+                                @if (CanDelete)
+                                {
+                                    <DropdownItem Clicked="() => Delete(context.Id)">
+                                        <Icon Name="IconName.Delete" Margin="Margin.Is1.FromEnd" />
+                                        @L["Action:Delete"]
+                                    </DropdownItem>
+                                }
+                            </DropdownMenu>
+                        </Dropdown>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="CompanyMembershipDto"
+                                Field="@nameof(CompanyMembershipDto.UserName)"
+                                Caption="@L["Field:UserName"]" />
+                <DataGridColumn TItem="CompanyMembershipDto"
+                                Field="@nameof(CompanyMembershipDto.Name)"
+                                Caption="@L["Field:Name"]" />
+                <DataGridColumn TItem="CompanyMembershipDto"
+                                Field="@nameof(CompanyMembershipDto.Surname)"
+                                Caption="@L["Field:Surname"]" />
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+
+<AdministrationCompanyMembershipNewModal @ref="CreateModalRef" 
+                                         CompanyId="@Company.Id" 
+                                         CompanyName="@Company.Name" 
+                                         OnCreated="ReloadDataAsync"/>
+
+@code {
+    [Parameter] public Guid CompanyId { get; set; }
+
+    private IReadOnlyList<CompanyMembershipDto> Memberships { get; set; } = new List<CompanyMembershipDto>();
+    private CompanyDto Company { get; set; } = new();
+    protected AdministrationCompanyMembershipNewModal CreateModalRef { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        PageTitle = L["Page:AdministrationCompanyMemberships"];
+        PageHeader = L["Header:CompanyMemberships"];
+        await LoadCompanyAsync();
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task SetPermissionsAsync()
+    {
+        CanView = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.CompanyMemberships.Default);
+        CanCreate = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.CompanyMemberships.Create);
+        CanEdit = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.CompanyMemberships.Update);
+        CanDelete = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.CompanyMemberships.Delete);
+    }
+
+    private async Task LoadCompanyAsync()
+    {
+        Company = await CompanyAdminAppService.GetAsync(CompanyId);
+    }
+
+    protected override async Task GetDataAsync()
+    {
+        var filter = new CompanyMembershipFilterDto
+        {
+            MaxResultCount = PageSize,
+            SkipCount = CurrentPage * PageSize,
+            Sorting = CurrentSorting,
+            CompanyId = CompanyId
+        };
+
+        var result = await CompanyMembershipAdminAppService.GetListAsync(filter);
+        Memberships = result.Items;
+        TotalCount = (int)result.TotalCount;
+    }
+
+    private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<CompanyMembershipDto> e)
+    {
+        PageSize = e.PageSize;
+        CurrentPage = e.Page - 1;
+        CurrentSorting = string.Join(",", e.Columns
+            .Where(c => c.SortDirection != SortDirection.Default)
+            .Select(c => $"{c.Field} {(c.SortDirection == SortDirection.Descending ? "DESC" : "")}"));
+
+        await GetDataAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ReloadDataAsync()
+    {
+        await GetDataAsync();
+    }
+
+    protected override async Task Create()
+    {
+        CreateModalRef.Show();
+        await Task.CompletedTask;
+    }
+
+    protected override async Task Delete(Guid id)
+    {
+        var confirmMessage = L["Message:CompanyMembershipDeletionConfirmation"];
+        if (!await UiMessageService.Confirm(confirmMessage))
+        {
+            return;
+        }
+
+        await CompanyAdminAppService.DeleteAsync(id);
+        await ReloadDataAsync();
+    }
+}

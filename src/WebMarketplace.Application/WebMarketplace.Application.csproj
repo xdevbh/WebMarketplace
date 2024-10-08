@@ -25,7 +25,6 @@
   <ItemGroup>
     <Folder Include="Currencies\" />
     <Folder Include="Orders\" />
-    <Folder Include="Companies\VendorUsers\" />
   </ItemGroup>
 
 </Project>

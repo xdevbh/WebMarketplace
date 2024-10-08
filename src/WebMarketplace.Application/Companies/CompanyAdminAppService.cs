@@ -14,12 +14,12 @@ namespace WebMarketplace.Companies;
 [Authorize("AdminOnly")]
 public class CompanyAdminAppService : WebMarketplaceAppService, ICompanyAdminAppService
 {
-    private readonly IRepository<Company, Guid> _vendorRepository;
+    private readonly IRepository<Company, Guid> _companyRepository;
     private readonly CompanyManager _companyManager;
 
-    public CompanyAdminAppService(IRepository<Company, Guid> vendorRepository, CompanyManager companyManager)
+    public CompanyAdminAppService(IRepository<Company, Guid> companyRepository, CompanyManager companyManager)
     {
-        _vendorRepository = vendorRepository;
+        _companyRepository = companyRepository;
         _companyManager = companyManager;
     }
 
@@ -31,10 +31,11 @@ public class CompanyAdminAppService : WebMarketplaceAppService, ICompanyAdminApp
     // }
 
     // [Authorize(WebMarketplacePermissions.Vendors.Default)]
-    public async Task<PagedResultDto<CompanyDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    public async Task<PagedResultDto<CompanyDto>> GetListAsync(CompanyFilterDto input)
     {
-        var vendorList = await _vendorRepository.GetPagedListAsync(input.SkipCount, input.MaxResultCount, input.Sorting);
-        var totalCount = await _vendorRepository.GetCountAsync();
+        var vendorList =
+            await _companyRepository.GetPagedListAsync(input.SkipCount, input.MaxResultCount, input.Sorting);
+        var totalCount = await _companyRepository.GetCountAsync();
 
         return new PagedResultDto<CompanyDto>(
             totalCount,
@@ -45,7 +46,7 @@ public class CompanyAdminAppService : WebMarketplaceAppService, ICompanyAdminApp
     // [Authorize(WebMarketplacePermissions.Vendors.Default)]
     public async Task<CompanyDto> GetAsync(Guid id)
     {
-        var vendor = await _vendorRepository.GetAsync(id);
+        var vendor = await _companyRepository.GetAsync(id);
         var vendorDto = ObjectMapper.Map<Company, CompanyDto>(vendor);
         return vendorDto;
     }
@@ -53,7 +54,7 @@ public class CompanyAdminAppService : WebMarketplaceAppService, ICompanyAdminApp
     // [Authorize(WebMarketplacePermissions.Vendors.Default)]
     public async Task<CompanyDto> GetByNameAsync(string name)
     {
-        var vendor = await _vendorRepository.GetAsync(x => x.Name == name);
+        var vendor = await _companyRepository.GetAsync(x => x.Name == name);
         var vendorDto = ObjectMapper.Map<Company, CompanyDto>(vendor);
         return vendorDto;
     }
@@ -61,17 +62,19 @@ public class CompanyAdminAppService : WebMarketplaceAppService, ICompanyAdminApp
     // [Authorize(WebMarketplacePermissions.Vendors.Update)]
     public async Task<CompanyDto> UpdateAsync(Guid id, CreateUpdateCompanyAdminDto input)
     {
-        var vendor = await _vendorRepository.GetAsync(id);
+        var vendor = await _companyRepository.GetAsync(id);
 
         await _companyManager.EditAsync(
             vendor,
+            input.CompanyIdentificationNumber,
             input.Name,
             input.DisplayName,
             input.AddressId,
-            input.Description,
+            input.ShortDescription,
+            input.FullDescription,
             input.Website);
 
-        await _vendorRepository.UpdateAsync(vendor);
+        await _companyRepository.UpdateAsync(vendor);
 
         var vendorDto = ObjectMapper.Map<Company, CompanyDto>(vendor);
         return vendorDto;
@@ -81,14 +84,16 @@ public class CompanyAdminAppService : WebMarketplaceAppService, ICompanyAdminApp
     public async Task<CompanyDto> CreateAsync(CreateUpdateCompanyAdminDto input)
     {
         var vendor = await _companyManager.CreateAsync(
+            input.CompanyIdentificationNumber,
             input.Name,
             input.DisplayName,
             input.AddressId,
-            input.Description,
+            input.ShortDescription,
+            input.FullDescription,
             input.Website
         );
 
-        await _vendorRepository.InsertAsync(vendor);
+        await _companyRepository.InsertAsync(vendor);
         var vendorDto = ObjectMapper.Map<Company, CompanyDto>(vendor);
         return vendorDto;
     }
@@ -96,6 +101,6 @@ public class CompanyAdminAppService : WebMarketplaceAppService, ICompanyAdminApp
     // [Authorize(WebMarketplacePermissions.Vendors.Delete)]
     public async Task DeleteAsync(Guid id)
     {
-        await _vendorRepository.DeleteAsync(id);
+        await _companyRepository.DeleteAsync(id);
     }
 }

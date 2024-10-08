@@ -19,6 +19,11 @@ public class WebMarketplacePermissionDefinitionProvider : PermissionDefinitionPr
         companiesPermission.AddChild(WebMarketplacePermissions.Companies.Update, L("Permission:Update"));
         companiesPermission.AddChild(WebMarketplacePermissions.Companies.Delete, L("Permission:Delete"));
         
+        var companyMembershipsPermission = myGroup.AddPermission(WebMarketplacePermissions.CompanyMemberships.Default, L("Permission:CompanyMemberships"));
+        companyMembershipsPermission.AddChild(WebMarketplacePermissions.CompanyMemberships.Create, L("Permission:Create"));
+        companyMembershipsPermission.AddChild(WebMarketplacePermissions.CompanyMemberships.Update, L("Permission:Update"));
+        companyMembershipsPermission.AddChild(WebMarketplacePermissions.CompanyMemberships.Delete, L("Permission:Delete"));
+        
         var addressesPermission = myGroup.AddPermission(WebMarketplacePermissions.Addresses.Default, L("Permission:Addresses"));
         addressesPermission.AddChild(WebMarketplacePermissions.Addresses.Create, L("Permission:Create"));
         addressesPermission.AddChild(WebMarketplacePermissions.Addresses.Update, L("Permission:Update"));

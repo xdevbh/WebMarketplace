@@ -7,7 +7,7 @@ using WebMarketplace.Addresses;
 using WebMarketplace.Orders;
 using WebMarketplace.Products;
 using WebMarketplace.Companies;
-using WebMarketplace.Companies.VendorUsers;
+using WebMarketplace.Companies.Memberships;
 
 namespace WebMarketplace.EntityFrameworkCore;
 
@@ -49,6 +49,8 @@ public static class WebMarketplaceDbContextModelBuilderExtensions
         builder.Entity<Company>(b =>
         {
             b.ToTable(WebMarketplaceConsts.DbTablePrefix + "Companies", WebMarketplaceConsts.DbSchema);
+            b.Property(x => x.CompanyIdentificationNumber).IsRequired();
+            b.HasIndex(x => x.CompanyIdentificationNumber).IsUnique();
             b.Property(x => x.Name).IsRequired();
             b.HasIndex(x => x.Name).IsUnique();
             b.Property(x => x.DisplayName).IsRequired();
@@ -57,9 +59,9 @@ public static class WebMarketplaceDbContextModelBuilderExtensions
             b.ConfigureByConvention();
         });
 
-        builder.Entity<VendorUser>(b =>
+        builder.Entity<CompanyMembership>(b =>
         {
-            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "VendorUsers", WebMarketplaceConsts.DbSchema);
+            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "CompanyMemberships", WebMarketplaceConsts.DbSchema);
             b.ConfigureByConvention();
             b.HasOne<Company>().WithMany().HasForeignKey(x => x.CompanyId).IsRequired();
             b.HasOne<IdentityUser>().WithMany().HasForeignKey(x => x.UserId).IsRequired();

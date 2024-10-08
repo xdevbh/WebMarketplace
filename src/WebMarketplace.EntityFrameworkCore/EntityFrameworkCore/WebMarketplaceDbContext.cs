@@ -18,7 +18,7 @@ using WebMarketplace.Addresses;
 using WebMarketplace.Orders;
 using WebMarketplace.Products;
 using WebMarketplace.Companies;
-using WebMarketplace.Companies.VendorUsers;
+using WebMarketplace.Companies.Memberships;
 
 namespace WebMarketplace.EntityFrameworkCore;
 
@@ -35,7 +35,7 @@ public class WebMarketplaceDbContext :
     public DbSet<Address> Addresses { get; set; }
     
     public DbSet<Company> Companies { get; set; }
-    public DbSet<VendorUser> VendorUsers { get; set; }
+    public DbSet<CompanyMembership> CompanyMembership { get; set; }
 
     public DbSet<Product> Products { get; set; }
     

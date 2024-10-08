@@ -58,7 +58,8 @@ public class CompanySellerAppService : WebMarketplaceAppService, ICompanySellerA
     {
         var vendor = await _vendorRepository.GetAsync(id);
 
-        vendor.Description = input.Description;
+        vendor.ShortDescription = input.ShortDescription;
+        vendor.FullDescription = input.FullDescription;
         vendor.Website = input.Website;
 
         await _vendorRepository.UpdateAsync(vendor);
