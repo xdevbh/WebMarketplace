@@ -21,6 +21,7 @@ using Volo.Abp.SettingManagement.Blazor.WebAssembly;
 using Volo.Abp.TenantManagement.Blazor.WebAssembly;
 using Volo.Abp.Identity.Blazor.WebAssembly;
 using Volo.Abp.AspNetCore.Components.Web.BasicTheme;
+using Volo.Abp.AspNetCore.Components.Web.Theming.Layout;
 using Volo.Abp.AspNetCore.Components.Web.Theming.Toolbars;
 
 namespace WebMarketplace.Blazor.Client;
@@ -49,6 +50,13 @@ namespace WebMarketplace.Blazor.Client;
         ConfigureMenu(context);
         ConfigureToolBar(context);
         ConfigureAutoMapper(context);
+        
+        Configure<PageHeaderOptions>(options => 
+        {
+            options.RenderPageTitle = true;
+            options.RenderBreadcrumbs = true;
+            options.RenderToolbar = true;
+        });
     }
     
     private void ConfigureLocalization()

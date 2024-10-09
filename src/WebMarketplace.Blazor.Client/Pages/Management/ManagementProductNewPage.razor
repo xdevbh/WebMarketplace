@@ -1,0 +1,196 @@
+﻿@page "/management/product/new"
+@using System.Linq.Expressions
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Components.Messages
+@using Volo.Abp.AspNetCore.Components.Web
+@using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars
+@using WebMarketplace.Companies
+@using WebMarketplace.Localization
+@using WebMarketplace.Permissions
+@using WebMarketplace.Products
+@inherits WmPageBase
+@inject IAuthorizationService AuthorizationService
+@inject IProductSellerAppService ProductAppService
+@inject ICompanySellerAppService CompanyAppService
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject AbpBlazorMessageLocalizerHelper<WebMarketplaceResource> LH
+@inject IUiMessageService UiMessageService
+@inject NavigationManager NavigationManager
+
+
+<WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle" />
+
+<Accordion Margin="Margin.Is3.FromBottom">
+    <AccordionItem Visible="true">
+        <AccordionHeader>
+            <Heading Size="HeadingSize.Is3">
+                <AccordionToggle>@L["Header:BasicInfo"]</AccordionToggle>
+            </Heading>
+        </AccordionHeader>
+        <AccordionBody>
+            <Validations @ref="@ValidationsRef" Model="@Product" ValidateOnLoad="false">
+                <Validation MessageLocalizer="@LH.Localize">
+                    <Field>
+                        <FieldLabel>@L["Field:Name"]</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.Pen" />
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <TextEdit Placeholder="@L["Placeholder:Write"]"
+                                          @bind-Text="@Product.Name" />
+                            </Addon>
+                        </Addons>
+                    </Field>
+                </Validation>
+                <Validation MessageLocalizer="@LH.Localize">
+                    <Field>
+                        <FieldLabel>@L["Field:ProductCategory"]</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.Pen" />
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <WmEnumSelect TEnum="ProductCategory" SelectedValue="@Product.ProductCategory" />
+                            </Addon>
+                        </Addons>
+                    </Field>
+                </Validation>
+                <Validation MessageLocalizer="@LH.Localize">
+                    <Field>
+                        <FieldLabel>@L["Field:ProductCategory"]</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.Pen" />
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <WmEnumSelect TEnum="ProductCategory"
+                                              @bind-SelectedValue="@Product.ProductCategory" />
+                            </Addon>
+                        </Addons>
+                    </Field>
+                </Validation>
+                <Validation MessageLocalizer="@LH.Localize">
+                    <Field>
+                        <FieldLabel>@L["Field:ShortDescription"]</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.Pen" />
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <MemoEdit @bind-Text="@Product.ShortDescription" />
+                            </Addon>
+                        </Addons>
+                    </Field>
+                </Validation>
+            </Validations>
+        </AccordionBody>
+    </AccordionItem>
+</Accordion>
+
+<Accordion Margin="Margin.Is3.FromBottom">
+    <AccordionItem Visible="true">
+        <AccordionHeader>
+            <Heading Size="HeadingSize.Is3">
+                <AccordionToggle>@L["Header:FullDescription"]</AccordionToggle>
+            </Heading>
+        </AccordionHeader>
+        <AccordionBody>
+
+        </AccordionBody>
+    </AccordionItem>
+</Accordion>
+
+<Accordion Margin="Margin.Is3.FromBottom">
+    <AccordionItem Visible="true">
+        <AccordionHeader>
+            <Heading Size="HeadingSize.Is3">
+                <AccordionToggle>@L["Header:Prices"]</AccordionToggle>
+            </Heading>
+        </AccordionHeader>
+        <AccordionBody>
+
+        </AccordionBody>
+    </AccordionItem>
+</Accordion>
+
+<Accordion Margin="Margin.Is3.FromBottom">
+    <AccordionItem Visible="true">
+        <AccordionHeader>
+            <Heading Size="HeadingSize.Is3">
+                <AccordionToggle>@L["Header:Images"]</AccordionToggle>
+            </Heading>
+        </AccordionHeader>
+        <AccordionBody>
+
+        </AccordionBody>
+    </AccordionItem>
+</Accordion>
+
+
+@code {
+    protected CreateUpdateProductDto Product { get; set; }
+    protected CreateUpdateProductPriceDto Price { get; set; }
+
+    protected Validations ValidationsRef { get; set; }
+    protected bool CanCreate { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+
+
+    protected override Task SetToolBarAsync()
+    {
+        PageToolbar.AddButton(L["Action:Cancel"],
+            () => GoToList(),
+            IconName.Times,
+            Color.Danger,
+            !CanCreate);
+        PageToolbar.AddButton(L["Action:Save"],
+            () => CreateAsync(),
+            IconName.Save,
+            Color.Primary,
+            !CanCreate);
+
+        return Task.CompletedTask;
+    }
+
+    protected override Task SetBreadcrumbItemsAsync()
+    {
+        BreadcrumbItems.Add(new BreadcrumbItem(L["Menu:Management"], "/management"));
+        BreadcrumbItems.Add(new BreadcrumbItem(L["Menu:Products"], "/management/product/list"));
+        BreadcrumbItems.Add(new BreadcrumbItem(L["Menu:CreateProduct"]));
+
+        return Task.CompletedTask;
+    }
+
+    protected async Task CreateAsync()
+    {
+        // await ProductAppService.CreateAsync(Product);
+        await UiMessageService.Success(L["Message:SavedSuccessfully"]);
+        // await OnCreated.InvokeAsync();
+    }
+
+    private async Task SetPermissionsAsync()
+    {
+        CanCreate = await AuthorizationService
+            .IsGrantedAsync(WebMarketplacePermissions.Products.Create);
+    }
+
+    private async Task GoToList()
+    {
+        NavigationManager.NavigateTo("/administration/company/list");
+    }
+
+}

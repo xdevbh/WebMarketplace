@@ -8,7 +8,9 @@
 @using WebMarketplace.Localization
 @using WebMarketplace.Permissions
 @using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
-@inherits DataGridPageBase
+@using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars
+@using Volo.Abp.AspNetCore.Components.Web.Theming.Toolbars
+@inherits WmDataGridPageBase
 @inject IStringLocalizer<WebMarketplaceResource> L
 @inject IAuthorizationService AuthorizationService
 @inject NavigationManager NavigationManager
@@ -16,21 +18,20 @@
 @inject ICompanyAdminAppService CompanyAdminAppService
 @inject IUiMessageService UiMessageService
 
-<PageTitle>@PageTitle</PageTitle>
-@* <PageHeader BreadcrumbItems="@BreadcrumbItems"></PageHeader> *@
+<WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle"/>
 
-<Div Flex="Flex.JustifyContent.Between" Margin="Margin.Is3.FromBottom">
-    <Heading Size="HeadingSize.Is3" Flex="Flex.Fill">@PageHeader</Heading>
-    <Div Float="Float.End" Flex="Flex.ReverseRow">
-        @if (CanCreate)
-        {
-            <Button Color="Color.Primary" Margin="Margin.Is2.FromEnd" Clicked="Create">
-                <Icon Name="IconName.Add" Margin="Margin.Is1.FromEnd" />
-                @L["Action:New"]
-            </Button>
-        }
-    </Div>
-</Div>
+@* <Div Flex="Flex.JustifyContent.Between" Margin="Margin.Is3.FromBottom"> *@
+@*     <Heading Size="HeadingSize.Is3" Flex="Flex.Fill">@PageHeader</Heading> *@
+@*     <Div Float="Float.End" Flex="Flex.ReverseRow"> *@
+@*         @if (CanCreate) *@
+@*         { *@
+@*             <Button Color="Color.Primary" Margin="Margin.Is2.FromEnd" Clicked="Create"> *@
+@*                 <Icon Name="IconName.Add" Margin="Margin.Is1.FromEnd"/> *@
+@*                 @L["Action:New"] *@
+@*             </Button> *@
+@*         } *@
+@*     </Div> *@
+@* </Div> *@
 
 <Card>
     <CardBody>
@@ -49,14 +50,14 @@
                     <DisplayTemplate>
                         <Dropdown>
                             <DropdownToggle Color="Color.Primary">
-                                <Icon Name="IconName.MoreHorizontal" Margin="Margin.Is1.FromEnd" />
+                                <Icon Name="IconName.MoreHorizontal" Margin="Margin.Is1.FromEnd"/>
                                 @L["Action:Actions"]
                             </DropdownToggle>
                             <DropdownMenu>
                                 @if (CanDelete)
                                 {
                                     <DropdownItem Clicked="() => Delete(context.Id)">
-                                        <Icon Name="IconName.Delete" Margin="Margin.Is1.FromEnd" />
+                                        <Icon Name="IconName.Delete" Margin="Margin.Is1.FromEnd"/>
                                         @L["Action:Delete"]
                                     </DropdownItem>
                                 }
@@ -66,21 +67,21 @@
                 </DataGridColumn>
                 <DataGridColumn TItem="CompanyMembershipDto"
                                 Field="@nameof(CompanyMembershipDto.UserName)"
-                                Caption="@L["Field:UserName"]" />
+                                Caption="@L["Field:UserName"]"/>
                 <DataGridColumn TItem="CompanyMembershipDto"
                                 Field="@nameof(CompanyMembershipDto.Name)"
-                                Caption="@L["Field:Name"]" />
+                                Caption="@L["Field:Name"]"/>
                 <DataGridColumn TItem="CompanyMembershipDto"
                                 Field="@nameof(CompanyMembershipDto.Surname)"
-                                Caption="@L["Field:Surname"]" />
+                                Caption="@L["Field:Surname"]"/>
             </DataGridColumns>
         </DataGrid>
     </CardBody>
 </Card>
 
-<AdministrationCompanyMembershipNewModal @ref="CreateModalRef" 
-                                         CompanyId="@Company.Id" 
-                                         CompanyName="@Company.Name" 
+<AdministrationCompanyMembershipNewModal @ref="CreateModalRef"
+                                         CompanyId="@Company.Id"
+                                         CompanyName="@Company.Name"
                                          OnCreated="ReloadDataAsync"/>
 
 @code {
@@ -89,7 +90,7 @@
     private IReadOnlyList<CompanyMembershipDto> Memberships { get; set; } = new List<CompanyMembershipDto>();
     private CompanyDto Company { get; set; } = new();
     protected AdministrationCompanyMembershipNewModal CreateModalRef { get; set; }
-    
+
     protected override async Task OnInitializedAsync()
     {
         PageTitle = L["Page:AdministrationCompanyMemberships"];
@@ -160,4 +161,24 @@
         await CompanyAdminAppService.DeleteAsync(id);
         await ReloadDataAsync();
     }
+
+
+    protected override Task SetToolBarAsync()
+    {
+        PageToolbar.AddButton(L["Action:New"],
+            () => Create(),
+            IconName.Add,
+            Color.Primary,
+            !CanCreate);
+        return Task.CompletedTask;
+    }
+
+    protected override Task SetBreadcrumbItemsAsync()
+    {
+        BreadcrumbItems.Add(new BreadcrumbItem(L["Menu:Administration"], "/administration"));
+        BreadcrumbItems.Add(new BreadcrumbItem(L["Menu:Companies"], "/administration/company/list"));
+        BreadcrumbItems.Add(new BreadcrumbItem(L["Menu:CompanyMemberships"]));
+        return Task.CompletedTask;
+    }
+
 }

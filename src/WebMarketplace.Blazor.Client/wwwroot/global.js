@@ -7,3 +7,7 @@ var abp=abp||{};(function(){abp.utils=abp.utils||{};abp.utils.updateHTMLDirAndLa
 
 (function(){const n="authentication-state-id";window.addEventListener("storage",function(t){t.key===n&&t.oldValue!==t.newValue&&(t.oldValue||!t.newValue?(abp.utils.removeOidcUser(),window.location.reload()):location.assign("/"))})})();
 
+function SetTitle(title) {
+    document.title = title;
+};
+

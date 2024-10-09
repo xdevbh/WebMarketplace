@@ -1,6 +1,415 @@
 ﻿@page "/management/product/list"
-<h3>ManagementProductListPage</h3>
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Components.Messages
+@using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars
+@using WebMarketplace.Companies
+@using WebMarketplace.Localization
+@using WebMarketplace.Permissions
+@using WebMarketplace.Products
+@inherits WmDataGridPageBase
+@inject IAuthorizationService AuthorizationService
+@inject IProductSellerAppService ProductAppService
+@inject ICompanySellerAppService CompanyAppService
+@inject NavigationManager NavigationManager
+@inject IUiMessageService UiMessageService
+@inject IStringLocalizer<WebMarketplaceResource> L
+
+
+<WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle" />
+
+<Accordion Margin="Margin.Is3.FromBottom">
+    <Collapse>
+        <CollapseHeader>
+            <Heading Size="HeadingSize.Is3">
+                <AccordionToggle>
+                    <Icon Name="IconName.Search" Margin="Margin.Is1.FromEnd" />
+                    @L["Header:Search"]
+                </AccordionToggle>
+            </Heading>
+        </CollapseHeader>
+        <CollapseBody>
+            @* <Fields>
+            <Field>
+            <FieldLabel>@L["Field:Id"]</FieldLabel>
+            <Addons>
+            <Addon AddonType="AddonType.Start">
+            <AddonLabel>
+            <Icon Name="IconName.Pen"></Icon>
+            </AddonLabel>
+            </Addon>
+            <Addon AddonType="AddonType.Body">
+            <TextEdit Placeholder="@L["Placeholder:Write"]"
+            @bind-Text="@SelectedId" />
+            </Addon>
+            </Addons>
+            </Field>
+            </Fields> *@
+            <Fields>
+                <Field>
+                    <FieldLabel>@L["Field:Name"]</FieldLabel>
+                    <Addons>
+                        <Addon AddonType="AddonType.Start">
+                            <AddonLabel>
+                                <Icon Name="IconName.Pen"></Icon>
+                            </AddonLabel>
+                        </Addon>
+                        <Addon AddonType="AddonType.Body">
+                            <TextEdit Placeholder="@L["Placeholder:Write"]"
+                                      @bind-Text="@SelectedName" />
+                        </Addon>
+                    </Addons>
+                </Field>
+            </Fields>
+            <Fields>
+                <Field ColumnSize="ColumnSize.Is6.OnDesktop">
+                    <FieldLabel>@L["Field:ProductType"]</FieldLabel>
+                    <Addons>
+                        <Addon AddonType="AddonType.Start">
+                            <AddonLabel>
+                                <Icon Name="IconName.List"></Icon>
+                            </AddonLabel>
+                        </Addon>
+                        <Addon AddonType="AddonType.Body">
+                            <WmEnumSelect TEnum="ProductType"
+                                          @bind-SelectedValue="SelectedProductType" />
+                        </Addon>
+                    </Addons>
+                </Field>
+                <Field ColumnSize="ColumnSize.Is6.OnDesktop">
+                    <FieldLabel>@L["Field:ProductCategory"]</FieldLabel>
+                    <Addons>
+                        <Addon AddonType="AddonType.Start">
+                            <AddonLabel>
+                                <Icon Name="IconName.Tag"></Icon>
+                            </AddonLabel>
+                        </Addon>
+                        <Addon AddonType="AddonType.Body">
+                            <WmEnumSelect TEnum="ProductCategory"
+                                          @bind-SelectedValue="SelectedProductCategory" />
+                        </Addon>
+                    </Addons>
+                </Field>
+            </Fields>
+            <Fields>
+                <Field ColumnSize="ColumnSize.Is4.OnDesktop">
+                    <FieldLabel>@L["Field:MinPriceAmount"]</FieldLabel>
+                    <Addons>
+                        <Addon AddonType="AddonType.Start">
+                            <AddonLabel>
+                                <Icon Name="IconName.MoneyBillAlt" />
+                            </AddonLabel>
+                        </Addon>
+                        <Addon AddonType="AddonType.Body">
+                            <NumericEdit TValue="decimal?" @bind-Value="@SelectedMinPriceAmount" Min="0" />
+                        </Addon>
+                    </Addons>
+                </Field>
+                <Field ColumnSize="ColumnSize.Is4.OnDesktop">
+                    <FieldLabel>@L["Field:MaxPriceAmount"]</FieldLabel>
+                    <Addons>
+                        <Addon AddonType="AddonType.Start">
+                            <AddonLabel>
+                                <Icon Name="IconName.MoneyBillAlt" />
+                            </AddonLabel>
+                        </Addon>
+                        <Addon AddonType="AddonType.Body">
+                            <NumericEdit TValue="decimal?" @bind-Value="@SelectedMaxPriceAmount" Min="0" />
+                        </Addon>
+                    </Addons>
+                </Field>
+                <Field ColumnSize="ColumnSize.Is4.OnDesktop">
+                    <FieldLabel>@L["Field:PriceCurrency"]</FieldLabel>
+                    <Addons>
+                        <Addon AddonType="AddonType.Start">
+                            <AddonLabel>
+                                <Icon Name="IconName.EuroSign" />
+                            </AddonLabel>
+                        </Addon>
+                        <Addon AddonType="AddonType.Body">
+                            <TextEdit Placeholder="@L["Placeholder:Write"]"
+                                      @bind-Text="@SelectedPriceCurrency" />
+                        </Addon>
+                    </Addons>
+                </Field>
+            </Fields>
+            <Fields>
+                <Field ColumnSize="ColumnSize.Is6.OnDesktop">
+                    <FieldLabel>@L["Field:MinRating"]</FieldLabel>
+                    <Addons>
+                        <Addon AddonType="AddonType.Start">
+                            <AddonLabel>
+                                <Icon Name="IconName.StarHalf" />
+                            </AddonLabel>
+                        </Addon>
+                        <Addon AddonType="AddonType.Body">
+                            <NumericEdit TValue="double?" @bind-Value="@SelectedMinRating" Min="0" Max="5" />
+                        </Addon>
+                    </Addons>
+                </Field>
+                <Field ColumnSize="ColumnSize.Is6.OnDesktop">
+                    <FieldLabel>@L["Field:MaxRating"]</FieldLabel>
+                    <Addons>
+                        <Addon AddonType="AddonType.Start">
+                            <AddonLabel>
+                                <Icon Name="IconName.Star" />
+                            </AddonLabel>
+                        </Addon>
+                        <Addon AddonType="AddonType.Body">
+                            <NumericEdit TValue="double?" @bind-Value="@SelectedMaxRating" Min="0" Max="5" />
+                        </Addon>
+                    </Addons>
+                </Field>
+            </Fields>
+            <Button Color="Color.Primary"
+                    Clicked="GetDataAsync"
+                    Block="true">
+                <Icon Name="IconName.Search" Margin="Margin.Is1.FromEnd" />
+                @L["Action:Search"]
+            </Button>
+        </CollapseBody>
+    </Collapse>
+</Accordion>
+
+<Card>
+    <CardBody>
+        <DataGrid TItem="ProductListItemDto"
+                  Data="Products"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  ShowPageSizes="true"
+                  PageSize="PageSize"
+                  Filterable="false"
+                  Responsive="true"
+                  Resizable="true"
+                  FixedHeader="false">
+            <DataGridColumns>
+                <DataGridColumn TItem="ProductListItemDto" Filterable="false">
+                    <DisplayTemplate>
+                        <Dropdown>
+                            <DropdownToggle Color="Color.Primary">
+@*                                 <Icon Name="IconName.MoreHorizontal" Margin="Margin.Is1.FromEnd" />
+                                @L["Action:Actions"] *@
+                            </DropdownToggle>
+                            <DropdownMenu>
+                                @if (!context.IsPublished)
+                                {
+                                    <DropdownItem Clicked="() => Publish(context.Id)" Disabled="!CanPublish">
+                                        <Icon Name="IconName.Eye" Margin="Margin.Is1.FromEnd" />
+                                        @L["Action:Publish"]
+                                    </DropdownItem>
+                                }
+                                @if (context.IsPublished)
+                                {
+                                    <DropdownItem Clicked="() => Unpublish(context.Id)" Disabled="!CanPublish">
+                                        <Icon Name="IconName.EyeSlash" Margin="Margin.Is1.FromEnd" />
+                                        @L["Action:Unpublish"]
+                                    </DropdownItem>
+                                }
+                                <DropdownDivider />
+                                <DropdownItem Clicked="() => View(context.Id)" >
+                                    <Icon Name="IconName.InfoCircle" Margin="Margin.Is1.FromEnd" />
+                                    @L["Action:View"]
+                                </DropdownItem>
+                                <DropdownItem Clicked="() => Edit(context.Id)" Disabled="!CanEdit">
+                                    <Icon Name="IconName.Edit" Margin="Margin.Is1.FromEnd" />
+                                    @L["Action:Edit"]
+                                </DropdownItem>
+                                <DropdownItem Clicked="() => Delete(context.Id)" Disabled="!CanPublish">
+                                    <Icon Name="IconName.Delete" Margin="Margin.Is1.FromEnd" />
+                                    @L["Action:Delete"]
+                                </DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="ProductListItemDto"
+                                Field="@nameof(ProductListItemDto.Name)"
+                                Caption="@L["Field:Name"]" />
+                <DataGridColumn TItem="ProductListItemDto"
+                                Field="@nameof(ProductListItemDto.PriceAmount)"
+                                Caption="@L["Field:PriceAmount"]" />
+                <DataGridColumn TItem="ProductListItemDto"
+                                Field="@nameof(ProductListItemDto.PriceCurrency)"
+                                Caption="@L["Field:PriceCurrency"]" />
+                <DataGridColumn TItem="ProductListItemDto"
+                                Field="@nameof(ProductListItemDto.ProductType)"
+                                Caption="@L["Field:ProductType"]" />
+                <DataGridColumn TItem="ProductListItemDto"
+                                Field="@nameof(ProductListItemDto.ProductCategory)"
+                                Caption="@L["Field:ProductCategory"]" />
+                <DataGridCheckColumn TItem="ProductListItemDto"
+                                     Field="@nameof(ProductListItemDto.IsPublished)"
+                                     Caption="@L["Field:IsPublished"]" />
+                <DataGridColumn TItem="ProductListItemDto"
+                                Field="@nameof(ProductListItemDto.Rating)"
+                                Caption="@L["Field:Rating"]">
+                    <DisplayTemplate>
+                        @Math.Round(context.Rating, 1) <Icon Name="IconName.Star" />
+                    </DisplayTemplate>
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
 
 @code {
-    
+
+    protected IReadOnlyList<ProductListItemDto> Products { get; set; } = new List<ProductListItemDto>();
+    protected CompanyLookupDto Company { get; set; } = new();
+    protected bool CanPublish { get; set; } = false;
+    protected string? SelectedId { get; set; } = null;
+    protected string? SelectedName { get; set; } = null;
+    protected ProductCategory SelectedProductCategory { get; set; } = ProductCategory.Undefined;
+    protected ProductType SelectedProductType { get; set; } = ProductType.Undefined;
+    protected double? SelectedMinRating { get; set; } = null;
+    protected double? SelectedMaxRating { get; set; } = null;
+    protected decimal? SelectedMinPriceAmount { get; set; } = null;
+    protected decimal? SelectedMaxPriceAmount { get; set; } = null;
+    public string? SelectedPriceCurrency { get; set; } = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetCompanyAsync();
+        PageTitle = L["Page:Products"];
+        PageHeader = L["Header:Products"] + ": " + Company.Name;
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task SetPermissionsAsync()
+    {
+        CanView = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.Products.Default);
+        CanCreate = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.Products.Create);
+        CanEdit = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.Products.Create);
+        CanDelete = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.Products.Create);
+        CanPublish = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.Products.Publish);
+    }
+
+    protected override Task SetToolBarAsync()
+    {
+        PageToolbar.AddButton(L["Action:ReloadData"],
+            () => GetDataAsync(),
+            IconName.Redo,
+            Color.Secondary);
+
+        PageToolbar.AddButton(L["Action:New"],
+            () => Create(),
+            IconName.Add,
+            Color.Primary,
+            !CanCreate);
+
+        return Task.CompletedTask;
+    }
+
+    protected override Task SetBreadcrumbItemsAsync()
+    {
+        BreadcrumbItems.Add(new BreadcrumbItem(L["Menu:Management"], "/management"));
+        BreadcrumbItems.Add(new BreadcrumbItem(L["Menu:Products"], "/management/product/list"));
+
+        return Task.CompletedTask;
+    }
+
+    protected override async Task GetDataAsync()
+    {
+        Guid? id = null;
+        if (Guid.TryParse(SelectedId, out var parsed))
+        {
+            id = parsed;
+        }
+
+        var filter = new ProductListFilterDto()
+            {
+                MaxResultCount = PageSize,
+                SkipCount = CurrentPage * PageSize,
+                Sorting = CurrentSorting,
+                Id = id,
+                Name = SelectedName,
+                ProductCategory = SelectedProductCategory == ProductCategory.Undefined ? null : SelectedProductCategory,
+                ProductType = SelectedProductType == ProductType.Undefined ? null : SelectedProductType,
+                MinRating = SelectedMinRating,
+                MaxRating = SelectedMaxRating,
+                MinPriceAmount = SelectedMinPriceAmount,
+                MaxPriceAmount = SelectedMaxPriceAmount,
+                PriceCurrency = SelectedPriceCurrency
+            };
+
+        var result = await ProductAppService.GetListAsync(filter);
+        Products = result.Items;
+        TotalCount = (int)result.TotalCount;
+    }
+
+    private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<ProductListItemDto> e)
+    {
+        PageSize = e.PageSize;
+        CurrentPage = e.Page - 1;
+        CurrentSorting = string.Join(",", e.Columns
+            .Where(c => c.SortDirection != SortDirection.Default)
+            .Select(c => $"{c.Field} {(c.SortDirection == SortDirection.Descending ? "DESC" : "")}"));
+
+        await GetDataAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task GetCompanyAsync()
+    {
+        Company = await CompanyAppService.GetCompanyLookupAsync();
+    }
+
+    protected Task View(Guid id)
+    {
+        NavigationManager.NavigateTo($"/product/{id}");
+        return Task.CompletedTask;
+    }
+
+    protected override Task Create()
+    {
+        NavigationManager.NavigateTo("/management/product/create");
+        return Task.CompletedTask;
+    }
+
+    protected override Task Edit(Guid id)
+    {
+        NavigationManager.NavigateTo($"/management/product/edit/{id}");
+        return Task.CompletedTask;
+    }
+
+    protected override async Task Delete(Guid id)
+    {
+        var confirmMessage = L["Message:ProductDeletionConfirmation"];
+        var message = confirmMessage;
+        if (!await UiMessageService.Confirm(message))
+        {
+            return;
+        }
+
+        await ProductAppService.DeleteAsync(id);
+        await GetDataAsync();
+    }
+
+    protected async Task Publish(Guid id)
+    {
+        var confirmMessage = L["Message:ProductPublicationConfirmation"];
+        var message = confirmMessage;
+        if (!await UiMessageService.Confirm(message))
+        {
+            return;
+        }
+
+        await ProductAppService.PublishAsync(id);
+        await GetDataAsync();
+    }
+
+    protected async Task Unpublish(Guid id)
+    {
+        var confirmMessage = L["Message:ProductCancelPublicationConfirmation"];
+        var message = confirmMessage;
+        if (!await UiMessageService.Confirm(message))
+        {
+            return;
+        }
+
+        await ProductAppService.UnpublishAsync(id);
+        await GetDataAsync();
+    }
 }

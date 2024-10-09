@@ -2,18 +2,24 @@
   "Culture": "en",
   "Texts": {
     "AppName": "WebMarketplace",
+
     "Menu:Home": "Home",
     "Menu:Products": "Products",
+    "Menu:CreateProduct": "Create product",
     "Menu:Companies": "Companies",
     "Menu:Company": "Company",
+    "Menu:CompanyMembership": "Company membership",
+    "Menu:CompanyMemberships": "Company memberships",
     "Menu:Cart": "Cart",
     "Menu:Orders": "Orders",
     "Menu:Management": "Management",
+    "Menu:Administration": "Administration",
     "Menu:Dashboard": "Dashboard",
     "Menu:Customers": "Customers",
-    
+
     "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP framework. For more information visit",
     "Welcome": "Welcome",
+
     "Exception:CompanyNameAlreadyExists": "The company with name '{Name}' already exists.",
     "Exception:CompanyDisplayNameAlreadyExists": "The company with display name '{DisplayName}' already exists.",
     "Exception:CompanyIdentificationNumberAlreadyExists": "The company with identification number '{CompanyIdentificationNumber}' already exists.",
@@ -23,7 +29,7 @@
     "Exception:CurrencyAlreadySet": "Currency is already set.",
     "Exception:ProductImageNotFound": "Product image not found.",
     "Exception:ProductImageDefaultRemoveNotAllowed": "Default image cannot be removed.",
-    
+
     "Permission:WebMarketplace": "WebMarketplace Management",
     "Permission:Companies": "Company Management",
     "Permission:CompanyMemberships": "Company Membership Management",
@@ -35,11 +41,11 @@
     "Permission:Delete": "Delete",
     "Permission:Publish": "Publish",
     "Permission:ChangeStatus": "Change Status",
-    
+
     "Placeholder:Select": "select...",
     "Placeholder:Write": "write...",
     "Placeholder:SelectUser": "select user...",
-  
+
     "Action:View": "View",
     "Action:Actions": "",
     "Action:New": "New",
@@ -53,16 +59,24 @@
     "Action:RemoveFromCart": "Remove from Cart",
     "Action:Checkout": "Checkout",
     "Action:Membership": "Membership",
-    
+    "Action:ReloadData": "",
+    "Action:Publish": "Publish",
+    "Action:Unpublish": "Unpublish",
+
     "Message:CompanyDeletionConfirmation": "Are you sure you want to delete the company?",
     "Message:CompanyMembershipDeletionConfirmation": "Are you sure you want to delete the company membership?",
+    "Message:ProductDeletionConfirmation": "Are you sure you want to delete the product?",
+    "Message:ProductPublicationConfirmation": "Are you sure you want to publish the product?",
+    "Message:ProductCancelPublicationConfirmation": "Are you sure you want to unpublish the product?",
 
     "Page:AdministrationCompanies": "Companies | Administration | WebMarketplace",
     "Page:AdministrationCreateCompany": "Create Company | Administration | WebMarketplace",
     "Page:AdministrationEditCompany": "Edit Company | Administration | WebMarketplace",
     "Page:AdministrationCompanyMemberships": "Company Memberships | Administration | WebMarketplace",
     "Page:AdministrationCreateCompanyMembership": "Create membership for company ",
-    
+    "Page:ManagementCompanies": "Companies | Management | WebMarketplace",
+    "Page:ManagementProducts": "Products | Management | WebMarketplace",
+
     "Header:Search": "Search",
     "Header:Companies": "Companies",
     "Header:Company": "Company",
@@ -70,11 +84,14 @@
     "Header:CompanyMembership": "Company Membership",
     "Header:Products": "Products",
     "Header:Product": "Product",
+    "Header:Price": "Price",
+    "Header:Prices": "Prices",
     "Header:CreateCompany": "Create new company",
     "Header:BasicInfo": "Basic Information",
     "Header:Address": "Address",
     "Header:FullDescription": "Full description",
-    
+    "Header:Images": "Images",
+
     "Field:Id": "ID",
     "Field:UserName": "UserName",
     "Field:Name": "Name",
@@ -95,6 +112,17 @@
     "Field:Email": "E-mail",
     "Field:Company": "Company",
     "Field:User": "User",
-    "Field:UserId": "User ID"
+    "Field:UserId": "User ID",
+    "Field:ProductId": "Product ID",
+    "Field:PriceAmount": "Price",
+    "Field:MinPriceAmount": "Min price",
+    "Field:MaxPriceAmount": "Max price",
+    "Field:PriceCurrency": "Currency",
+    "Field:ProductType": "Type",
+    "Field:ProductCategory": "Category",
+    "Field:IsPublished": "Published",
+    "Field:Rating": "Rating",
+    "Field:MinRating": "Min rating",
+    "Field:MaxRating": "Max rating"
   }
 }

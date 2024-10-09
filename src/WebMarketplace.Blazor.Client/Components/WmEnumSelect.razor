@@ -1,0 +1,43 @@
+﻿@typeparam TEnum
+@using Blazorise
+@using System.ComponentModel.DataAnnotations
+
+
+<SelectList TItem="EnumSelectItem"
+            TValue="int"
+            Data="@EnumSelectItems"
+            TextField="@((item)=>item.Text)"
+            ValueField="@((item)=>item.Value)"
+            @bind-SelectedValue="@SelectedIntValue"
+            DefaultItemHidden="true"/>
+
+
+@code {
+
+    protected class EnumSelectItem
+    {
+        public int Value { get; set; }
+        public string Text { get; set; }
+    }
+
+    [Parameter] public TEnum SelectedValue { get => (TEnum)Enum.ToObject(typeof(TEnum), SelectedIntValue); set => SelectedIntValue = Convert.ToInt32(value); }
+    [Parameter] public EventCallback<TEnum> SelectedValueChanged { get; set; }
+    public int SelectedIntValue { get; set; }
+
+
+    protected List<EnumSelectItem> EnumSelectItems
+    {
+        get
+        {
+            return Enum.GetValues(typeof(TEnum))
+                .Cast<TEnum>()
+                .Select(e => new EnumSelectItem
+                    {
+                        Value = Convert.ToInt32(e),
+                        Text = e.ToString()
+                    })
+                .ToList();
+        }
+    }
+
+}

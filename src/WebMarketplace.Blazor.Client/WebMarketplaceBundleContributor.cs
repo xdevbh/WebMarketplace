@@ -13,6 +13,7 @@ public class WebMarketplaceBundleContributor : IBundleContributor
 {
     public void AddScripts(BundleContext context)
     {
+        context.Add("main.js");
     }
 
     public void AddStyles(BundleContext context)

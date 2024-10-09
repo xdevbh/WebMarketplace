@@ -21,17 +21,17 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
     private readonly IProductRepository _productRepository;
     private readonly ProductManager _productManager;
     private readonly IRepository<Company, Guid> _companyRepository;
-    private readonly IRepository<CompanyMembership, Guid> _vendorUserRepository;
+    private readonly IRepository<CompanyMembership, Guid> _companyMembershipRepository;
     private readonly IBlobContainer _productBlobContainer;
 
     public ProductSellerAppService(IProductRepository productRepository, ProductManager productManager,
-        IRepository<Company, Guid> companyRepository, IRepository<CompanyMembership, Guid> vendorUserRepository,
+        IRepository<Company, Guid> companyRepository, IRepository<CompanyMembership, Guid> companyMembershipRepository,
         IBlobContainer productBlobContainer)
     {
         _productRepository = productRepository;
         _productManager = productManager;
         _companyRepository = companyRepository;
-        _vendorUserRepository = vendorUserRepository;
+        _companyMembershipRepository = companyMembershipRepository;
         _productBlobContainer = productBlobContainer;
     }
 
@@ -43,16 +43,23 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
         var company = await _companyRepository.GetAsync(product.CompanyId);
 
         var productDto = ObjectMapper.Map<Product, ProductDto>(product);
-        productDto.CompanyName = company.Name;
+        //productDto.CompanyName = company.Name;
 
         return productDto;
     }
 
-    public async Task<PagedResultDto<ProductCardDto>> GetListAsync(ProductCardListFilterDto input)
+    public async Task<PagedResultDto<ProductListItemDto>> GetListAsync(ProductListFilterDto input)
     {
+        var user = CurrentUser.GetId();
+        var companyMembership = await _companyMembershipRepository.GetAsync(x => x.UserId == user); 
+        if (companyMembership == null)
+        {
+            throw new AbpAuthorizationException();
+        }
+        
         var totalCount = await _productRepository.GetProductDetailCountAsync(
-            input.CompanyId,
-            false,
+            companyMembership.CompanyId,
+            input.IsPublished,
             input.Name,
             input.ProductCategory,
             input.ProductType,
@@ -67,8 +74,8 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
             input.Sorting,
             input.MaxResultCount,
             input.SkipCount,
-            input.CompanyId,
-            false,
+            companyMembership.CompanyId,
+            input.IsPublished,
             input.Name,
             input.ProductCategory,
             input.ProductType,
@@ -79,30 +86,29 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
             input.PriceCurrency
         );
 
-        var dtos = new List<ProductCardDto>();
+        var dtos = new List<ProductListItemDto>();
         foreach (var item in items)
         {
-            var dto = ObjectMapper.Map<ProductDetailQueryRequestItem, ProductCardDto>(item);
-            dto.PriceAmount = item.CurrentPrice.Amount;
-            dto.PriceCurrency = item.CurrentPrice.Currency;
+            var dto = ObjectMapper.Map<ProductDetailQueryRequestItem, ProductListItemDto>(item);
+            dto.PriceAmount = item.CurrentPrice?.Amount ?? 0;
+            dto.PriceCurrency = item.CurrentPrice?.Currency ?? string.Empty;
             dtos.Add(dto);
         }
 
-        return new PagedResultDto<ProductCardDto>(totalCount, dtos);
+        return new PagedResultDto<ProductListItemDto>(totalCount, dtos);
     }
 
     public async Task<ProductDto> CreateAsync(CreateUpdateProductDto input)
     {
         var user = CurrentUser.GetId();
-        var vendorUser = await _vendorUserRepository.GetAsync(x => x.UserId == user); // can be null
-
-        if (vendorUser == null)
+        var companyMembership = await _companyMembershipRepository.GetAsync(x => x.UserId == user); // can be null
+        if (companyMembership == null)
         {
             throw new AbpAuthorizationException();
         }
 
         var product = await _productManager.CreateAsync(
-            vendorUser.CompanyId,
+            companyMembership.CompanyId,
             input.Name,
             input.ProductCategory,
             input.ProductType,
@@ -111,6 +117,9 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
 
         await _productRepository.InsertAsync(product);
         var dto = ObjectMapper.Map<Product, ProductDto>(product);
+        dto.Rating = product.Rating;
+        dto.PriceAmount = product.CurrentPrice?.Amount ?? 0;
+        dto.PriceCurrency = product.CurrentPrice?.Currency ?? string.Empty;
         return dto;
     }
 
@@ -134,16 +143,19 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
 
         await _productRepository.UpdateAsync(product);
         var dto = ObjectMapper.Map<Product, ProductDto>(product);
+        dto.Rating = product.Rating;
+        dto.PriceAmount = product.CurrentPrice?.Amount ?? 0;
+        dto.PriceCurrency = product.CurrentPrice?.Currency ?? string.Empty;
         return dto;
     }
 
     public async Task DeleteAsync(Guid id)
     {
         var userId = CurrentUser.GetId();
-        var vendorUser = await _vendorUserRepository.GetAsync(x => x.UserId == userId);
+        var companyMembership = await _companyMembershipRepository.GetAsync(x => x.UserId == userId);
         var product = await _productRepository.GetAsync(id);
 
-        if (vendorUser == null || product.CompanyId != vendorUser.CompanyId)
+        if (companyMembership == null || product.CompanyId != companyMembership.CompanyId)
         {
             throw new AbpAuthorizationException();
         }
@@ -282,9 +294,9 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
     private async Task<bool> UserHasAccessToProduct(Product product)
     {
         var userId = CurrentUser.GetId();
-        var vendorUser = await _vendorUserRepository.FindAsync(x => x.UserId == userId);
+        var companyMembership = await _companyMembershipRepository.FindAsync(x => x.UserId == userId);
 
-        if (vendorUser != null && product.CompanyId == vendorUser.CompanyId)
+        if (companyMembership != null && product.CompanyId == companyMembership.CompanyId)
         {
             return true;
         }

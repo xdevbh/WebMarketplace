@@ -20,6 +20,7 @@ public class WebMarketplaceApplicationAutoMapperProfile : Profile
          * into multiple profile classes for a better organization. */
 
         CreateMap<Company, CompanyDto>();
+        CreateMap<Company, CompanyLookupDto>();
         CreateMap<CompanyMembershipDetailQueryResultItem, CompanyMembershipDto>();
         CreateMap<CreateCompanyMembershipDto, CompanyMembership>();
         CreateMap<CompanyDto, CreateUpdateCompanyAdminDto>();
@@ -27,6 +28,10 @@ public class WebMarketplaceApplicationAutoMapperProfile : Profile
         CreateMap<Address, AddressDto>();
         CreateMap<CreateUpdateAddressDto, Address>();
 
+        CreateMap<Product, ProductDto>()
+            .Ignore(x => x.PriceAmount)
+            .Ignore(x => x.PriceCurrency)
+            .Ignore(x => x.Rating);
         CreateMap<ProductDetailQueryRequestItem, ProductDto>()
             .Ignore(x => x.PriceAmount)
             .Ignore(x => x.PriceCurrency);
@@ -34,6 +39,9 @@ public class WebMarketplaceApplicationAutoMapperProfile : Profile
             .Ignore(x => x.PriceAmount)
             .Ignore(x => x.PriceCurrency);
         CreateMap<ProductDetailQueryRequestItem, ProductCardDto>()
+            .Ignore(x => x.PriceAmount)
+            .Ignore(x => x.PriceCurrency);
+        CreateMap<ProductDetailQueryRequestItem, ProductListItemDto>()
             .Ignore(x => x.PriceAmount)
             .Ignore(x => x.PriceCurrency);
         CreateMap<CreateUpdateProductDto, Product>();

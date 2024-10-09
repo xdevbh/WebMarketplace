@@ -1,7 +1,22 @@
 ﻿@page "/management/product/{id:guid}"
-<h3>ManagementProductEditPage</h3>
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@using WebMarketplace.Companies
+@using WebMarketplace.Localization
+@using WebMarketplace.Products
+@inject IAuthorizationService AuthorizationService
+@inject IProductSellerAppService ProductAppService
+@inject ICompanySellerAppService CompanyAppService
+@inject IStringLocalizer<WebMarketplaceResource> L
+
 
 @code {
     [Parameter] public Guid Id { get; set; }
+
+    public CreateUpdateProductDto Product { get; set; }
     
+    protected override async Task OnInitializedAsync()
+    {
+        var productDto = await ProductAppService.GetAsync(Id);
+    }
 }

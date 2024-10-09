@@ -1,6 +1,21 @@
 ﻿@page "/management/customer/list"
-<h3>ManagementCustomerListPage</h3>
+@using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
+@using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars
+@using Volo.Abp.AspNetCore.Components.Web.Theming.Toolbars
+@inject NavigationManager NavigationManager
+@inherits WmPageBase
+
+<WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle"/>
 
 @code {
-    
+
+
+    protected override async Task SetToolBarAsync()
+    {
+    }
+
+    protected override async Task SetBreadcrumbItemsAsync()
+    {
+    }
+
 }

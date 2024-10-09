@@ -65,6 +65,7 @@ public static class WebMarketplaceDbContextModelBuilderExtensions
             b.ConfigureByConvention();
             b.HasOne<Company>().WithMany().HasForeignKey(x => x.CompanyId).IsRequired();
             b.HasOne<IdentityUser>().WithMany().HasForeignKey(x => x.UserId).IsRequired();
+            b.HasIndex(x=>x.UserId).IsUnique();
             b.HasIndex(x => new { x.CompanyId, x.UserId }).IsUnique();
         });
     }

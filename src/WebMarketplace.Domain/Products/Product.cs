@@ -25,8 +25,8 @@ public class Product : AuditedAggregateRoot<Guid>
 
 
     public virtual List<ProductReview> Reviews { get; set; }
-    
-    public virtual double Rating => Reviews.Average(x => x.Rating);
+
+    public virtual double Rating => Reviews.Any() ? Reviews.Average(x => x.Rating) : 0;
 
     public virtual List<ProductPrice> Prices { get; set; }
 

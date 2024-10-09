@@ -71,19 +71,56 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
             };
             
 
-        query.WhereIf(companyId != null, x => companyId != null && x.CompanyId == companyId.Value);
-        query.WhereIf(isPublished != null, x => isPublished != null && x.IsPublished == isPublished.Value);
-        query.WhereIf(!name.IsNullOrEmpty(), x => x.Name.Contains(name));
-        query.WhereIf(productCategory != null, x => x.ProductCategory == productCategory);
-        query.WhereIf(productType != null, x => x.ProductType == productType);
-        query.WhereIf(minRating != null, x => x.Rating >= minRating);
-        query.WhereIf(maxRating != null, x => x.Rating <= maxRating);
-        query.WhereIf(minPriceAmount != null,
-            x => x.CurrentPrice != null && x.CurrentPrice.Amount >= minPriceAmount);
-        query.WhereIf(maxPriceAmount != null,
-            x => x.CurrentPrice != null && x.CurrentPrice.Amount <= maxPriceAmount);
-        query.WhereIf(priceCurrency != null,
-            x => x.CurrentPrice != null && x.CurrentPrice.Currency == priceCurrency);
+        if (companyId != null)
+        {
+            query = query.Where(x => x.CompanyId == companyId.Value);
+        }
+
+        if (isPublished != null)
+        {
+            query = query.Where(x => x.IsPublished == isPublished.Value);
+        }
+
+        if (!name.IsNullOrWhiteSpace())
+        {
+            query = query.Where(x => x.Name.Contains(name));
+        }
+
+        if (productCategory != null)
+        {
+            query = query.Where(x => x.ProductCategory == productCategory);
+        }
+
+        if (productType != null)
+        {
+            query = query.Where(x => x.ProductType == productType);
+        }
+
+        if (minRating != null)
+        {
+            query = query.Where(x => x.Rating >= minRating);
+        }
+
+        if (maxRating != null)
+        {
+            query = query.Where(x => x.Rating <= maxRating);
+        }
+
+        if (minPriceAmount != null)
+        {
+            query = query.Where(x => x.CurrentPrice != null && x.CurrentPrice.Amount >= minPriceAmount);
+        }
+
+        if (maxPriceAmount != null)
+        {
+            query = query.Where(x => x.CurrentPrice != null && x.CurrentPrice.Amount <= maxPriceAmount);
+        }
+
+        if (priceCurrency != null)
+        {
+            query = query.Where(x => x.CurrentPrice != null && x.CurrentPrice.Currency == priceCurrency);
+        }
+
 
         return query;
     }

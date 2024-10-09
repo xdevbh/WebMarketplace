@@ -2,6 +2,7 @@ namespace WebMarketplace.Products;
 
 public enum ProductType
 {
-    Goods,
-    Services
+    Undefined = 0,
+    Goods = 1,
+    Services = 2
 }

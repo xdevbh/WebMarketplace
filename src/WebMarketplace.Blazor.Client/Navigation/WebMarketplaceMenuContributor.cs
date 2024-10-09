@@ -100,7 +100,7 @@ public class WebMarketplaceMenuContributor : IMenuContributor
             "/management",
             "fa fa-cogs",
             4
-        ).RequireAuthenticated(); // todo: seller only
+        ).RequireAuthenticated().RequirePermissions("SellerOnly");
         context.Menu.AddItem(management);
 
         var managementDashboard = new ApplicationMenuItem(
@@ -173,7 +173,7 @@ public class WebMarketplaceMenuContributor : IMenuContributor
             "/administration/company/list",
             icon: "fa fa-store",
             order: 4
-        );
+        ).RequireAuthenticated().RequirePermissions("AdminOnly");
         administration.AddItem(administrationCompanies);
     }
 

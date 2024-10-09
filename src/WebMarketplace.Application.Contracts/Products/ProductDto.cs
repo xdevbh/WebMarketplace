@@ -8,7 +8,7 @@ namespace WebMarketplace.Products;
 public class ProductDto : AuditedEntityDto<Guid>
 {
     public Guid CompanyId { get; set; }
-    public String CompanyName { get; set; }
+    //public String CompanyName { get; set; }
 
     public string Name { get;  set; }
 
@@ -25,6 +25,7 @@ public class ProductDto : AuditedEntityDto<Guid>
     public double Rating { get; set; }
     
     public decimal PriceAmount { get; set; }
+
     public string PriceCurrency { get; set; }
 
 }

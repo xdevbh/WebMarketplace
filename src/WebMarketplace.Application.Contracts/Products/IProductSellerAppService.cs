@@ -11,7 +11,7 @@ public interface IProductSellerAppService : IApplicationService
     // products
     Task<ProductDto> GetAsync(Guid id);
 
-    Task<PagedResultDto<ProductCardDto>> GetListAsync(ProductCardListFilterDto input);
+    Task<PagedResultDto<ProductListItemDto>> GetListAsync(ProductListFilterDto input);
 
     Task<ProductDto> CreateAsync(CreateUpdateProductDto input);
 
