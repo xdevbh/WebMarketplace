@@ -35,6 +35,7 @@ public partial class AdministrationCompanyListPage
         await GetCompaniesAsync();
         
         PageTitle = L["Page:AdministrationCompanies"];
+        base.OnInitializedAsync();
     }
 
     private async Task SetPermissionsAsync()

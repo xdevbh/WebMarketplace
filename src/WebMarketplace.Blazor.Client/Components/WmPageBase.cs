@@ -7,6 +7,7 @@ using Volo.Abp.AspNetCore.Components;
 using Volo.Abp.AspNetCore.Components.Web.Theming.Layout;
 using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars;
 using Volo.Abp.BlazoriseUI;
+using WebMarketplace.Permissions;
 
 namespace WebMarketplace.Blazor.Client.Components;
 
@@ -25,15 +26,24 @@ public abstract class WmPageBase : AbpComponentBase
 
     protected override async Task OnInitializedAsync()
     {
+        await SetPermissionsAsync();
         await SetToolBarAsync();
         await SetBreadcrumbItemsAsync();
+        await base.OnInitializedAsync();
     }
 
-    protected virtual async Task SetToolBarAsync()
+    protected virtual Task SetToolBarAsync()
     {
+        return Task.CompletedTask;
     }
 
-    protected virtual async Task SetBreadcrumbItemsAsync()
+    protected virtual Task SetBreadcrumbItemsAsync()
     {
+        return Task.CompletedTask;
+    }
+
+    protected virtual Task SetPermissionsAsync()
+    {
+        return Task.CompletedTask;
     }
 }

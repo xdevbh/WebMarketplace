@@ -76,6 +76,7 @@
     "Page:AdministrationCreateCompanyMembership": "Create membership for company ",
     "Page:ManagementCompanies": "Companies | Management | WebMarketplace",
     "Page:ManagementProducts": "Products | Management | WebMarketplace",
+    "Page:ManagementCreateProduct": "Products | Management | WebMarketplace",
 
     "Header:Search": "Search",
     "Header:Companies": "Companies",
@@ -84,6 +85,7 @@
     "Header:CompanyMembership": "Company Membership",
     "Header:Products": "Products",
     "Header:Product": "Product",
+    "Header:CreateProduct": "Product",
     "Header:Price": "Price",
     "Header:Prices": "Prices",
     "Header:CreateCompany": "Create new company",

@@ -16,18 +16,8 @@ public abstract class WmDataGridPageBase : WmPageBase
     protected string CurrentSorting { get; set; }
     protected int TotalCount { get; set; }
     
-    protected override async Task OnInitializedAsync()
-    {
-        await SetPermissionsAsync();
-        await base.OnInitializedAsync();
-    }
-    
-    protected virtual async Task SetPermissionsAsync()
-    {
-        await Task.CompletedTask;
-    }
-
     protected abstract Task GetDataAsync();
+
     protected virtual Task Create()
     {
         return Task.CompletedTask;

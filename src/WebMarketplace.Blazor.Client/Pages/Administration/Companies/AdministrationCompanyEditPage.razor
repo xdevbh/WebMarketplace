@@ -180,9 +180,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await SetPermissionsAsync();
         await GetAsync();
         PageTitle = L["Page:AdministrationCreateCompany"];
+        await base.OnInitializedAsync();
     }
 
     protected async Task GetAsync()

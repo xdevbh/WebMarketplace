@@ -6,11 +6,10 @@
 <SelectList TItem="EnumSelectItem"
             TValue="int"
             Data="@EnumSelectItems"
-            TextField="@((item)=>item.Text)"
-            ValueField="@((item)=>item.Value)"
-            @bind-SelectedValue="@SelectedIntValue"
-            DefaultItemHidden="true"/>
-
+            TextField="@((item) => item.Text)"
+            ValueField="@((item) => item.Value)"
+            @bind-SelectedValue="SelectedIntValue"
+            DefaultItemHidden="true" />
 
 @code {
 
@@ -20,24 +19,34 @@
         public string Text { get; set; }
     }
 
-    [Parameter] public TEnum SelectedValue { get => (TEnum)Enum.ToObject(typeof(TEnum), SelectedIntValue); set => SelectedIntValue = Convert.ToInt32(value); }
+    [Parameter]
+    public TEnum SelectedValue { get; set; }
+
+
     [Parameter] public EventCallback<TEnum> SelectedValueChanged { get; set; }
-    public int SelectedIntValue { get; set; }
 
 
-    protected List<EnumSelectItem> EnumSelectItems
+    public int SelectedIntValue
     {
-        get
+        get => Convert.ToInt32(SelectedValue);
+        set
         {
-            return Enum.GetValues(typeof(TEnum))
-                .Cast<TEnum>()
-                .Select(e => new EnumSelectItem
-                    {
-                        Value = Convert.ToInt32(e),
-                        Text = e.ToString()
-                    })
-                .ToList();
+            var enumValue = (TEnum)Enum.ToObject(typeof(TEnum), value);
+            if (!EqualityComparer<TEnum>.Default.Equals(SelectedValue, enumValue))
+            {
+                SelectedValue = enumValue;
+                SelectedValueChanged.InvokeAsync(enumValue);
+            }
         }
     }
 
+
+    protected List<EnumSelectItem> EnumSelectItems => Enum.GetValues(typeof(TEnum))
+        .Cast<TEnum>()
+        .Select(e => new EnumSelectItem
+            {
+                Value = Convert.ToInt32(e),
+                Text = e.ToString()
+            })
+        .ToList();
 }

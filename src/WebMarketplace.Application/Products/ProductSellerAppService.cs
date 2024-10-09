@@ -199,6 +199,27 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
 
     #region Prices
 
+    public async Task AddProductPriceAsync(CreateUpdateProductPriceDto input)
+    {
+        var product = await _productRepository.GetAsync(input.ProductId);
+
+        var hasAccess = await UserHasAccessToProduct(product);
+        if (!hasAccess)
+        {
+            throw new AbpAuthorizationException();
+        }
+
+        await _productManager.AddProductPriceAsync(
+            product,
+            input.Date,
+            input.Amount,
+            input.Currency);
+    }
+
+    #endregion
+
+    #region Images
+
     public async Task<ProductImageDto> GetDefaultImageAsync(Guid productId)
     {
         var product = await _productRepository.GetAsync(productId);
@@ -236,28 +257,7 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
         return new ListResultDto<ProductImageDto>(imageDtos);
     }
 
-    public async Task CreateProductPriceAsync(CreateUpdateProductPriceDto input)
-    {
-        var product = await _productRepository.GetAsync(input.ProductId);
-
-        var hasAccess = await UserHasAccessToProduct(product);
-        if (!hasAccess)
-        {
-            throw new AbpAuthorizationException();
-        }
-
-        await _productManager.AddProductPriceAsync(
-            product,
-            input.Date,
-            input.Amount,
-            input.Currency);
-    }
-
-    #endregion
-
-    #region Images
-
-    public async Task CreateProductImageAsync(CreateProductImageDto input)
+    public async Task AddProductImageAsync(CreateProductImageDto input)
     {
         var product = await _productRepository.GetAsync(input.ProductId);
 

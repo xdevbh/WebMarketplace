@@ -24,11 +24,14 @@ public interface IProductSellerAppService : IApplicationService
     Task UnpublishAsync(Guid id);
 
     // prices
-    Task CreateProductPriceAsync(CreateUpdateProductPriceDto input);
+    Task AddProductPriceAsync(CreateUpdateProductPriceDto input);
 
     // images
     Task<ProductImageDto> GetDefaultImageAsync(Guid productId);
+
     Task <ListResultDto<ProductImageDto>> GetAllImagesAsync(Guid productId);
-    Task CreateProductImageAsync(CreateProductImageDto input);
+
+    Task AddProductImageAsync(CreateProductImageDto input);
+
     Task DeleteProductImageAsync(DeleteProductImageDto input);
 }

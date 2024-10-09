@@ -9,6 +9,7 @@
 @using WebMarketplace.Localization
 @using WebMarketplace.Permissions
 @using WebMarketplace.Products
+@attribute [Authorize("SellerOnly")]
 @inherits WmPageBase
 @inject IAuthorizationService AuthorizationService
 @inject IProductSellerAppService ProductAppService
@@ -29,7 +30,7 @@
             </Heading>
         </AccordionHeader>
         <AccordionBody>
-            <Validations @ref="@ValidationsRef" Model="@Product" ValidateOnLoad="false">
+            <Validations @ref="@ProductValidationsRef" Model="@Product" ValidateOnLoad="false">
                 <Validation MessageLocalizer="@LH.Localize">
                     <Field>
                         <FieldLabel>@L["Field:Name"]</FieldLabel>
@@ -48,15 +49,16 @@
                 </Validation>
                 <Validation MessageLocalizer="@LH.Localize">
                     <Field>
-                        <FieldLabel>@L["Field:ProductCategory"]</FieldLabel>
+                        <FieldLabel>@L["Field:ProductType"]</FieldLabel>
                         <Addons>
                             <Addon AddonType="AddonType.Start">
                                 <AddonLabel>
-                                    <Icon Name="IconName.Pen" />
+                                    <Icon Name="IconName.List" />
                                 </AddonLabel>
                             </Addon>
                             <Addon AddonType="AddonType.Body">
-                                <WmEnumSelect TEnum="ProductCategory" SelectedValue="@Product.ProductCategory" />
+                                <WmEnumSelect TEnum="ProductType"
+                                              @bind-SelectedValue="@Product.ProductType" />
                             </Addon>
                         </Addons>
                     </Field>
@@ -67,7 +69,7 @@
                         <Addons>
                             <Addon AddonType="AddonType.Start">
                                 <AddonLabel>
-                                    <Icon Name="IconName.Pen" />
+                                    <Icon Name="IconName.Tag" />
                                 </AddonLabel>
                             </Addon>
                             <Addon AddonType="AddonType.Body">
@@ -114,11 +116,43 @@
     <AccordionItem Visible="true">
         <AccordionHeader>
             <Heading Size="HeadingSize.Is3">
-                <AccordionToggle>@L["Header:Prices"]</AccordionToggle>
+                <AccordionToggle>@L["Header:Price"]</AccordionToggle>
             </Heading>
         </AccordionHeader>
         <AccordionBody>
-
+            <Validations @ref="@PriceValidationsRef" Model="@Price" ValidateOnLoad="false">
+                <Fields>
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field ColumnSize="ColumnSize.Is10.OnDesktop">
+                            <Addons>
+                                <Addon AddonType="AddonType.Start">
+                                    <AddonLabel>
+                                        <Icon Name="IconName.MoneyBillAlt" />
+                                    </AddonLabel>
+                                </Addon>
+                                <Addon AddonType="AddonType.Body">
+                                    <NumericEdit TValue="decimal" @bind-Value="@Price.Amount" Min="0" />
+                                </Addon>
+                            </Addons>
+                        </Field>
+                    </Validation>
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field ColumnSize="ColumnSize.Is2.OnDesktop">
+                            <Addons>
+                                <Addon AddonType="AddonType.Start">
+                                    <AddonLabel>
+                                        <Icon Name="IconName.EuroSign" />
+                                    </AddonLabel>
+                                </Addon>
+                                <Addon AddonType="AddonType.Body">
+                                    <TextEdit Placeholder="@L["Placeholder:Write"]"
+                                              @bind-Text="@Price.Currency" />
+                                </Addon>
+                            </Addons>
+                        </Field>
+                    </Validation>
+                </Fields>
+            </Validations>
         </AccordionBody>
     </AccordionItem>
 </Accordion>
@@ -138,25 +172,27 @@
 
 
 @code {
-    protected CreateUpdateProductDto Product { get; set; }
-    protected CreateUpdateProductPriceDto Price { get; set; }
+    protected CreateUpdateProductDto Product { get; set; } = new();
+    protected CreateUpdateProductPriceDto Price { get; set; } = new();
 
-    protected Validations ValidationsRef { get; set; }
-    protected bool CanCreate { get; set; }
+    protected Validations ProductValidationsRef { get; set; } = new();
+    protected Validations PriceValidationsRef { get; set; } = new();
+    protected bool CanCreate { get; set; } = false;
 
     protected override Task OnInitializedAsync()
     {
+        PageTitle = L["Page:CreateProduct"];
+        PageHeader = L["Header:CreateProduct"];
         return base.OnInitializedAsync();
     }
-
 
     protected override Task SetToolBarAsync()
     {
         PageToolbar.AddButton(L["Action:Cancel"],
-            () => GoToList(),
+            () => Cancel(),
             IconName.Times,
-            Color.Danger,
-            !CanCreate);
+            Color.Danger);
+
         PageToolbar.AddButton(L["Action:Save"],
             () => CreateAsync(),
             IconName.Save,
@@ -175,22 +211,42 @@
         return Task.CompletedTask;
     }
 
+    protected override async Task SetPermissionsAsync()
+    {
+        CanCreate = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.Products.Create);
+        await base.SetPermissionsAsync();
+    }
+
+    protected async Task GetDataAsync()
+    {
+        await Task.CompletedTask;
+    }
+
     protected async Task CreateAsync()
     {
-        // await ProductAppService.CreateAsync(Product);
-        await UiMessageService.Success(L["Message:SavedSuccessfully"]);
-        // await OnCreated.InvokeAsync();
+        if (await ProductValidationsRef.ValidateAll() && await PriceValidationsRef.ValidateAll())
+        {
+            var productDto = await ProductAppService.CreateAsync(Product);
+
+            Price.ProductId = productDto.Id;
+            Price.Date = DateTime.Now;
+            await ProductAppService.AddProductPriceAsync(Price);
+
+            await UiMessageService.Success(L["Message:SavedSuccessfully"]);
+            await GoToList();
+        }
     }
 
-    private async Task SetPermissionsAsync()
+    protected Task Cancel()
     {
-        CanCreate = await AuthorizationService
-            .IsGrantedAsync(WebMarketplacePermissions.Products.Create);
+        GoToList();
+        return Task.CompletedTask;
     }
 
-    private async Task GoToList()
+    protected Task GoToList()
     {
-        NavigationManager.NavigateTo("/administration/company/list");
+        NavigationManager.NavigateTo("/management/product/list");
+        return Task.CompletedTask;
     }
 
 }

@@ -30,11 +30,11 @@ public class Product : AuditedAggregateRoot<Guid>
 
     public virtual List<ProductPrice> Prices { get; set; }
 
-    public virtual ProductPrice? CurrentPrice => Prices.OrderByDescending(x => x.Date).FirstOrDefault();
+    public virtual ProductPrice? CurrentPrice => Prices?.OrderByDescending(x => x.Date).FirstOrDefault();
     
     public virtual List<ProductImage> Images { get; set; }
     
-    public virtual ProductImage? DefaultImage => Images.Where(x => x.IsDefault).FirstOrDefault();
+    public virtual ProductImage? DefaultImage => Images?.Where(x => x.IsDefault).FirstOrDefault();
     
     protected Product()
     {

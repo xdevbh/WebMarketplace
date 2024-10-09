@@ -5,8 +5,7 @@ namespace WebMarketplace.Products;
 
 public class CreateUpdateProductDto
 {
-    [Required]
-    public Guid CompanyId { get; set; }
+    public Guid? CompanyId { get; set; }
     
     [Required]
     public string Name { get; set; }

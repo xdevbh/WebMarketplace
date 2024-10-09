@@ -4,6 +4,8 @@
 @using WebMarketplace.Companies
 @using WebMarketplace.Localization
 @using WebMarketplace.Products
+@attribute [Authorize("SellerOnly")]
+@inherits WmPageBase
 @inject IAuthorizationService AuthorizationService
 @inject IProductSellerAppService ProductAppService
 @inject ICompanySellerAppService CompanyAppService
