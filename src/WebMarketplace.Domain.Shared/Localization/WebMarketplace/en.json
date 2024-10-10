@@ -80,12 +80,13 @@
     "Page:AdministrationCreateCompany": "Create Company | Administration | WebMarketplace",
     "Page:AdministrationEditCompany": "Edit Company | Administration | WebMarketplace",
     "Page:AdministrationCompanyMemberships": "Company Memberships | Administration | WebMarketplace",
-    "Page:AdministrationCreateCompanyMembership": "Create membership for company ",
     "Page:ManagementCompanies": "Companies | Management | WebMarketplace",
     "Page:ManagementProducts": "Products | Management | WebMarketplace",
     "Page:ManagementCreateProduct": "Create new products | Management | WebMarketplace",
     "Page:ManagementUpdateProduct": "Edit products | Management | WebMarketplace",
-    "Page:ManagementCreateProductPrice": "Add price | Management | WebMarketplace",
+
+    "Modal:ManagementCreateProductPrice": "Add price",
+    "Modal:AdministrationCreateCompanyMembership": "Create membership for company ",
 
     "Header:Search": "Search",
     "Header:Companies": "Companies",

@@ -68,11 +68,11 @@
     protected Guid SelectedUser { get; set; }
     protected string ModalTitle { get; set; }
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        ModalTitle = @L["Page:AdministrationCreateCompanyMembership"] + CompanyName;
-        GetDataAsync();
-        return base.OnInitializedAsync();
+        ModalTitle = @L["Modal:AdministrationCreateCompanyMembership"] + CompanyName;
+        await GetDataAsync();
+        await base.OnInitializedAsync();
     }
 
     protected async Task GetDataAsync()
