@@ -1,8 +1,13 @@
-﻿@page "/management/product/{id:guid}"
+﻿@page "/management/product/edit/{id:guid}"
+@using System.Linq.Expressions
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Components.Messages
+@using Volo.Abp.AspNetCore.Components.Web
+@using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars
 @using WebMarketplace.Companies
 @using WebMarketplace.Localization
+@using WebMarketplace.Permissions
 @using WebMarketplace.Products
 @attribute [Authorize("SellerOnly")]
 @inherits WmPageBase
@@ -10,15 +15,189 @@
 @inject IProductSellerAppService ProductAppService
 @inject ICompanySellerAppService CompanyAppService
 @inject IStringLocalizer<WebMarketplaceResource> L
+@inject AbpBlazorMessageLocalizerHelper<WebMarketplaceResource> LH
+@inject IUiMessageService UiMessageService
+@inject NavigationManager NavigationManager
 
+<WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle" />
 
-@code {
-    [Parameter] public Guid Id { get; set; }
+<Accordion Margin="Margin.Is3.FromBottom">
+    <AccordionItem Visible="true">
+        <AccordionHeader>
+            <Heading Size="HeadingSize.Is3">
+                <AccordionToggle>@L["Header:BasicInfo"]</AccordionToggle>
+            </Heading>
+        </AccordionHeader>
+        <AccordionBody>
+            <Field>
+                <FieldLabel>@L["Field:Id"]</FieldLabel>
+                <Addons>
+                    <Addon AddonType="AddonType.Start">
+                        <AddonLabel>
+                            <Icon Name="IconName.Table" />
+                        </AddonLabel>
+                    </Addon>
+                    <Addon AddonType="AddonType.Body">
+                        <TextEdit Placeholder="@L["Placeholder:Write"]"
+                                  Text="@Id.ToString()"
+                                  ReadOnly="true" />
+                    </Addon>
+                </Addons>
+            </Field>
+            <Validations @ref="@ProductValidationsRef" Model="@EditProduct" ValidateOnLoad="false">
+                <Validation MessageLocalizer="@LH.Localize">
+                    <Field>
+                        <FieldLabel>@L["Field:Name"]</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.Pen" />
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <TextEdit Placeholder="@L["Placeholder:Write"]"
+                                          @bind-Text="@EditProduct.Name" />
+                            </Addon>
+                        </Addons>
+                    </Field>
+                </Validation>
+                <Validation MessageLocalizer="@LH.Localize">
+                    <Field>
+                        <FieldLabel>@L["Field:ProductType"]</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.List" />
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <WmEnumSelect TEnum="ProductType"
+                                              @bind-SelectedValue="@EditProduct.ProductType" />
+                            </Addon>
+                        </Addons>
+                    </Field>
+                </Validation>
+                <Validation MessageLocalizer="@LH.Localize">
+                    <Field>
+                        <FieldLabel>@L["Field:ProductCategory"]</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.Tag" />
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <WmEnumSelect TEnum="ProductCategory"
+                                              @bind-SelectedValue="@EditProduct.ProductCategory" />
+                            </Addon>
+                        </Addons>
+                    </Field>
+                </Validation>
+                <Validation MessageLocalizer="@LH.Localize">
+                    <Field>
+                        <FieldLabel>@L["Field:ShortDescription"]</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.Pen" />
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <MemoEdit @bind-Text="@EditProduct.ShortDescription" />
+                            </Addon>
+                        </Addons>
+                    </Field>
+                </Validation>
+            </Validations>
+        </AccordionBody>
+    </AccordionItem>
+</Accordion>
 
-    public CreateUpdateProductDto Product { get; set; }
-    
-    protected override async Task OnInitializedAsync()
-    {
-        var productDto = await ProductAppService.GetAsync(Id);
-    }
-}
+<Accordion Margin="Margin.Is3.FromBottom">
+    <AccordionItem Visible="true">
+        <AccordionHeader>
+            <Heading Size="HeadingSize.Is3">
+                <AccordionToggle>@L["Header:FullDescription"]</AccordionToggle>
+            </Heading>
+        </AccordionHeader>
+        <AccordionBody>
+            // todo: add rich text editor
+        </AccordionBody>
+    </AccordionItem>
+</Accordion>
+
+<Accordion Margin="Margin.Is3.FromBottom">
+    <AccordionItem Visible="true">
+        <AccordionHeader>
+            <Heading Size="HeadingSize.Is3">
+                <AccordionToggle>@L["Header:Price"]</AccordionToggle>
+            </Heading>
+        </AccordionHeader>
+        <AccordionBody>
+            <Div Flex="Flex.ReverseRow">
+                <ToolbarButton Color="Color.Primary"
+                               Icon="IconName.Add"
+                               Clicked="()=>CreatePriceAsync()"
+                               Text="@L["Action:AddPrice"]" />
+            </Div>
+            <DataGrid TItem="ProductPriceDto"
+                      Data="Prices"
+                      ReadData="OnPricesDataGridReadAsync"
+                      TotalItems="PriceTotalCount"
+                      ShowPager="true"
+                      ShowPageSizes="true"
+                      PageSize="PricePageSize"
+                      Filterable="false"
+                      Responsive="true"
+                      Resizable="true"
+                      FixedHeader="false">
+                <DataGridColumns>
+                    <DataGridColumn TItem="ProductPriceDto" Filterable="false">
+                        <DisplayTemplate>
+                            <Dropdown>
+                                <DropdownToggle Color="Color.Primary">
+                                </DropdownToggle>
+                                <DropdownMenu>
+                                    <DropdownItem Clicked="() => DeletePriceAsync(context.Date)" Disabled="!CanEdit">
+                                        <Icon Name="IconName.Delete" Margin="Margin.Is1.FromEnd" />
+                                        @L["Action:Delete"]
+                                    </DropdownItem>
+                                </DropdownMenu>
+                            </Dropdown>
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="ProductPriceDto"
+                                    Field="@nameof(ProductPriceDto.Amount)"
+                                    Caption="@L["Field:Amount"]" />
+                    <DataGridColumn TItem="ProductPriceDto"
+                                    Field="@nameof(ProductPriceDto.Currency)"
+                                    Caption="@L["Field:Currency"]" />
+                    <DataGridColumn TItem="ProductPriceDto"
+                                    Field="@nameof(ProductPriceDto.Date)"
+                                    Caption="@L["Field:Date"]" />
+                </DataGridColumns>
+            </DataGrid>
+        </AccordionBody>
+    </AccordionItem>
+</Accordion>
+
+<Accordion Margin="Margin.Is3.FromBottom">
+    <AccordionItem Visible="true">
+        <AccordionHeader>
+            <Heading Size="HeadingSize.Is3">
+                <AccordionToggle>@L["Header:Images"]</AccordionToggle>
+            </Heading>
+        </AccordionHeader>
+        <AccordionBody>
+            <Alert Color="Color.Default" Visible="true">
+                <AlertMessage>
+                    @L["Message:SaveBeforeUpload"]
+                </AlertMessage>
+            </Alert>
+        </AccordionBody>
+    </AccordionItem>
+</Accordion>
+
+<ManagementProductPriceNewModal @ref="CreatePriceModalRef"
+                                ProductId="@Id"
+                                OnCreated="GetDataAsync" />

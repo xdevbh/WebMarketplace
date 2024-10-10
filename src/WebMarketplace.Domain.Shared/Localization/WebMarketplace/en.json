@@ -6,6 +6,7 @@
     "Menu:Home": "Home",
     "Menu:Products": "Products",
     "Menu:CreateProduct": "Create product",
+    "Menu:UpdateProduct": "Edit product",
     "Menu:Companies": "Companies",
     "Menu:Company": "Company",
     "Menu:CompanyMembership": "Company membership",
@@ -29,6 +30,9 @@
     "Exception:CurrencyAlreadySet": "Currency is already set.",
     "Exception:ProductImageNotFound": "Product image not found.",
     "Exception:ProductImageDefaultRemoveNotAllowed": "Default image cannot be removed.",
+    "Exception:ProductCategoryUndefinedNotAllowed": "Product with undefined category is not allowed.",
+    "Exception:ProductTypeUndefinedNotAllowed": "Product with undefined type is not allowed.",
+    "Exception:CurrencyNotFound": "Currency {Code} not found.",
 
     "Permission:WebMarketplace": "WebMarketplace Management",
     "Permission:Companies": "Company Management",
@@ -62,12 +66,15 @@
     "Action:ReloadData": "",
     "Action:Publish": "Publish",
     "Action:Unpublish": "Unpublish",
+    "Action:AddPrice": "Add price",
 
     "Message:CompanyDeletionConfirmation": "Are you sure you want to delete the company?",
     "Message:CompanyMembershipDeletionConfirmation": "Are you sure you want to delete the company membership?",
     "Message:ProductDeletionConfirmation": "Are you sure you want to delete the product?",
     "Message:ProductPublicationConfirmation": "Are you sure you want to publish the product?",
     "Message:ProductCancelPublicationConfirmation": "Are you sure you want to unpublish the product?",
+    "Message:SaveBeforeUpload": "You need to save the product before you can upload pictures or videos for this product page.",
+    "Message:SavedSuccessfully": "Saved successfully.",
 
     "Page:AdministrationCompanies": "Companies | Administration | WebMarketplace",
     "Page:AdministrationCreateCompany": "Create Company | Administration | WebMarketplace",
@@ -76,7 +83,9 @@
     "Page:AdministrationCreateCompanyMembership": "Create membership for company ",
     "Page:ManagementCompanies": "Companies | Management | WebMarketplace",
     "Page:ManagementProducts": "Products | Management | WebMarketplace",
-    "Page:ManagementCreateProduct": "Products | Management | WebMarketplace",
+    "Page:ManagementCreateProduct": "Create new products | Management | WebMarketplace",
+    "Page:ManagementUpdateProduct": "Edit products | Management | WebMarketplace",
+    "Page:ManagementCreateProductPrice": "Add price | Management | WebMarketplace",
 
     "Header:Search": "Search",
     "Header:Companies": "Companies",
@@ -85,7 +94,8 @@
     "Header:CompanyMembership": "Company Membership",
     "Header:Products": "Products",
     "Header:Product": "Product",
-    "Header:CreateProduct": "Product",
+    "Header:CreateProduct": "Create new product",
+    "Header:UpdateProduct": "Edit product",
     "Header:Price": "Price",
     "Header:Prices": "Prices",
     "Header:CreateCompany": "Create new company",
@@ -117,6 +127,8 @@
     "Field:UserId": "User ID",
     "Field:ProductId": "Product ID",
     "Field:PriceAmount": "Price",
+    "Field:Amount": "Amount",
+    "Field:Currency": "Currency",
     "Field:MinPriceAmount": "Min price",
     "Field:MaxPriceAmount": "Max price",
     "Field:PriceCurrency": "Currency",
@@ -125,6 +137,7 @@
     "Field:IsPublished": "Published",
     "Field:Rating": "Rating",
     "Field:MinRating": "Min rating",
-    "Field:MaxRating": "Max rating"
+    "Field:MaxRating": "Max rating",
+    "Field:Date": "Date"
   }
 }

@@ -1,0 +1,132 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.Application.Dtos
+@using Volo.Abp.AspNetCore.Components.Web
+@using Volo.Abp.Users
+@using WebMarketplace.Companies.Memberships
+@using WebMarketplace.Localization
+@using WebMarketplace.Products
+@attribute [Authorize("SellerOnly")]
+@inject IProductSellerAppService ProductAppService
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject AbpBlazorMessageLocalizerHelper<WebMarketplaceResource> LH
+
+<Modal @ref="ModalRef">
+    <ModalContent Centered="true">
+        <Form>
+            <ModalHeader>
+                <ModalTitle>@ModalTitle</ModalTitle>
+                <CloseButton Clicked="() => Close()" />
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@ValidationsRef" Model="@NewPrice" ValidateOnLoad="false">
+                    <Fields>
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field ColumnSize="ColumnSize.Is12.OnDesktop">
+                                <Addons>
+                                    <Addon AddonType="AddonType.Start">
+                                        <AddonLabel>
+                                            <Icon Name="IconName.MoneyBillAlt" />
+                                        </AddonLabel>
+                                    </Addon>
+                                    <Addon AddonType="AddonType.Body">
+                                        <DateEdit TValue="DateTime"
+                                                  InputMode="DateInputMode.DateTime" 
+                                                  @bind-Date="NewPrice.Date"/>
+                                    </Addon>
+                                </Addons>
+                            </Field>
+                        </Validation>
+                    </Fields>
+                    <Fields>
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <Addons>
+                                    <Addon AddonType="AddonType.Start">
+                                        <AddonLabel>
+                                            <Icon Name="IconName.MoneyBillAlt" />
+                                        </AddonLabel>
+                                    </Addon>
+                                    <Addon AddonType="AddonType.Body">
+                                        <NumericPicker TValue="decimal" @bind-Value="@NewPrice.Amount" Min="0" />
+                                    </Addon>
+                                </Addons>
+                            </Field>
+                        </Validation>
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <Addons>
+                                    <Addon AddonType="AddonType.Start">
+                                        <AddonLabel>
+                                            <Icon Name="IconName.EuroSign" />
+                                        </AddonLabel>
+                                    </Addon>
+                                    <Addon AddonType="AddonType.Body">
+                                        <WmCurrencyPicker @bind-SelectedValue="@NewPrice.Currency" />
+                                    </Addon>
+                                </Addons>
+                            </Field>
+                        </Validation>
+                    </Fields>
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="Close">
+                    @L["Cancel"]
+                </Button>
+                <Button Color="Color.Primary"
+                        Type="@ButtonType.Submit"
+                        PreventDefaultOnSubmit="true"
+                        Clicked="Create">
+                    <Icon Name="IconName.Save" />
+                    @L["Save"]
+                </Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+@code {
+    [Parameter] public Guid ProductId { get; set; }
+    [Parameter] public EventCallback OnCreated { get; set; }
+
+    protected string ModalTitle { get; set; }
+    protected Modal ModalRef { get; set; }
+    protected CreateUpdateProductPriceDto NewPrice { get; set; } = new();
+    protected Validations ValidationsRef { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ModalTitle = @L["Page:ManagementCreateProductPrice"];
+        await GetDataAsync();
+        await base.OnInitializedAsync();
+    }
+
+    protected async Task GetDataAsync()
+    {
+        NewPrice.Date = DateTime.Now;
+    }
+
+    protected async Task Create()
+    {
+        if (await ValidationsRef.ValidateAll())
+        {
+            NewPrice.ProductId = ProductId;
+            await ProductAppService.AddProductPriceAsync(NewPrice);
+            await ModalRef.Hide();
+            await OnCreated.InvokeAsync();
+        }
+    }
+
+    public Task Close()
+    {
+        ModalRef.Hide();
+        return Task.CompletedTask;
+    }
+
+    public Task Show()
+    {
+        ModalRef.Show();
+        return Task.CompletedTask;
+    }
+}

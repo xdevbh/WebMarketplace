@@ -107,7 +107,7 @@
             </Heading>
         </AccordionHeader>
         <AccordionBody>
-
+            // todo: add rich text editor
         </AccordionBody>
     </AccordionItem>
 </Accordion>
@@ -131,7 +131,7 @@
                                     </AddonLabel>
                                 </Addon>
                                 <Addon AddonType="AddonType.Body">
-                                    <NumericEdit TValue="decimal" @bind-Value="@Price.Amount" Min="0" />
+                                    <NumericPicker TValue="decimal" @bind-Value="@Price.Amount" Min="0" />
                                 </Addon>
                             </Addons>
                         </Field>
@@ -145,8 +145,7 @@
                                     </AddonLabel>
                                 </Addon>
                                 <Addon AddonType="AddonType.Body">
-                                    <TextEdit Placeholder="@L["Placeholder:Write"]"
-                                              @bind-Text="@Price.Currency" />
+                                    <WmCurrencyPicker @bind-SelectedValue="@Price.Currency" />
                                 </Addon>
                             </Addons>
                         </Field>
@@ -165,7 +164,11 @@
             </Heading>
         </AccordionHeader>
         <AccordionBody>
-
+            <Alert Color="Color.Default" Visible="true">
+                <AlertMessage>
+                    @L["Message:SaveBeforeUpload"]
+                </AlertMessage>
+            </Alert>
         </AccordionBody>
     </AccordionItem>
 </Accordion>

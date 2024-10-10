@@ -12,6 +12,7 @@ using Volo.Abp.Users;
 using WebMarketplace.Permissions;
 using WebMarketplace.Companies;
 using WebMarketplace.Companies.Memberships;
+using Volo.Abp.ObjectMapping;
 
 namespace WebMarketplace.Products;
 
@@ -43,8 +44,6 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
         var company = await _companyRepository.GetAsync(product.CompanyId);
 
         var productDto = ObjectMapper.Map<Product, ProductDto>(product);
-        //productDto.CompanyName = company.Name;
-
         return productDto;
     }
 
@@ -90,8 +89,8 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
         foreach (var item in items)
         {
             var dto = ObjectMapper.Map<ProductDetailQueryRequestItem, ProductListItemDto>(item);
-            dto.PriceAmount = item.CurrentPrice?.Amount ?? 0;
-            dto.PriceCurrency = item.CurrentPrice?.Currency ?? string.Empty;
+            dto.PriceAmount = item.PriceAmount;
+            dto.PriceCurrency = item.PriceCurrency;
             dtos.Add(dto);
         }
 
@@ -107,6 +106,7 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
             throw new AbpAuthorizationException();
         }
 
+
         var product = await _productManager.CreateAsync(
             companyMembership.CompanyId,
             input.Name,
@@ -117,9 +117,6 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
 
         await _productRepository.InsertAsync(product);
         var dto = ObjectMapper.Map<Product, ProductDto>(product);
-        dto.Rating = product.Rating;
-        dto.PriceAmount = product.CurrentPrice?.Amount ?? 0;
-        dto.PriceCurrency = product.CurrentPrice?.Currency ?? string.Empty;
         return dto;
     }
 
@@ -143,9 +140,6 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
 
         await _productRepository.UpdateAsync(product);
         var dto = ObjectMapper.Map<Product, ProductDto>(product);
-        dto.Rating = product.Rating;
-        dto.PriceAmount = product.CurrentPrice?.Amount ?? 0;
-        dto.PriceCurrency = product.CurrentPrice?.Currency ?? string.Empty;
         return dto;
     }
 
@@ -215,6 +209,21 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
             input.Amount,
             input.Currency);
     }
+
+    public async Task<PagedResultDto<ProductPriceDto>> GetPricesAsync(ProductPriceListFilterDto input)
+    {
+        var totalCount = await _productRepository.GetPriceCountAsync(input.ProductId);
+
+        var prices = await _productRepository.GetPriceListAsync(
+            input.Sorting, 
+            input.MaxResultCount, 
+            input.SkipCount, 
+            input.ProductId);
+
+        var dtos = ObjectMapper.Map<List<ProductPrice>, List<ProductPriceDto>>(prices);
+        return new PagedResultDto<ProductPriceDto>(totalCount, dtos);
+    }
+
 
     #endregion
 

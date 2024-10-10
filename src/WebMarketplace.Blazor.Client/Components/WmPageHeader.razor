@@ -18,7 +18,7 @@
                 {
                     <BreadcrumbItem>
                         <BreadcrumbLink To="/">
-                            <Icon Name="IconName.Home"/>
+                            <Icon Name="IconName.Home" />
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                 }
@@ -28,7 +28,7 @@
                         <BreadcrumbLink To="@item.Url">
                             @if (item.Icon != null)
                             {
-                                <Icon Name="@item.Icon"/>
+                                <Icon Name="@item.Icon" />
                             }
                             @item.Text
                         </BreadcrumbLink>
@@ -39,7 +39,7 @@
     }
 </Row>
 <Row>
-    <Column  VerticalAlignment="VerticalAlignment.Middle">
+    <Column VerticalAlignment="VerticalAlignment.Middle">
         @if (Options.Value.RenderPageTitle)
         {
             <Column ColumnSize="ColumnSize.IsAuto">

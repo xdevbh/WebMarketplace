@@ -7,22 +7,38 @@ using Volo.Abp;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
 using WebMarketplace.Companies;
+using WebMarketplace.Currencies;
 
 namespace WebMarketplace.Products
 {
     public class ProductManager : DomainService
     {
         private readonly IRepository<Product, Guid> _productRepository;
+        private readonly ICurrencyRepository _currencyRepository;
 
-        public ProductManager(IRepository<Product, Guid> productRepository)
+        public ProductManager(
+            IRepository<Product, Guid> productRepository, 
+            ICurrencyRepository currencyRepository)
         {
             _productRepository = productRepository;
+            _currencyRepository = currencyRepository;
         }
 
         #region Verify
 
         public async Task VerifyNameAsync(string name)
         {
+        }
+
+        public async Task VerifyCurrencyAsync(string currency)
+        {
+            Check.NotNullOrWhiteSpace(currency, nameof(currency));
+            Check.Length(currency, nameof(currency), WebMarketplaceConsts.CurrencyCodeLength, WebMarketplaceConsts.CurrencyCodeLength);
+
+            if (await _currencyRepository.Exists(currency))
+            {
+                throw new BusinessException(WebMarketplaceDomainErrorCodes.CurrencyNotFound).WithData("Code", currency);
+            }
         }
 
         #endregion
@@ -100,6 +116,7 @@ namespace WebMarketplace.Products
             decimal amount,
             string currency)
         {
+            currency = currency.ToUpper();
             product.AddPrice(date, amount, currency);
         }
 

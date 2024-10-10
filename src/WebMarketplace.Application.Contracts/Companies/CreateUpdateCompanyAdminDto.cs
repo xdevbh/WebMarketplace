@@ -7,6 +7,7 @@ public class CreateUpdateCompanyAdminDto
 {
     [Required]
     public string CompanyIdentificationNumber { get; set; }
+
     [Required]
     public string Name { get; set; }
     
@@ -19,5 +20,6 @@ public class CreateUpdateCompanyAdminDto
     public string? ShortDescription { get; set; }
 
     public  string? FullDescription { get; set; }    // to rich text editor
+
     public string? Website { get; set; }
 }

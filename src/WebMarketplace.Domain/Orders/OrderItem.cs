@@ -30,14 +30,14 @@ public class OrderItem : AuditedEntity<Guid>
     {
         OrderId = orderId;
         ProductId = productId;
-        SetProductPrice(productName);
+        SetProductName(productName);
         SetQuantity(quantity);
         SetUnitPrice(unitPrice);
         SetCurrency(currency); 
         SetTotalPrice(totalPrice);
     }
     
-    public OrderItem SetProductPrice(string productName)
+    public OrderItem SetProductName(string productName)
     {
         Check.NotNull(productName, nameof(productName));
 

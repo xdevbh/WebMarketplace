@@ -8,6 +8,7 @@ using WebMarketplace.Addresses;
 using WebMarketplace.Products;
 using WebMarketplace.Companies;
 using WebMarketplace.Companies.Memberships;
+using WebMarketplace.Currencies;
 
 namespace WebMarketplace;
 
@@ -19,6 +20,8 @@ public class WebMarketplaceApplicationAutoMapperProfile : Profile
          * Alternatively, you can split your mapping configurations
          * into multiple profile classes for a better organization. */
 
+        CreateMap<Currency, CurrencyDto>();
+
         CreateMap<Company, CompanyDto>();
         CreateMap<Company, CompanyLookupDto>();
         CreateMap<CompanyMembershipDetailQueryResultItem, CompanyMembershipDto>();
@@ -28,13 +31,8 @@ public class WebMarketplaceApplicationAutoMapperProfile : Profile
         CreateMap<Address, AddressDto>();
         CreateMap<CreateUpdateAddressDto, Address>();
 
-        CreateMap<Product, ProductDto>()
-            .Ignore(x => x.PriceAmount)
-            .Ignore(x => x.PriceCurrency)
-            .Ignore(x => x.Rating);
-        CreateMap<ProductDetailQueryRequestItem, ProductDto>()
-            .Ignore(x => x.PriceAmount)
-            .Ignore(x => x.PriceCurrency);
+        CreateMap<Product, ProductDto>();
+        CreateMap<ProductDetailQueryRequestItem, ProductDto>();
         CreateMap<ProductDetailQueryRequestItem, ProductDetailDto>()
             .Ignore(x => x.PriceAmount)
             .Ignore(x => x.PriceCurrency);
@@ -45,6 +43,7 @@ public class WebMarketplaceApplicationAutoMapperProfile : Profile
             .Ignore(x => x.PriceAmount)
             .Ignore(x => x.PriceCurrency);
         CreateMap<CreateUpdateProductDto, Product>();
+        CreateMap<ProductDto, CreateUpdateProductDto>();
 
 
         CreateMap<ProductReviewDetailQueryResultItem, ProductReviewDto>()
@@ -53,5 +52,6 @@ public class WebMarketplaceApplicationAutoMapperProfile : Profile
 
         CreateMap<ProductImage, ProductImageDto>()
             .Ignore(x => x.Content);
+        CreateMap<ProductPrice, ProductPriceDto>();
     }
 }

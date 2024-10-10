@@ -26,6 +26,8 @@ public interface IProductSellerAppService : IApplicationService
     // prices
     Task AddProductPriceAsync(CreateUpdateProductPriceDto input);
 
+    Task<PagedResultDto<ProductPriceDto>> GetPricesAsync(ProductPriceListFilterDto input);
+
     // images
     Task<ProductImageDto> GetDefaultImageAsync(Guid productId);
 

@@ -23,7 +23,6 @@ public class Product : AuditedAggregateRoot<Guid>
     
     public virtual bool IsPublished { get; private set; }
 
-
     public virtual List<ProductReview> Reviews { get; set; }
 
     public virtual double Rating => Reviews.Any() ? Reviews.Average(x => x.Rating) : 0;
@@ -52,8 +51,8 @@ public class Product : AuditedAggregateRoot<Guid>
     {
         CompanyId = companyId;
         SetName(name);
-        ProductCategory = productCategory;
-        ProductType = productType;
+        SetCategory(productCategory);
+        SetType(productType);
         ShortDescription = shortDescription;
         FullDescription = fullDescription;
         IsPublished = false;
@@ -68,6 +67,28 @@ public class Product : AuditedAggregateRoot<Guid>
         Check.NotNull(name, nameof(name));
 
         Name = name;
+        return this;
+    }
+
+    public Product SetCategory(ProductCategory category)
+    {
+        if(category == ProductCategory.Undefined)
+        {
+            throw new ArgumentException(WebMarketplaceDomainErrorCodes.ProductCategoryUndefinedNotAllowed);
+        }
+
+        ProductCategory = category;
+        return this;
+    }
+
+    public Product SetType(ProductType type)
+    {
+        if (type == ProductType.Undefined)
+        {
+            throw new ArgumentException(WebMarketplaceDomainErrorCodes.ProductTypeUndefinedNotAllowed);
+        }
+
+        ProductType = type;
         return this;
     }
 
@@ -142,7 +163,7 @@ public class Product : AuditedAggregateRoot<Guid>
     {
         if (Prices.Any(x => x.Date == date))
         {
-            throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductReviewUserAlreadyExists);
+            throw new ArgumentException(WebMarketplaceDomainErrorCodes.ProductReviewUserAlreadyExists);
         }
 
         var price = new ProductPrice(this.Id, date, amount, currency);
@@ -174,13 +195,13 @@ public class Product : AuditedAggregateRoot<Guid>
         var image = Images.FirstOrDefault(x => x.BlobName == blobName);
         if (image is null)
         {
-            throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductImageNotFound);
+            throw new ArgumentException(WebMarketplaceDomainErrorCodes.ProductImageNotFound);
         }
         else
         {
             if (image.IsDefault)
             {
-                throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductImageDefaultRemoveNotAllowed);
+                throw new ArgumentException(WebMarketplaceDomainErrorCodes.ProductImageDefaultRemoveNotAllowed);
             }
         }
 

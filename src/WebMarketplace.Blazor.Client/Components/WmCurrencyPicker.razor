@@ -1,0 +1,53 @@
+﻿@using WebMarketplace.Currencies
+@inject ICurrencyAppService CurrencyAppService
+
+@* <Select TValue="string" @bind-Value="SelectedValue">
+    @foreach (var currency in Currencies)
+    {
+        <SelectItem Value="@currency">
+            @currency
+        </SelectItem>
+    }
+</Select> *@
+
+
+<SelectList TItem="string"
+            TValue="string"
+            Data="@Currencies"
+            TextField="@((item)=>item)"
+            ValueField="@((item)=>item)"
+            @bind-SelectedValue="@SelectedValue"
+            DefaultItemText="" />
+
+@code {
+
+    [Parameter] public string SelectedValue
+    {
+        get => _selectedValue;
+        set
+        {
+            if (_selectedValue != value)
+            {
+                _selectedValue = value;
+                SelectedValueChanged.InvokeAsync(value);
+            }
+        }
+    }
+
+    [Parameter] public EventCallback<string> SelectedValueChanged { get; set; }
+
+    private string _selectedValue;
+
+    protected IReadOnlyList<string> Currencies = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetData();
+    }
+
+    protected async Task GetData()
+    {
+        var result = await CurrencyAppService.GetCodeListAsync();
+        Currencies = result.Items;
+    }
+}

@@ -21,11 +21,5 @@ public class ProductDto : AuditedEntityDto<Guid>
     public string? FullDescription { get; set; }
 
     public bool IsPublished { get;  set; }
-    
-    public double Rating { get; set; }
-    
-    public decimal PriceAmount { get; set; }
-
-    public string PriceCurrency { get; set; }
 
 }

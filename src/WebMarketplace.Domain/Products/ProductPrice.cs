@@ -38,7 +38,7 @@ public class ProductPrice : Entity
         Check.NotNullOrWhiteSpace(currency, nameof(currency));
         Check.Length(currency, nameof(currency), WebMarketplaceConsts.CurrencyCodeLength, WebMarketplaceConsts.CurrencyCodeLength);
 
-        Currency = currency;
+        Currency = currency.ToUpper();
 
         return this;
     }

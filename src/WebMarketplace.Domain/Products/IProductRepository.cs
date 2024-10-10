@@ -10,11 +10,11 @@ namespace WebMarketplace.Products;
 public interface IProductRepository : IRepository<Product, Guid>
 {
     // ProductDetail
-    
+
     Task<ProductDetailQueryRequestItem> GetProductDetailAsync(
         Guid id,
         CancellationToken cancellationToken = default);
-    
+
     Task<IQueryable<ProductDetailQueryRequestItem>> GetProductDetailQueryableAsync(
         Guid? companyId = null,
         bool? isPublished = null,
@@ -55,11 +55,11 @@ public interface IProductRepository : IRepository<Product, Guid>
         decimal? maxPriceAmount = null,
         string? priceCurrency = null,
         CancellationToken cancellationToken = default);
-    
+
 
     // ReviewDetail
     Task<ProductReviewDetailQueryResultItem> GetReviewDetailAsync(
-        Guid id ,
+        Guid id,
         CancellationToken cancellationToken = default);
 
     Task<IQueryable<ProductReviewDetailQueryResultItem>> GetReviewDetailQueryableAsync(
@@ -80,5 +80,25 @@ public interface IProductRepository : IRepository<Product, Guid>
         Guid? productId = null,
         double? minRating = null,
         double? maxRating = null,
+        CancellationToken cancellationToken = default);
+
+    // Price
+    Task<IQueryable<ProductPrice>> GetPriceQueryableAsync(
+        Guid? productId = null);
+
+    Task<ProductPrice> GetPriceAsync(
+        Guid productId,
+        DateTime date,
+        CancellationToken cancellationToken = default);
+
+    Task<List<ProductPrice>> GetPriceListAsync(
+        string? sorting = null,
+        int maxResultCount = int.MaxValue,
+        int skipCount = 0,
+        Guid? productId = null,
+        CancellationToken cancellationToken = default);
+
+    Task<long> GetPriceCountAsync(
+        Guid? productId = null,
         CancellationToken cancellationToken = default);
 }

@@ -11,7 +11,10 @@ public static class WebMarketplaceDomainErrorCodes
     public const string ProductReviewNotFound = "Exception:ProductReviewNotFound";
     public const string ProductImageNotFound = "Exception:ProductImageNotFound";
     public const string ProductImageDefaultRemoveNotAllowed = "Exception:ProductImageDefaultRemoveNotAllowed";
+    public const string ProductCategoryUndefinedNotAllowed = "Exception:ProductCategoryUndefinedNotAllowed";
+    public const string ProductTypeUndefinedNotAllowed = "Exception:ProductTypeUndefinedNotAllowed";
     
     public const string PriceNotNegative = "Exception:PriceNotNegative"; 
     public const string CurrencyAlreadySet = "Exception:CurrencyAlreadySet";
+    public const string CurrencyNotFound = "Exception:CurrencyNotFound";
 }

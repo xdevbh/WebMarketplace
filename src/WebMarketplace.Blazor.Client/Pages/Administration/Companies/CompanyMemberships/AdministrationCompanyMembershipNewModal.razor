@@ -61,8 +61,8 @@
     [Parameter] public string CompanyName { get; set; }
     [Parameter] public EventCallback OnCreated { get; set; }
 
-    public Modal ModalRef { get; set; }
-    public CreateCompanyMembershipDto NewMembership { get; set; } = new();
+    protected Modal ModalRef { get; set; }
+    protected CreateCompanyMembershipDto NewMembership { get; set; } = new();
     protected Validations ValidationsRef { get; set; }
     protected IReadOnlyList<UserSelectItemDto> Users { get; set; } = new List<UserSelectItemDto>();
     protected Guid SelectedUser { get; set; }

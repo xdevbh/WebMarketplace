@@ -36,8 +36,8 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
     {
         var item = await _productRepository.GetProductDetailAsync(id);
         var dto = ObjectMapper.Map<ProductDetailQueryRequestItem, ProductDetailDto>(item);
-        dto.PriceAmount = item.CurrentPrice.Amount;
-        dto.PriceCurrency = item.CurrentPrice.Currency;
+        dto.PriceAmount = item.PriceAmount;
+        dto.PriceCurrency = item.PriceCurrency;
         return dto;
     }
 
@@ -76,8 +76,8 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
         foreach (var item in items)
         {
             var dto = ObjectMapper.Map<ProductDetailQueryRequestItem, ProductCardDto>(item);
-            dto.PriceAmount = item.CurrentPrice.Amount;
-            dto.PriceCurrency = item.CurrentPrice.Currency;
+            dto.PriceAmount = item.PriceAmount;
+            dto.PriceCurrency = item.PriceCurrency;
             dtos.Add(dto);
         }
         
@@ -162,8 +162,6 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
     {
         var productDto = new ProductDto();
         productDto = ObjectMapper.Map<ProductDetailQueryRequestItem, ProductDto>(item);
-        productDto.PriceAmount = item.CurrentPrice.Amount;
-        productDto.PriceCurrency = item.CurrentPrice.Currency;
         
         // var reviews = await GetReviewListAsync(new ProductReviewListFilterDto(item.Id));
         // productDto.Reviews = reviews;

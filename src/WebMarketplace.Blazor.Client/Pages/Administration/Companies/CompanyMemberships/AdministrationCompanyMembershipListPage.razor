@@ -56,7 +56,7 @@
                             <DropdownMenu>
                                 @if (CanDelete)
                                 {
-                                    <DropdownItem Clicked="() => Delete(context.Id)">
+                                    <DropdownItem Clicked="() => DeleteAsync(context.Id)">
                                         <Icon Name="IconName.Delete" Margin="Margin.Is1.FromEnd"/>
                                         @L["Action:Delete"]
                                     </DropdownItem>
@@ -144,13 +144,13 @@
         await GetDataAsync();
     }
 
-    protected override async Task Create()
+    protected override async Task CreateAsync()
     {
         CreateModalRef.Show();
         await Task.CompletedTask;
     }
 
-    protected override async Task Delete(Guid id)
+    protected override async Task DeleteAsync(Guid id)
     {
         var confirmMessage = L["Message:CompanyMembershipDeletionConfirmation"];
         if (!await UiMessageService.Confirm(confirmMessage))
@@ -166,7 +166,7 @@
     protected override Task SetToolBarAsync()
     {
         PageToolbar.AddButton(L["Action:New"],
-            () => Create(),
+            () => CreateAsync(),
             IconName.Add,
             Color.Primary,
             !CanCreate);

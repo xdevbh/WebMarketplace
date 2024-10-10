@@ -160,10 +160,10 @@
             </Heading>
         </AccordionHeader>
         <AccordionBody>
-            <AddressComponent @ref="AddressComponentRef"
+            <WmAddressComponent @ref="WmAddressComponentRef"
                               Address="Address"
                               ReadOnly="false">
-            </AddressComponent>
+            </WmAddressComponent>
         </AccordionBody>
     </AccordionItem>
 </Accordion>
@@ -177,7 +177,7 @@
     public Validations CompanyValidationsRef { get; set; }
     private CreateUpdateCompanyAdminDto Company = new CreateUpdateCompanyAdminDto();
     private CreateUpdateAddressDto Address = new CreateUpdateAddressDto();
-    private AddressComponent AddressComponentRef;
+    private WmAddressComponent WmAddressComponentRef;
 
     protected override async Task OnInitializedAsync()
     {
@@ -193,7 +193,7 @@
 
     private async Task CreateAsync()
     {
-        if (await AddressComponentRef.ValidateAll() && await CompanyValidationsRef.ValidateAll())
+        if (await WmAddressComponentRef.ValidateAll() && await CompanyValidationsRef.ValidateAll())
         {
             var addressDto = await AddressAppService.CreateAsync(Address);
 

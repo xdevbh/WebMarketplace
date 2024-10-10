@@ -23,8 +23,8 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
     {
         return (await GetQueryableAsync()).IncludeDetails();
     }
-    
-    
+
+
     #region ProductCompanyQueryResultItems
 
     public async Task<ProductDetailQueryRequestItem> GetProductDetailAsync(
@@ -54,22 +54,34 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
         var query =
             from product in dbContext.Set<Product>().IncludeDetails()
             join company in dbContext.Set<Company>() on product.CompanyId equals company.Id
+            select new
+            {
+                Product = product,
+                CompanyName = company.Name,
+                Reviews = product.Reviews,
+                Prices = product.Prices
+            }
+            into result
             select new ProductDetailQueryRequestItem
             {
-                Id = product.Id,
-                CompanyId = product.CompanyId,
-                CompanyName = company.Name,
-                Name = product.Name,
-                ProductCategory = product.ProductCategory,
-                ProductType = product.ProductType,
-                ShortDescription = product.ShortDescription,
-                FullDescription = product.FullDescription,
-                IsPublished = product.IsPublished,
-                Rating = product.Rating,
-                CurrentPrice = product.CurrentPrice,
-                CreationTime = product.CreationTime
+                Id = result.Product.Id,
+                CompanyId = result.Product.CompanyId,
+                CompanyName = result.CompanyName,
+                Name = result.Product.Name,
+                ProductCategory = result.Product.ProductCategory,
+                ProductType = result.Product.ProductType,
+                ShortDescription = result.Product.ShortDescription,
+                FullDescription = result.Product.FullDescription,
+                IsPublished = result.Product.IsPublished,
+                Rating = result.Reviews.Any() ? result.Reviews.Average(r => r.Rating) : 0, 
+                //CurrentPrice = result.Prices.Any() ? result.Prices.OrderByDescending(p => p.Date).FirstOrDefault() : null, 
+                PriceAmount = result.Prices.Any() ? result.Prices.OrderByDescending(p => p.Date).FirstOrDefault().Amount : 0,
+                PriceCurrency = result.Prices.Any() ? result.Prices.OrderByDescending(p => p.Date).FirstOrDefault().Currency : string.Empty,
+                PriceDate = result.Prices.Any() ? result.Prices.OrderByDescending(p => p.Date).FirstOrDefault().Date : (DateTime?)null,
+                CreationTime = result.Product.CreationTime
             };
-            
+
+
 
         if (companyId != null)
         {
@@ -108,17 +120,17 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
 
         if (minPriceAmount != null)
         {
-            query = query.Where(x => x.CurrentPrice != null && x.CurrentPrice.Amount >= minPriceAmount);
+            query = query.Where(x => x.PriceAmount >= minPriceAmount);
         }
 
         if (maxPriceAmount != null)
         {
-            query = query.Where(x => x.CurrentPrice != null && x.CurrentPrice.Amount <= maxPriceAmount);
+            query = query.Where(x => x.PriceAmount <= maxPriceAmount);
         }
 
-        if (priceCurrency != null)
+        if (!priceCurrency.IsNullOrWhiteSpace())
         {
-            query = query.Where(x => x.CurrentPrice != null && x.CurrentPrice.Currency == priceCurrency);
+            query = query.Where(x => x.PriceCurrency != null && x.PriceCurrency == priceCurrency);
         }
 
 
@@ -195,31 +207,6 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
 
     #region Reviews
 
-    public async Task<ProductReviewDetailQueryResultItem> GetReviewDetailAsync(
-        Guid id,
-        CancellationToken cancellationToken = default)
-    {
-        var dbContext = await GetDbContextAsync();
-        var query =
-            from review in dbContext.Set<ProductReview>()
-            join user in dbContext.Set<IdentityUser>() on review.UserId equals user.Id
-            join product in dbContext.Set<Product>() on review.ProductId equals product.Id
-            where product.Id == id
-            select new ProductReviewDetailQueryResultItem
-            {
-                UserId = user.Id,
-                UserName = user.Name ?? user.UserName,
-                ProductId = product.Id,
-                ProductName = product.Name,
-                Rating = review.Rating,
-                Comment = review.Comment,
-                CreationTime = review.CreationTime
-            };
-        
-        var item = await query.FirstOrDefaultAsync(GetCancellationToken(cancellationToken));
-        return item;
-    }
-
     public async Task<IQueryable<ProductReviewDetailQueryResultItem>> GetReviewDetailQueryableAsync(
         Guid? productId = null,
         double? minRating = null,
@@ -250,6 +237,31 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
         return query;
     }
 
+    public async Task<ProductReviewDetailQueryResultItem> GetReviewDetailAsync(
+    Guid id,
+    CancellationToken cancellationToken = default)
+    {
+        var dbContext = await GetDbContextAsync();
+        var query =
+            from review in dbContext.Set<ProductReview>()
+            join user in dbContext.Set<IdentityUser>() on review.UserId equals user.Id
+            join product in dbContext.Set<Product>() on review.ProductId equals product.Id
+            where product.Id == id
+            select new ProductReviewDetailQueryResultItem
+            {
+                UserId = user.Id,
+                UserName = user.Name ?? user.UserName,
+                ProductId = product.Id,
+                ProductName = product.Name,
+                Rating = review.Rating,
+                Comment = review.Comment,
+                CreationTime = review.CreationTime
+            };
+
+        var item = await query.FirstOrDefaultAsync(GetCancellationToken(cancellationToken));
+        return item;
+    }
+
     public async Task<List<ProductReviewDetailQueryResultItem>> GetReviewDetailListAsync(
         string? sorting = null,
         int maxResultCount = int.MaxValue,
@@ -260,8 +272,8 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
         CancellationToken cancellationToken = default)
     {
         var query = await GetReviewDetailQueryableAsync(
-            productId, 
-            minRating, 
+            productId,
+            minRating,
             maxRating);
 
         if (string.IsNullOrWhiteSpace(sorting))
@@ -269,7 +281,7 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
             sorting = "CreationTime DESC";
         }
 
-        query = query.OrderBy(sorting); 
+        query = query.OrderBy(sorting);
         query = query.PageBy(skipCount, maxResultCount);
 
         var list = await query.ToListAsync(cancellationToken);
@@ -287,6 +299,69 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
             productId,
             minRating,
             maxRating);
+
+        var count = await query.LongCountAsync(GetCancellationToken(cancellationToken));
+        return count;
+    }
+
+    #endregion
+
+    #region Price
+
+    public async Task<IQueryable<ProductPrice>> GetPriceQueryableAsync(
+        Guid? productId = null)
+    {
+        var dbContext = await GetDbContextAsync();
+        var query =
+            from price in dbContext.Set<ProductPrice>()
+            select price;
+
+        if(productId != null)
+        {
+            query = query.Where(x => x.ProductId == productId);
+        }
+
+        return query;
+    }
+
+    public async Task<ProductPrice> GetPriceAsync(
+        Guid productId, 
+        DateTime date, 
+        CancellationToken cancellationToken = default)
+    {
+        var query = await GetPriceQueryableAsync(productId);
+        query = query.Where(x => x.Date == date);
+
+        var price = await query.FirstOrDefaultAsync(GetCancellationToken(cancellationToken));
+        return price;
+    }
+
+    public async Task<List<ProductPrice>> GetPriceListAsync(
+        string? sorting = null,
+        int maxResultCount = int.MaxValue,
+        int skipCount = 0,
+        Guid? productId = null,
+        CancellationToken cancellationToken = default)
+    {
+        var query = await GetPriceQueryableAsync(productId);
+
+        if (string.IsNullOrWhiteSpace(sorting))
+        {
+            sorting = nameof(ProductPrice.Date) + " DESC";
+        }
+
+        query = query.OrderBy(sorting);
+        query = query.PageBy(skipCount, maxResultCount);
+
+        var list = await query.ToListAsync(GetCancellationToken(cancellationToken));
+        return list;
+    }
+
+    public async Task<long> GetPriceCountAsync(
+        Guid? productId = null, 
+        CancellationToken cancellationToken = default)
+    {
+        var query = await GetPriceQueryableAsync(productId);
 
         var count = await query.LongCountAsync(GetCancellationToken(cancellationToken));
         return count;
