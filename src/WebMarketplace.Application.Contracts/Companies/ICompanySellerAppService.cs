@@ -14,4 +14,13 @@ public interface ICompanySellerAppService : IApplicationService
     Task<CompanyDto> GetAsync();
     Task<CompanyLookupDto> GetCompanyLookupAsync();
     Task<CompanyDto> UpdateAsync(UpdateCompanySellerDto input);
+
+    // images
+    Task<ListResultDto<CompanyImageDto>> GetAllImagesAsync();
+
+    Task AddImageAsync(CreateCompanyImageDto input);
+
+    Task SetDefaultImageAsync(UpdateCompanyImageDto input);
+
+    Task DeleteImageAsync(string blobName);
 }

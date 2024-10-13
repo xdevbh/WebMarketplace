@@ -18,7 +18,7 @@
 @inject IUiMessageService UiMessageService
 @inject NavigationManager NavigationManager
 
-<WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle"/>
+<WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle" />
 
 <Accordion Margin="Margin.Is3.FromBottom">
     <AccordionItem Visible="true">
@@ -50,13 +50,13 @@
                         <Addons>
                             <Addon AddonType="AddonType.Start">
                                 <AddonLabel>
-                                    <Icon Name="IconName.Pen"/>
+                                    <Icon Name="IconName.Pen" />
                                 </AddonLabel>
                             </Addon>
                             <Addon AddonType="AddonType.Body">
                                 <TextEdit Placeholder="@L["Placeholder:Write"]"
                                           @bind-Text="@Company.CompanyIdentificationNumber"
-                                          ReadOnly="true"/>
+                                          ReadOnly="true" />
                             </Addon>
                         </Addons>
                     </Field>
@@ -67,7 +67,7 @@
                         <Addons>
                             <Addon AddonType="AddonType.Start">
                                 <AddonLabel>
-                                    <Icon Name="IconName.Pen"/>
+                                    <Icon Name="IconName.Pen" />
                                 </AddonLabel>
                             </Addon>
                             <Addon AddonType="AddonType.Body">
@@ -84,13 +84,13 @@
                         <Addons>
                             <Addon AddonType="AddonType.Start">
                                 <AddonLabel>
-                                    <Icon Name="IconName.Pen"/>
+                                    <Icon Name="IconName.Pen" />
                                 </AddonLabel>
                             </Addon>
                             <Addon AddonType="AddonType.Body">
                                 <TextEdit Placeholder="@L["Placeholder:Write"]"
                                           @bind-Text="@Company.DisplayName"
-                                          ReadOnly="true"/>
+                                          ReadOnly="true" />
                             </Addon>
                         </Addons>
                     </Field>
@@ -101,11 +101,12 @@
                         <Addons>
                             <Addon AddonType="AddonType.Start">
                                 <AddonLabel>
-                                    <Icon Name="IconName.Pen"/>
+                                    <Icon Name="IconName.Pen" />
                                 </AddonLabel>
                             </Addon>
                             <Addon AddonType="AddonType.Body">
-                                <MemoEdit @bind-Text="@EditCompany.ShortDescription"/>
+                                <MemoEdit @bind-Text="@EditCompany.ShortDescription"
+                                          ReadOnly="!IsEditMode"/>
                             </Addon>
                         </Addons>
                     </Field>
@@ -116,12 +117,13 @@
                         <Addons>
                             <Addon AddonType="AddonType.Start">
                                 <AddonLabel>
-                                    <Icon Name="IconName.Pen"/>
+                                    <Icon Name="IconName.Pen" />
                                 </AddonLabel>
                             </Addon>
                             <Addon AddonType="AddonType.Body">
                                 <TextEdit Placeholder="@L["Placeholder:Write"]"
-                                          @bind-Text="@EditCompany.Website"/>
+                                          @bind-Text="@EditCompany.Website" 
+                                          ReadOnly="!IsEditMode"/>
                             </Addon>
                         </Addons>
                     </Field>
@@ -152,69 +154,84 @@
             </Heading>
         </AccordionHeader>
         <AccordionBody>
-            <WmAddressComponent @ref="WmAddressComponentRef"
+            <WmAddressEdit @ref="WmAddressEditRef"
                                 Address="EditAddress"
                                 Id="@Address.Id"
-                                ReadOnly="false">
-            </WmAddressComponent>
+                                ReadOnly="!IsEditMode">
+            </WmAddressEdit>
         </AccordionBody>
     </AccordionItem>
 </Accordion>
 
-@code {
-    protected CompanyDto Company { get; set; } = new();
-    protected UpdateCompanySellerDto EditCompany { get; set; } = new();
-    protected AddressDto Address { get; set; } = new();
-    protected CreateUpdateAddressDto EditAddress { get; set; } = new();
-    protected bool CanEdit { get; set; } = false;
-    
-    protected Validations CompanyValidationsRef { get; set; }
-    protected WmAddressComponent WmAddressComponentRef;
+<Accordion Margin="Margin.Is3.FromBottom">
+    <AccordionItem Visible="true">
+        <AccordionHeader>
+            <Heading Size="HeadingSize.Is3">
+                <AccordionToggle>@L["Header:Images"]</AccordionToggle>
+            </Heading>
+        </AccordionHeader>
+        <AccordionBody>
+            <Div Flex="Flex.ReverseRow">
+                <ToolbarButton Color="Color.Primary"
+                               Icon="IconName.Add"
+                               Clicked="()=>AddImageAsync()"
+                               Text="@L["Action:AddImage"]" />
+            </Div>
+            <DataGrid TItem="CompanyImageDto"
+                      Data="Images"
+                      ReadData="OnImagesDataGridReadAsync"
+                      TotalItems="ImageTotalCount"
+                      ShowPager="false"
+                      ShowPageSizes="false"
+                      PageSize="ImageTotalCount"
+                      Filterable="false"
+                      Responsive="true"
+                      Resizable="true"
+                      FixedHeader="false">
+                <DataGridColumns>
+                    <DataGridColumn TItem="CompanyImageDto" Filterable="false">
+                        <DisplayTemplate>
+                            <Dropdown>
+                                <DropdownToggle Color="Color.Primary">
+                                </DropdownToggle>
+                                <DropdownMenu>
+                                    <DropdownItem Clicked="() => SetDefaultAsync(context.BlobName)" Disabled="!(CanEdit && !context.IsDefault)">
+                                        <Icon Name="IconName.Check" Margin="Margin.Is1.FromEnd" />
+                                        @L["Action:SetDefault"]
+                                    </DropdownItem>
+                                    <DropdownItem Clicked="() => DeleteImagesAsync(context.BlobName)" Disabled="!CanEdit">
+                                        <Icon Name="IconName.Delete" Margin="Margin.Is1.FromEnd" />
+                                        @L["Action:Delete"]
+                                    </DropdownItem>
+                                </DropdownMenu>
+                            </Dropdown>
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="CompanyImageDto"
+                                    Field="@nameof(CompanyImageDto.Content)"
+                                    Caption="@L["Field:Image"]"
+                                    Width="300px">
+                        <DisplayTemplate>
+                            @{
+                                var imageDataUrl = $"data:{context.ContentType};base64,{Convert.ToBase64String(context.Content)}";
+                                <Image Source="@imageDataUrl"
+                                       Text="@context.BlobName"
+                                       Loading
+                                       Style="height: 100%; width: 100%" />
+                            }
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="CompanyImageDto"
+                                    Field="@nameof(CompanyImageDto.BlobName)"
+                                    Caption="@L["Field:Name"]" />
+                    <DataGridCheckColumn TItem="CompanyImageDto"
+                                         Field="@nameof(CompanyImageDto.IsDefault)"
+                                         Caption="@L["Field:IsDefault"]" />
+                </DataGridColumns>
+            </DataGrid>
+        </AccordionBody>
+    </AccordionItem>
+</Accordion>
 
-
-    protected override async Task OnInitializedAsync()
-    {
-        PageTitle = L["Page:Company"];
-        PageHeader = L["Header:Company"];
-        await GetDataAsync();
-        await base.OnInitializedAsync();
-    }
-
-    protected override async Task SetPermissionsAsync()
-    {
-        CanEdit = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.Companies.Update);
-        await base.SetPermissionsAsync();
-    }
-
-    protected override Task SetBreadcrumbItemsAsync()
-    {
-        BreadcrumbItems.Add(new BreadcrumbItem(L["Menu:Management"], "/management"));
-        BreadcrumbItems.Add(new BreadcrumbItem(L["Menu:Company"]));
-        return base.SetBreadcrumbItemsAsync();
-    }
-
-    protected override Task SetToolBarAsync()
-    {
-        PageToolbar.AddButton(L["Action:Edit"],
-            () => UpdateAsync(),
-            IconName.Save,
-            Color.Primary,
-            !CanEdit);
-
-        return base.SetToolBarAsync();
-    }
-
-    protected Task UpdateAsync()
-    {
-        NavigationManager.NavigateTo("/management/company/edit");
-        return Task.CompletedTask;
-    }
-    
-    protected async Task GetDataAsync()
-    {
-        Company = await CompanyAppService.GetAsync();
-        EditCompany = ObjectMapper.Map<CompanyDto, UpdateCompanySellerDto>(Company);
-        Address = await AddressAppService.GetAsync(Company.AddressId);
-        EditAddress = ObjectMapper.Map<AddressDto, CreateUpdateAddressDto>(Address);
-    }
-}
+<CompanyImageNewModal @ref="AddImageModalRef"
+                      OnCreated="GetImagesAsync" />

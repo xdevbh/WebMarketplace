@@ -6,7 +6,11 @@ public static class WebMarketplaceDomainErrorCodes
     public const string CompanyNameAlreadyExists = "Exception:CompanyNameAlreadyExists"; 
     public const string CompanyDisplayNameAlreadyExists = "Exception:CompanyDisplayNameAlreadyExists"; 
     public const string CompanyIdentificationNumberAlreadyExists = "Exception:CompanyIdentificationNumberAlreadyExists"; 
-    
+    public const string CompanyImageNotFound = "Exception:CompanyImageNotFound";
+    public const string CompanyImagesNotFound = "Exception:CompanyImagesNotFound";
+    public const string CompanyImageDefaultRemoveNotAllowed = "Exception:CompanyImageDefaultRemoveNotAllowed";
+    public const string CompanyNotFoundForUser = "Exception:CompanyNotFoundForUser";
+
     public const string ProductReviewUserAlreadyExists = "Exception:ProductReviewUserAlreadyExists";
     public const string ProductReviewNotFound = "Exception:ProductReviewNotFound";
     public const string ProductImageNotFound = "Exception:ProductImageNotFound";
@@ -18,4 +22,6 @@ public static class WebMarketplaceDomainErrorCodes
     public const string PriceNotNegative = "Exception:PriceNotNegative"; 
     public const string CurrencyAlreadySet = "Exception:CurrencyAlreadySet";
     public const string CurrencyNotFound = "Exception:CurrencyNotFound";
+    public const string ImageContentIsEmpty = "Exception:ImageContentIsEmpty";
+
 }

@@ -27,9 +27,12 @@ public class WebMarketplaceApplicationAutoMapperProfile : Profile
         CreateMap<CompanyMembershipDetailQueryResultItem, CompanyMembershipDto>();
         CreateMap<CreateCompanyMembershipDto, CompanyMembership>();
         CreateMap<CompanyDto, CreateUpdateCompanyAdminDto>();
+        CreateMap<CompanyImage, CompanyImageDto>()
+            .Ignore(x => x.Content);
 
         CreateMap<Address, AddressDto>();
-        CreateMap<CreateUpdateAddressDto, Address>();
+        CreateMap<CreateUpdateAddressDto, Address>()
+            .Ignore(x => x.Id);
 
         CreateMap<Product, ProductDto>();
         CreateMap<ProductDetailQueryRequestItem, ProductDto>();

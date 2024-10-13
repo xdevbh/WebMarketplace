@@ -1,7 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
-using WebMarketplace.Addresses;
 
 namespace WebMarketplace.Companies;
 
@@ -14,6 +15,9 @@ public class Company : FullAuditedAggregateRoot<Guid>
     public virtual string? ShortDescription { get; set; }
     public virtual string? FullDescription { get; set; }
     public virtual string? Website { get; set; }
+
+    public virtual List<CompanyImage> Images { get; set; }
+    public virtual CompanyImage? DefaultImage => Images?.Where(x => x.IsDefault).FirstOrDefault();
 
     // todo: add contact information as list with ContactInformationType: mail, phone ... 
 
@@ -37,6 +41,8 @@ public class Company : FullAuditedAggregateRoot<Guid>
         ShortDescription = shortDescription;
         FullDescription = fullDescription;
         Website = website;
+
+        Images = new List<CompanyImage>();
     }
     
     public Company SetIdentificationNumber(string companyIdentificationNumber)
@@ -56,8 +62,65 @@ public class Company : FullAuditedAggregateRoot<Guid>
         DisplayName = Check.NotNullOrWhiteSpace(displayName, nameof(displayName));
         return this;
     }
-    
-    
-    // public string? ImagePath { get; set; }
-    // public VendorCategory VendorCategorygory { get; set; }
+
+
+    #region Images
+
+    public Company AddImage(
+        string blobName,
+        bool isDefault)
+    {
+        var defaultImage = Images.FirstOrDefault(x => x.IsDefault);
+        if (defaultImage is not null && isDefault)
+        {
+            defaultImage.IsDefault = false;
+        }
+
+        var image = new CompanyImage(this.Id, blobName, isDefault);
+        Images.Add(image);
+        return this;
+    }
+
+    public Company SetDefaultImage(
+        string blobName,
+        bool isDefault)
+    {
+        var defaultImage = Images.FirstOrDefault(x => x.IsDefault);
+        if (defaultImage is not null && isDefault)
+        {
+            defaultImage.IsDefault = false;
+        }
+
+        var image = Images.FirstOrDefault(x => x.BlobName == blobName);
+        if (image is null)
+        {
+            throw new BusinessException(WebMarketplaceDomainErrorCodes.CompanyImageNotFound);
+        }
+
+        image.IsDefault = isDefault;
+
+        return this;
+    }
+
+    public Company RemoveImage(string blobName)
+    {
+        var image = Images.FirstOrDefault(x => x.BlobName == blobName);
+        if (image is null)
+        {
+            throw new BusinessException(WebMarketplaceDomainErrorCodes.CompanyImageNotFound);
+        }
+        else
+        {
+            if (image.IsDefault)
+            {
+                throw new BusinessException(WebMarketplaceDomainErrorCodes.CompanyImageDefaultRemoveNotAllowed);
+            }
+        }
+
+        Images.Remove(image);
+        return this;
+    }
+
+    #endregion
+
 }

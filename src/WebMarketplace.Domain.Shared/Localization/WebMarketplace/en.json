@@ -24,6 +24,10 @@
     "Exception:CompanyNameAlreadyExists": "The company with name '{Name}' already exists.",
     "Exception:CompanyDisplayNameAlreadyExists": "The company with display name '{DisplayName}' already exists.",
     "Exception:CompanyIdentificationNumberAlreadyExists": "The company with identification number '{CompanyIdentificationNumber}' already exists.",
+    "Exception:CompanyImageNotFound": "Company image not found.",
+    "Exception:CompanyImagesNotFound": "Company images not found.",
+    "Exception:CompanyImageDefaultRemoveNotAllowed": "Default image cannot be removed.",
+    "Exception:CompanyNotFoundForUser": "The company associated with the user could not be found.",
     "Exception:ProductReviewUserAlreadyExists": "A review for this product by this user already exists.",
     "Exception:ProductReviewNotFound": "Product review not found.",
     "Exception:PriceNotNegative": "Price cannot be negative.",
@@ -34,6 +38,7 @@
     "Exception:ProductTypeUndefinedNotAllowed": "Product with undefined type is not allowed.",
     "Exception:ProductPriceNotFound": "Product price not found.",
     "Exception:CurrencyNotFound": "Currency {Code} not found.",
+    "Exception:ImageContentIsEmpty": "Image content is empty.",
 
     "Permission:WebMarketplace": "WebMarketplace Management",
     "Permission:Companies": "Company Management",
@@ -73,6 +78,7 @@
 
     "Message:CompanyDeletionConfirmation": "Are you sure you want to delete the company?",
     "Message:CompanyMembershipDeletionConfirmation": "Are you sure you want to delete the company membership?",
+    "Message:CompanyImageDeletionConfirmation": "Are you sure you want to delete the image?",
     "Message:ProductDeletionConfirmation": "Are you sure you want to delete the product?",
     "Message:ProductPublicationConfirmation": "Are you sure you want to publish the product?",
     "Message:ProductCancelPublicationConfirmation": "Are you sure you want to unpublish the product?",
@@ -93,6 +99,7 @@
     "Modal:ManagementAddProductPrice": "Add price",
     "Modal:ManagementAddProductImage": "Add image",
     "Modal:AdministrationCreateCompanyMembership": "Create membership for company ",
+    "Modal:ManagementAddCompanyImage": "Add image",
 
     "Header:Search": "Search",
     "Header:Companies": "Companies",

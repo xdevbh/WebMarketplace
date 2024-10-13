@@ -16,13 +16,23 @@ public class Address : AuditedAggregateRoot<Guid>
     public virtual string? Note { get; private set; }
     public virtual string PhoneNumber { get; private set; }
     public virtual string? Email { get; private set; }
-
+    
     protected Address()
     {
     }
 
-    public Address(Guid id, string fullName, string country, string state, string city, string line1, string? line2,
-        string zipCode, string? note, string phoneNumber, string? email) 
+    public Address(
+        Guid id, 
+        string fullName, 
+        string country, 
+        string state, 
+        string city, 
+        string line1, 
+        string? line2,
+        string zipCode, 
+        string? note, 
+        string phoneNumber, 
+        string? email)
         : base(id)
     {
         SetFullName(fullName);
@@ -32,6 +42,7 @@ public class Address : AuditedAggregateRoot<Guid>
         SetLine1(line1);
         SetLine2(line2);
         SetZipCode(zipCode);
+        SetNote(note);
         SetPhoneNumber(phoneNumber);
         SetEmail(email);
     }
@@ -65,7 +76,7 @@ public class Address : AuditedAggregateRoot<Guid>
         Line1 = Check.NotNullOrWhiteSpace(line1, nameof(line1));
         return this;
     }
-    
+
     public Address SetLine2(string? line2)
     {
         Line2 = line2;
@@ -83,10 +94,16 @@ public class Address : AuditedAggregateRoot<Guid>
         PhoneNumber = Check.NotNullOrWhiteSpace(phoneNumber, nameof(phoneNumber));
         return this;
     }
-    
+
     public Address SetEmail(string? email)
     {
         Email = email;
+        return this;
+    }
+    
+    public Address SetNote(string? note)
+    {
+        Note = note;
         return this;
     }
 }

@@ -49,6 +49,7 @@ public static class WebMarketplaceDbContextModelBuilderExtensions
         builder.Entity<Company>(b =>
         {
             b.ToTable(WebMarketplaceConsts.DbTablePrefix + "Companies", WebMarketplaceConsts.DbSchema);
+            b.ConfigureByConvention();
             b.Property(x => x.CompanyIdentificationNumber).IsRequired();
             b.HasIndex(x => x.CompanyIdentificationNumber).IsUnique();
             b.Property(x => x.Name).IsRequired();
@@ -56,7 +57,7 @@ public static class WebMarketplaceDbContextModelBuilderExtensions
             b.Property(x => x.DisplayName).IsRequired();
             b.HasIndex(x => x.DisplayName).IsUnique();
             b.HasOne<Address>().WithMany().HasForeignKey(x => x.AddressId).IsRequired();
-            b.ConfigureByConvention();
+            b.HasMany(x => x.Images).WithOne().IsRequired().HasForeignKey(x => x.CompanyId);
         });
 
         builder.Entity<CompanyMembership>(b =>
@@ -67,6 +68,17 @@ public static class WebMarketplaceDbContextModelBuilderExtensions
             b.HasOne<IdentityUser>().WithMany().HasForeignKey(x => x.UserId).IsRequired();
             b.HasIndex(x=>x.UserId).IsUnique();
             b.HasIndex(x => new { x.CompanyId, x.UserId }).IsUnique();
+        });
+
+        builder.Entity<CompanyImage>(b =>
+        {
+            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "CompanyImages", WebMarketplaceConsts.DbSchema);
+            b.ConfigureByConvention(); // auto configure for the base class props
+            b.Property(x => x.CompanyId).IsRequired();
+            b.Property(x => x.BlobName).IsRequired();
+            b.Property(x => x.IsDefault).IsRequired();
+            b.HasKey(x => new { x.CompanyId, BlobId = x.BlobName });
+            b.HasIndex(x => new { x.CompanyId, x.IsDefault }).IsUnique().HasFilter("[IsDefault] = 1");
         });
     }
 

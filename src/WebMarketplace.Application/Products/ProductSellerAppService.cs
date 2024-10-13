@@ -27,11 +27,14 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
     private readonly ProductManager _productManager;
     private readonly IRepository<Company, Guid> _companyRepository;
     private readonly IRepository<CompanyMembership, Guid> _companyMembershipRepository;
-    private readonly IBlobContainer _productBlobContainer;
+    private readonly IBlobContainer<ProductImageContainer> _productBlobContainer;
 
-    public ProductSellerAppService(IProductRepository productRepository, ProductManager productManager,
-        IRepository<Company, Guid> companyRepository, IRepository<CompanyMembership, Guid> companyMembershipRepository,
-        IBlobContainer productBlobContainer)
+    public ProductSellerAppService(
+        IProductRepository productRepository, 
+        ProductManager productManager,
+        IRepository<Company, Guid> companyRepository, 
+        IRepository<CompanyMembership, Guid> companyMembershipRepository,
+        IBlobContainer<ProductImageContainer> productBlobContainer)
     {
         _productRepository = productRepository;
         _productManager = productManager;
