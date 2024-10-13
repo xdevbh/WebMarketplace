@@ -2,6 +2,7 @@
 @using System.Linq.Expressions
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.Extensions.Localization
+@using System.IO
 @using Volo.Abp.AspNetCore.Components.Messages
 @using Volo.Abp.AspNetCore.Components.Web
 @using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars
@@ -137,7 +138,7 @@
             <Div Flex="Flex.ReverseRow">
                 <ToolbarButton Color="Color.Primary"
                                Icon="IconName.Add"
-                               Clicked="()=>CreatePriceAsync()"
+                               Clicked="()=>AddPriceAsync()"
                                Text="@L["Action:AddPrice"]" />
             </Div>
             <DataGrid TItem="ProductPriceDto"
@@ -189,15 +190,72 @@
             </Heading>
         </AccordionHeader>
         <AccordionBody>
-            <Alert Color="Color.Default" Visible="true">
-                <AlertMessage>
-                    @L["Message:SaveBeforeUpload"]
-                </AlertMessage>
-            </Alert>
+            <Div Flex="Flex.ReverseRow">
+                <ToolbarButton Color="Color.Primary"
+                               Icon="IconName.Add"
+                               Clicked="()=>AddImageAsync()"
+                               Text="@L["Action:AddImage"]" />
+            </Div>
+            <DataGrid TItem="ProductImageDto"
+                      Data="Images"
+                      ReadData="OnImagesDataGridReadAsync"
+                      TotalItems="ImageTotalCount"
+                      ShowPager="false"
+                      ShowPageSizes="false"
+                      PageSize="ImageTotalCount"
+                      Filterable="false"
+                      Responsive="true"
+                      Resizable="true"
+                      FixedHeader="false">
+                <DataGridColumns>
+                    <DataGridColumn TItem="ProductImageDto" Filterable="false">
+                        <DisplayTemplate>
+                            <Dropdown>
+                                <DropdownToggle Color="Color.Primary">
+                                </DropdownToggle>
+                                <DropdownMenu>
+                                    <DropdownItem Clicked="() => SetDefaultAsync(context.BlobName)" Disabled="!CanEdit">
+                                        <Icon Name="IconName.Check" Margin="Margin.Is1.FromEnd" />
+                                        @L["Action:SetDefault"]
+                                    </DropdownItem>
+                                    <DropdownItem Clicked="() => DeleteImagesAsync(context.BlobName)" Disabled="!CanEdit">
+                                        <Icon Name="IconName.Delete" Margin="Margin.Is1.FromEnd" />
+                                        @L["Action:Delete"]
+                                    </DropdownItem>
+                                </DropdownMenu>
+                            </Dropdown>
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="ProductImageDto"
+                                    Field="@nameof(ProductImageDto.Content)"
+                                    Caption="@L["Field:Image"]"
+                                    Width="300px">
+                        <DisplayTemplate>
+                            @{
+                                var imageDataUrl = $"data:{context.ContentType};base64,{Convert.ToBase64String(context.Content)}";
+                               <Image Source="@imageDataUrl" 
+                                        Text="@context.BlobName" 
+                                        Loading 
+                                            Style="height: 100%; width: 100%" />
+                            }
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="ProductImageDto"
+                                    Field="@nameof(ProductImageDto.BlobName)"
+                                    Caption="@L["Field:Name"]" />
+                    <DataGridCheckColumn TItem="ProductImageDto"
+                                         Field="@nameof(ProductImageDto.IsDefault)"
+                                         Caption="@L["Field:IsDefault"]" />
+                </DataGridColumns>
+            </DataGrid>
         </AccordionBody>
     </AccordionItem>
 </Accordion>
 
-<ManagementProductPriceNewModal @ref="CreatePriceModalRef"
+<ManagementProductPriceNewModal @ref="AddPriceModalRef"
+                                ProductId="@Id"
+                                OnCreated="GetDataAsync" />
+
+<ManagementProductImageNewModal @ref="AddImageModalRef"
                                 ProductId="@Id"
                                 OnCreated="GetDataAsync" />

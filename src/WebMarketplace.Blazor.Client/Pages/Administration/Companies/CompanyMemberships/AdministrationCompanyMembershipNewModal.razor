@@ -17,7 +17,7 @@
         <Form>
             <ModalHeader>
                 <ModalTitle>@ModalTitle</ModalTitle>
-                <CloseButton Clicked="() => Close()"/>
+                <CloseButton Clicked="() => Close()" />
             </ModalHeader>
             <ModalBody>
                 <Validations @ref="@ValidationsRef" Model="@NewMembership" ValidateOnLoad="false">
@@ -35,20 +35,21 @@
                                     TextField="@((item) => item.UserName)"
                                     ValueField="@((item) => item.Id)"
                                     @bind-SelectedValue="@SelectedUser"
-                                    DefaultItemText="@L["Placeholder:SelectUser"]"/>
+                                    DefaultItemText="@L["Placeholder:SelectUser"]" />
                     </Field>
                 </Validations>
             </ModalBody>
             <ModalFooter>
-                <Button Color="Color.Secondary"
+                <Button Color="Color.Danger"
                         Clicked="Close">
+                    <Icon Name="IconName.Times" />
                     @L["Cancel"]
                 </Button>
                 <Button Color="Color.Primary"
                         Type="@ButtonType.Submit"
                         PreventDefaultOnSubmit="true"
                         Clicked="CreateUserVendorAsync">
-                    <Icon Name="IconName.Save"/>
+                    <Icon Name="IconName.Save" />
                     @L["Save"]
                 </Button>
             </ModalFooter>

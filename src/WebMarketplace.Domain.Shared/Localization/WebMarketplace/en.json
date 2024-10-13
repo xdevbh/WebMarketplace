@@ -32,6 +32,7 @@
     "Exception:ProductImageDefaultRemoveNotAllowed": "Default image cannot be removed.",
     "Exception:ProductCategoryUndefinedNotAllowed": "Product with undefined category is not allowed.",
     "Exception:ProductTypeUndefinedNotAllowed": "Product with undefined type is not allowed.",
+    "Exception:ProductPriceNotFound": "Product price not found.",
     "Exception:CurrencyNotFound": "Currency {Code} not found.",
 
     "Permission:WebMarketplace": "WebMarketplace Management",
@@ -67,12 +68,16 @@
     "Action:Publish": "Publish",
     "Action:Unpublish": "Unpublish",
     "Action:AddPrice": "Add price",
+    "Action:AddImage": "Add image",
+    "Action:SetDefault": "Set default",
 
     "Message:CompanyDeletionConfirmation": "Are you sure you want to delete the company?",
     "Message:CompanyMembershipDeletionConfirmation": "Are you sure you want to delete the company membership?",
     "Message:ProductDeletionConfirmation": "Are you sure you want to delete the product?",
     "Message:ProductPublicationConfirmation": "Are you sure you want to publish the product?",
     "Message:ProductCancelPublicationConfirmation": "Are you sure you want to unpublish the product?",
+    "Message:ProductPriceDeletionConfirmation": "Are you sure you want to delete the price?",
+    "Message:ProductImageDeletionConfirmation": "Are you sure you want to delete the image?",
     "Message:SaveBeforeUpload": "You need to save the product before you can upload pictures or videos for this product page.",
     "Message:SavedSuccessfully": "Saved successfully.",
 
@@ -85,7 +90,8 @@
     "Page:ManagementCreateProduct": "Create new products | Management | WebMarketplace",
     "Page:ManagementUpdateProduct": "Edit products | Management | WebMarketplace",
 
-    "Modal:ManagementCreateProductPrice": "Add price",
+    "Modal:ManagementAddProductPrice": "Add price",
+    "Modal:ManagementAddProductImage": "Add image",
     "Modal:AdministrationCreateCompanyMembership": "Create membership for company ",
 
     "Header:Search": "Search",
@@ -136,9 +142,11 @@
     "Field:ProductType": "Type",
     "Field:ProductCategory": "Category",
     "Field:IsPublished": "Published",
+    "Field:IsDefault": "Default",
     "Field:Rating": "Rating",
     "Field:MinRating": "Min rating",
     "Field:MaxRating": "Max rating",
-    "Field:Date": "Date"
+    "Field:Date": "Date",
+    "Field:Image": "Image"
   }
 }

@@ -195,14 +195,14 @@
                             <DropdownMenu>
                                 @if (!context.IsPublished)
                                 {
-                                    <DropdownItem Clicked="() => Publish(context.Id)" Disabled="!CanPublish">
+                                    <DropdownItem Clicked="() => PublishAsync(context.Id)" Disabled="!CanPublish">
                                         <Icon Name="IconName.Eye" Margin="Margin.Is1.FromEnd" />
                                         @L["Action:Publish"]
                                     </DropdownItem>
                                 }
                                 @if (context.IsPublished)
                                 {
-                                    <DropdownItem Clicked="() => Unpublish(context.Id)" Disabled="!CanPublish">
+                                    <DropdownItem Clicked="() => UnpublishAsync(context.Id)" Disabled="!CanPublish">
                                         <Icon Name="IconName.EyeSlash" Margin="Margin.Is1.FromEnd" />
                                         @L["Action:Unpublish"]
                                     </DropdownItem>
@@ -252,4 +252,3 @@
         </DataGrid>
     </CardBody>
 </Card>
-

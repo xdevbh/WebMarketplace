@@ -148,7 +148,7 @@ namespace WebMarketplace.Blazor.Client.Pages.Management.Products
             await GetDataAsync();
         }
 
-        protected async Task Publish(Guid id)
+        protected async Task PublishAsync(Guid id)
         {
             var confirmMessage = L["Message:ProductPublicationConfirmation"];
             var message = confirmMessage;
@@ -161,7 +161,7 @@ namespace WebMarketplace.Blazor.Client.Pages.Management.Products
             await GetDataAsync();
         }
 
-        protected async Task Unpublish(Guid id)
+        protected async Task UnpublishAsync(Guid id)
         {
             var confirmMessage = L["Message:ProductCancelPublicationConfirmation"];
             var message = confirmMessage;

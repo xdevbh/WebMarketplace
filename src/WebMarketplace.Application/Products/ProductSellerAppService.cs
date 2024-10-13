@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Authorization;
 using Volo.Abp.BlobStoring;
+using Volo.Abp.Content;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity.Settings;
 using Volo.Abp.Users;
@@ -13,6 +14,9 @@ using WebMarketplace.Permissions;
 using WebMarketplace.Companies;
 using WebMarketplace.Companies.Memberships;
 using Volo.Abp.ObjectMapping;
+using System.Reflection.Metadata.Ecma335;
+using System.Net.Mime;
+using System.IO;
 
 namespace WebMarketplace.Products;
 
@@ -50,12 +54,12 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
     public async Task<PagedResultDto<ProductListItemDto>> GetListAsync(ProductListFilterDto input)
     {
         var user = CurrentUser.GetId();
-        var companyMembership = await _companyMembershipRepository.GetAsync(x => x.UserId == user); 
+        var companyMembership = await _companyMembershipRepository.GetAsync(x => x.UserId == user);
         if (companyMembership == null)
         {
             throw new AbpAuthorizationException();
         }
-        
+
         var totalCount = await _productRepository.GetProductDetailCountAsync(
             companyMembership.CompanyId,
             input.IsPublished,
@@ -215,15 +219,27 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
         var totalCount = await _productRepository.GetPriceCountAsync(input.ProductId);
 
         var prices = await _productRepository.GetPriceListAsync(
-            input.Sorting, 
-            input.MaxResultCount, 
-            input.SkipCount, 
+            input.Sorting,
+            input.MaxResultCount,
+            input.SkipCount,
             input.ProductId);
 
         var dtos = ObjectMapper.Map<List<ProductPrice>, List<ProductPriceDto>>(prices);
         return new PagedResultDto<ProductPriceDto>(totalCount, dtos);
     }
 
+    public async Task DeleteProductPriceAsync(DeleteProductPriceDto input)
+    {
+        var product = await _productRepository.GetAsync(input.ProductId);
+
+        var hasAccess = await UserHasAccessToProduct(product);
+        if (!hasAccess)
+        {
+            throw new AbpAuthorizationException();
+        }
+
+        product.RemovePrice(input.Date.DateTime);
+    }
 
     #endregion
 
@@ -233,14 +249,18 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
     {
         var product = await _productRepository.GetAsync(productId);
 
-        if (product != null || product.DefaultImage == null)
+        if (product == null || product.DefaultImage == null)
         {
             return null;
         }
-
-        var blob = await _productBlobContainer.GetAllBytesOrNullAsync(product.DefaultImage.BlobName);
         var dto = ObjectMapper.Map<ProductImage, ProductImageDto>(product.DefaultImage);
-        dto.Content = blob;
+
+        //var blob = await _productBlobContainer.GetAllBytesOrNullAsync(product.DefaultImage.BlobName);
+        //dto.Content = blob;
+
+        var bytes = await _productBlobContainer.GetAllBytesOrNullAsync(product.DefaultImage.BlobName);
+        dto.Content = bytes;
+
         return dto;
     }
 
@@ -257,13 +277,25 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
 
         foreach (var image in product.Images)
         {
-            var blob = await _productBlobContainer.GetAllBytesOrNullAsync(image.BlobName);
             var dto = ObjectMapper.Map<ProductImage, ProductImageDto>(image);
-            dto.Content = blob;
+
+            //var blob = await _productBlobContainer.GetAllBytesOrNullAsync(image.BlobName);
+            //dto.Content = blob;
+
+            var bytes = await _productBlobContainer.GetAllBytesOrNullAsync(image.BlobName);
+            dto.Content = bytes;
+
             imageDtos.Add(dto);
         }
 
         return new ListResultDto<ProductImageDto>(imageDtos);
+    }
+
+    private async Task SaveCoverImageAsync(Guid id, IRemoteStreamContent coverImageContent)
+    {
+        var blobName = id.ToString();
+
+        await _productBlobContainer.SaveAsync(blobName, coverImageContent.GetStream(), overrideExisting: true);
     }
 
     public async Task AddProductImageAsync(CreateProductImageDto input)
@@ -276,10 +308,29 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
             throw new AbpAuthorizationException();
         }
 
-        var blobName = GuidGenerator.Create().ToString();
-        product.AddImage(blobName, input.IsDefault);
+        var blobName = GuidGenerator.Create().ToString() + "_" + input.FileName;
 
-        await _productBlobContainer.SaveAsync(blobName, input.Content);
+        if (input.Content == null || input.Content.Length <= 0)
+        {
+            return; // todo: throw exception
+        }
+
+        await _productBlobContainer.SaveAsync(blobName, input.Content, overrideExisting: true);
+
+        product.AddImage(blobName, input.IsDefault);
+    }
+
+    public async Task SetDefaultImageAsync(UpdateProductImageDto input)
+    {
+        var product = await _productRepository.GetAsync(input.ProductId);
+
+        var hasAccess = await UserHasAccessToProduct(product);
+        if (!hasAccess)
+        {
+            throw new AbpAuthorizationException();
+        }
+        
+        product.SetDefaultImage(input.BlobName, input.IsDefault);
     }
 
     public async Task DeleteProductImageAsync(DeleteProductImageDto input)

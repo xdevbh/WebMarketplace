@@ -171,6 +171,18 @@ public class Product : AuditedAggregateRoot<Guid>
         return this;
     }
 
+    public Product RemovePrice(DateTime date)
+    {
+        var price = Prices.FirstOrDefault(x => x.Date == date);
+        if (price is null)
+        {
+            throw new ArgumentException(WebMarketplaceDomainErrorCodes.ProductPriceNotFound);
+        }
+
+        Prices.Remove(price);
+        return this;
+    }
+
     #endregion
 
     #region Images
@@ -189,7 +201,28 @@ public class Product : AuditedAggregateRoot<Guid>
         Images.Add(image);
         return this;
     }
-    
+
+    public Product SetDefaultImage(
+        string blobName,
+        bool isDefault)
+    {
+        var defaultImage = Images.FirstOrDefault(x => x.IsDefault);
+        if (defaultImage is not null && isDefault)
+        {
+            defaultImage.IsDefault = false;
+        }
+
+        var image = Images.FirstOrDefault(x => x.BlobName == blobName);
+        if (image is null)
+        {
+            throw new ArgumentException(WebMarketplaceDomainErrorCodes.ProductImageNotFound);
+        }
+
+        image.IsDefault = isDefault;
+
+        return this;
+    }
+
     public Product RemoveImage(string blobName)
     {
         var image = Images.FirstOrDefault(x => x.BlobName == blobName);

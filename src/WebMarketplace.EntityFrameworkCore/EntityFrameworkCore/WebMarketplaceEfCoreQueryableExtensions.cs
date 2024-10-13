@@ -15,8 +15,9 @@ public static class WebMarketplaceEfCoreQueryableExtensions
         }
 
         return queryable
-            .Include(x=>x.Prices)
-            .Include(x=>x.Reviews);
+            .Include(x => x.Prices)
+            .Include(x => x.Reviews)
+            .Include(x => x.Images);
     }
     
     public static IQueryable<Order> IncludeDetails(this IQueryable<Order> queryable, bool include = true)

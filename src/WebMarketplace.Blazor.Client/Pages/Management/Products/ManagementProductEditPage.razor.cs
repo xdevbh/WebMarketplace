@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars;
@@ -12,6 +13,7 @@ using Volo.Abp.AspNetCore.Components.Web.Theming.Toolbars;
 using WebMarketplace.Blazor.Client.Pages.Administration.Companies.CompanyMemberships;
 using WebMarketplace.Permissions;
 using WebMarketplace.Products;
+using static System.Net.WebRequestMethods;
 using BreadcrumbItem = Volo.Abp.BlazoriseUI.BreadcrumbItem;
 
 namespace WebMarketplace.Blazor.Client.Pages.Management.Products
@@ -23,11 +25,12 @@ namespace WebMarketplace.Blazor.Client.Pages.Management.Products
 
         protected bool CanEdit { get; set; } = false;
 
-        protected override Task OnInitializedAsync()
+        protected override async Task OnInitializedAsync()
         {
+            await GetProductAsync();
             PageTitle = L["Page:UpdateProduct"];
             PageHeader = L["Header:UpdateProduct"];
-            return base.OnInitializedAsync();
+            await base.OnInitializedAsync();
         }
 
         protected override Task SetToolBarAsync()
@@ -63,6 +66,7 @@ namespace WebMarketplace.Blazor.Client.Pages.Management.Products
 
         protected async Task GetDataAsync()
         {
+            await GetImagesAsync();
             await GetProductAsync();
             await GetPricesAsync();
             await Task.CompletedTask;
@@ -108,8 +112,7 @@ namespace WebMarketplace.Blazor.Client.Pages.Management.Products
         #region Prices
 
         protected IReadOnlyList<ProductPriceDto> Prices { get; set; } = new List<ProductPriceDto>();
-        protected CreateUpdateProductPriceDto EditPrice { get; set; } = new();
-        protected ManagementProductPriceNewModal CreatePriceModalRef { get; set; }
+        protected ManagementProductPriceNewModal AddPriceModalRef { get; set; }
 
         protected int PricePageSize { get; set; } = LimitedResultRequestDto.DefaultMaxResultCount;
         protected int PriceCurrentPage { get; set; }
@@ -138,18 +141,91 @@ namespace WebMarketplace.Blazor.Client.Pages.Management.Products
                 .Where(c => c.SortDirection != SortDirection.Default)
                 .Select(c => $"{c.Field} {(c.SortDirection == SortDirection.Descending ? "DESC" : "")}"));
 
-            await GetDataAsync();
+            await GetPricesAsync();
             await InvokeAsync(StateHasChanged);
         }
 
-        protected async Task CreatePriceAsync()
+        protected async Task AddPriceAsync()
         {
-            await CreatePriceModalRef.Show();
+            await AddPriceModalRef.Show();
         }
 
         protected async Task DeletePriceAsync(DateTime date)
         {
-            await Task.CompletedTask;
+            var confirmMessage = L["Message:ProductPriceDeletionConfirmation"];
+            var message = confirmMessage;
+            if (!await UiMessageService.Confirm(message))
+            {
+                return;
+            }
+
+            var deleteDto = new DeleteProductPriceDto
+            {
+                ProductId = Id,
+                Date = date
+            };
+            await ProductAppService.DeleteProductPriceAsync(deleteDto);
+            await GetPricesAsync();
+        }
+
+        #endregion
+
+        #region Images
+
+        protected IReadOnlyList<ProductImageDto> Images { get; set; } = new List<ProductImageDto>();
+        protected ManagementProductImageNewModal AddImageModalRef { get; set; }
+
+        protected int ImageTotalCount { get; set; }
+
+
+        protected async Task GetImagesAsync()
+        {
+            var result = await ProductAppService.GetAllImagesAsync(Id);
+            Images = result.Items;
+            ImageTotalCount = (int)result.Items.Count;
+        }
+
+        protected async Task OnImagesDataGridReadAsync(DataGridReadDataEventArgs<ProductImageDto> e)
+        {
+            await GetImagesAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+
+        protected async Task AddImageAsync()
+        {
+            await AddImageModalRef.Show();
+        }
+
+        protected async Task SetDefaultAsync(string blobName)
+        {
+            var updateDto = new UpdateProductImageDto
+            {
+                ProductId = Id,
+                BlobName = blobName,
+                IsDefault = true
+            };
+
+            await ProductAppService.SetDefaultImageAsync(updateDto); // todo: fix 
+            await GetImagesAsync();
+        }
+
+        protected async Task DeleteImagesAsync(string blobName)
+        {
+            var confirmMessage = L["Message:ProductImageDeletionConfirmation"];
+            var message = confirmMessage;
+            if (!await UiMessageService.Confirm(message))
+            {
+                return;
+            }
+
+            var deleteDto = new DeleteProductImageDto
+            {
+                ProductId = Id,
+                BlobName = blobName
+            };
+
+            await ProductAppService.DeleteProductImageAsync(deleteDto);
+            await GetImagesAsync();
         }
 
         #endregion

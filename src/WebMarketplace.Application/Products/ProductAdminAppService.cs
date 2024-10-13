@@ -41,60 +41,60 @@ public class ProductAdminAppService : WebMarketplaceAppService, IProductAdminApp
 
     #region Images
     
-    public async Task<ProductImageDto> GetDefaultImageAsync(Guid productId)
-    {
-        var product = await _productRepository.GetAsync(productId);
-    
-        if (product != null || product.DefaultImage == null)
-        {
-            return null; 
-        }
-
-        var blob = await _productBlobContainer.GetAllBytesOrNullAsync(product.DefaultImage.BlobName);
-        var dto = ObjectMapper.Map<ProductImage, ProductImageDto>(product.DefaultImage);
-        dto.Content = blob;
-        return dto;
-    }
-
-    public async Task<ListResultDto<ProductImageDto>> GetAllImagesAsync(Guid productId)
-    {
-        var product = await _productRepository.GetAsync(productId);
-
-        if (product == null || product.Images == null || !product.Images.Any())
-        {
-            return new ListResultDto<ProductImageDto>();
-        }
-
-        var imageDtos = new List<ProductImageDto>();
-
-        foreach (var image in product.Images)
-        {
-            var blob = await _productBlobContainer.GetAllBytesOrNullAsync(image.BlobName);
-            var dto = ObjectMapper.Map<ProductImage, ProductImageDto>(image);
-            dto.Content = blob;
-            imageDtos.Add(dto);
-        }
-
-        return new ListResultDto<ProductImageDto>(imageDtos);
-    }
-
-    public async Task CreateProductImageAsync(CreateProductImageDto input)
-    {
-        var product = await _productRepository.GetAsync(input.ProductId);
-        
-        var blobName = GuidGenerator.Create().ToString();
-        product.AddImage(blobName, input.IsDefault);
-        
-        await _productBlobContainer.SaveAsync(blobName, input.Content);
-    }
-
-    public async Task DeleteProductImageAsync(DeleteProductImageDto input)
-    {
-        var product = await _productRepository.GetAsync(input.ProductId);
-        
-        product.RemoveImage(input.BlobName);
-        await _productBlobContainer.DeleteAsync(input.BlobName);
-    }
+    // public async Task<ProductImageDto> GetDefaultImageAsync(Guid productId)
+    // {
+    //     var product = await _productRepository.GetAsync(productId);
+    //
+    //     if (product != null || product.DefaultImage == null)
+    //     {
+    //         return null; 
+    //     }
+    //
+    //     var blob = await _productBlobContainer.GetAllBytesOrNullAsync(product.DefaultImage.BlobName);
+    //     var dto = ObjectMapper.Map<ProductImage, ProductImageDto>(product.DefaultImage);
+    //     dto.Content = blob;
+    //     return dto;
+    // }
+    //
+    // public async Task<ListResultDto<ProductImageDto>> GetAllImagesAsync(Guid productId)
+    // {
+    //     var product = await _productRepository.GetAsync(productId);
+    //
+    //     if (product == null || product.Images == null || !product.Images.Any())
+    //     {
+    //         return new ListResultDto<ProductImageDto>();
+    //     }
+    //
+    //     var imageDtos = new List<ProductImageDto>();
+    //
+    //     foreach (var image in product.Images)
+    //     {
+    //         var blob = await _productBlobContainer.GetAllBytesOrNullAsync(image.BlobName);
+    //         var dto = ObjectMapper.Map<ProductImage, ProductImageDto>(image);
+    //         dto.Content = blob;
+    //         imageDtos.Add(dto);
+    //     }
+    //
+    //     return new ListResultDto<ProductImageDto>(imageDtos);
+    // }
+    //
+    // public async Task CreateProductImageAsync(CreateProductImageDto input)
+    // {
+    //     var product = await _productRepository.GetAsync(input.ProductId);
+    //     
+    //     var blobName = GuidGenerator.Create().ToString();
+    //     product.AddImage(blobName, input.IsDefault);
+    //     
+    //     await _productBlobContainer.SaveAsync(blobName, input.Content);
+    // }
+    //
+    // public async Task DeleteProductImageAsync(DeleteProductImageDto input)
+    // {
+    //     var product = await _productRepository.GetAsync(input.ProductId);
+    //     
+    //     product.RemoveImage(input.BlobName);
+    //     await _productBlobContainer.DeleteAsync(input.BlobName);
+    // }
 
     #endregion
 

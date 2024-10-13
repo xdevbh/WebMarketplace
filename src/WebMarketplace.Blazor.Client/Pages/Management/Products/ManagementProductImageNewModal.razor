@@ -1,0 +1,158 @@
+﻿@using System.IO
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.Application.Dtos
+@using Volo.Abp.AspNetCore.Components.Web
+@using Volo.Abp.Content
+@using Volo.Abp.Users
+@using WebMarketplace.Companies.Memberships
+@using WebMarketplace.Localization
+@using WebMarketplace.Products
+@attribute [Authorize("SellerOnly")]
+@inject IProductSellerAppService ProductAppService
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject AbpBlazorMessageLocalizerHelper<WebMarketplaceResource> LH
+
+<Modal @ref="ModalRef">
+    <ModalContent Centered="true">
+        <Form>
+            <ModalHeader>
+                <ModalTitle>@ModalTitle</ModalTitle>
+                <CloseButton Clicked="() => Close()" />
+            </ModalHeader>
+            <ModalBody>
+                <Fields>
+                    <Field ColumnSize="ColumnSize.Is12.OnDesktop">
+                        <FileEdit @ref="@FileEditRef"
+                                  Changed="@OnImageFileChanged"
+                                  Progressed="@OnProgressed"
+                                  AutoReset="false" />
+                    </Field>
+                </Fields>
+                <Fields>
+                    <Field ColumnSize="ColumnSize.Is12.OnDesktop">
+                        <Check TValue="bool" @bind-Checked="NewImage.IsDefault">@L["Field:IsDefault"]</Check>
+                    </Field>
+                </Fields>
+                <Fields>
+                    <Field ColumnSize="ColumnSize.Is12.OnDesktop">
+                        <Image Source="@ImageUrl" Style="width: 100%" />
+                    </Field>
+                </Fields>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Danger"
+                        Clicked="Close">
+                    <Icon Name="IconName.Times" />
+                    @L["Cancel"]
+                </Button>
+                <Button Color="Color.Primary"
+                        Type="@ButtonType.Submit"
+                        PreventDefaultOnSubmit="true"
+                        Clicked="Create">
+                    <Icon Name="IconName.Save" />
+                    @L["Save"]
+                </Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+
+@code {
+    [Parameter] public Guid ProductId { get; set; }
+    [Parameter] public EventCallback OnCreated { get; set; }
+
+
+    protected string ModalTitle { get; set; }
+    protected Modal ModalRef { get; set; }
+    protected FileEdit FileEditRef { get; set; }
+    protected CreateProductImageDto NewImage { get; set; } = new();
+
+    protected string ImageUrl { get; set; } = string.Empty;
+    private IFileEntry FileEntry { get; set; }
+    protected bool IsLoadingImage { get; set; } = false;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ModalTitle = L["Modal:ManagementAddProductImage"];
+        await GetDataAsync();
+        await base.OnInitializedAsync();
+    }
+
+    protected async Task GetDataAsync()
+    {
+        await Task.CompletedTask;
+    }
+
+    protected async Task Create()
+    {
+        if (NewImage.Content != null && NewImage.Content.Length > 0)
+        {
+            NewImage.ProductId = ProductId;
+
+            await ProductAppService.AddProductImageAsync(NewImage);
+            await Close();
+            await OnCreated.InvokeAsync();
+        }
+    }
+
+    public Task Close()
+    {
+        ImageUrl = string.Empty;
+        FileEditRef.Reset();
+        ModalRef.Hide();
+        return Task.CompletedTask;
+    }
+
+    public Task Show()
+    {
+        ModalRef.Show();
+        return Task.CompletedTask;
+    }
+
+    protected void OnProgressed(FileProgressedEventArgs e)
+    {
+        if (e.Percentage == 100D)
+        {
+            IsLoadingImage = false;
+        }
+    }
+
+    private async Task OnImageFileChanged(FileChangedEventArgs e)
+    {
+        FileEntry = e.Files.FirstOrDefault();
+        if (FileEntry is null)
+        {
+            return;
+        }
+
+        IsLoadingImage = true;
+
+        var stream = new MemoryStream();
+        await FileEntry.WriteToStreamAsync(stream);
+        stream.Seek(0, SeekOrigin.Begin);
+        NewImage.Content = stream.ToArray();
+        NewImage.FileName = FileEntry.Name;
+
+        void SetProfileImageUrl(byte[] content)
+        {
+            if (content != null)
+            {
+                var contentType = "application/octet-stream";
+                ImageUrl = $"data:{contentType};base64,{Convert.ToBase64String(content)}";
+                // DisabledProfileImageButton = false;
+            }
+        }
+
+        SetProfileImageUrl(stream.ToArray());
+
+        await stream.FlushAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+}

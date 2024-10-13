@@ -71,8 +71,9 @@
                 </Validations>
             </ModalBody>
             <ModalFooter>
-                <Button Color="Color.Secondary"
+                <Button Color="Color.Danger"
                         Clicked="Close">
+                    <Icon Name="IconName.Times" />
                     @L["Cancel"]
                 </Button>
                 <Button Color="Color.Primary"
@@ -97,7 +98,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ModalTitle = @L["Modal:ManagementCreateProductPrice"];
+        ModalTitle = @L["Modal:ManagementAddProductPrice"];
         await GetDataAsync();
         await base.OnInitializedAsync();
     }
