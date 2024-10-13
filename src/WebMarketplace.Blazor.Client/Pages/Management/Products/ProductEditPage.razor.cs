@@ -14,7 +14,7 @@ using BreadcrumbItem = Volo.Abp.BlazoriseUI.BreadcrumbItem;
 
 namespace WebMarketplace.Blazor.Client.Pages.Management.Products
 {
-    public partial class ManagementProductEditPage
+    public partial class ProductEditPage
     {
 
         [Parameter] public Guid Id { get; set; }
@@ -108,7 +108,7 @@ namespace WebMarketplace.Blazor.Client.Pages.Management.Products
         #region Prices
 
         protected IReadOnlyList<ProductPriceDto> Prices { get; set; } = new List<ProductPriceDto>();
-        protected ManagementProductPriceNewModal AddPriceModalRef { get; set; }
+        protected ProductPriceNewModal AddPriceModalRef { get; set; }
 
         protected int PricePageSize { get; set; } = LimitedResultRequestDto.DefaultMaxResultCount;
         protected int PriceCurrentPage { get; set; }
@@ -169,7 +169,7 @@ namespace WebMarketplace.Blazor.Client.Pages.Management.Products
         #region Images
 
         protected IReadOnlyList<ProductImageDto> Images { get; set; } = new List<ProductImageDto>();
-        protected ManagementProductImageNewModal AddImageModalRef { get; set; }
+        protected ProductImageNewModal AddImageModalRef { get; set; }
 
         protected int ImageTotalCount { get; set; }
 

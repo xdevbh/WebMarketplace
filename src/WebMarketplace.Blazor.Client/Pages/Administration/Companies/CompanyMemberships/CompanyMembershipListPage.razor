@@ -79,7 +79,7 @@
     </CardBody>
 </Card>
 
-<AdministrationCompanyMembershipNewModal @ref="CreateModalRef"
+<CompanyMembershipNewModal @ref="CreateModalRef"
                                          CompanyId="@Company.Id"
                                          CompanyName="@Company.Name"
                                          OnCreated="ReloadDataAsync"/>
@@ -89,7 +89,7 @@
 
     private IReadOnlyList<CompanyMembershipDto> Memberships { get; set; } = new List<CompanyMembershipDto>();
     private CompanyDto Company { get; set; } = new();
-    protected AdministrationCompanyMembershipNewModal CreateModalRef { get; set; }
+    protected CompanyMembershipNewModal CreateModalRef { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

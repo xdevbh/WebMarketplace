@@ -14,7 +14,7 @@ using BreadcrumbItem = Volo.Abp.BlazoriseUI.BreadcrumbItem;
 
 namespace WebMarketplace.Blazor.Client.Pages.Management.Products
 {
-    public partial class ManagementProductListPage
+    public partial class ProductListPage
     {
 
         protected IReadOnlyList<ProductListItemDto> Products { get; set; } = new List<ProductListItemDto>();

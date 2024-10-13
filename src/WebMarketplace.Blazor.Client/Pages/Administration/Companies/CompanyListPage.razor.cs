@@ -12,7 +12,7 @@ using WebMarketplace.Permissions;
 
 namespace WebMarketplace.Blazor.Client.Pages.Administration.Companies;
 
-public partial class AdministrationCompanyListPage
+public partial class CompanyListPage
 {
     private string PageTitle { get; set; } = string.Empty;
     private bool CanCreateCompany { get; set; }
