@@ -8,6 +8,39 @@
 
 <Validations @ref="@ValidationsRef" Model="@Address" ValidateOnLoad="false">
     <Validation MessageLocalizer="@LH.Localize">
+        @if(Id != null)
+        {
+            <Field>
+                <FieldLabel>@L["Field:Id"]</FieldLabel>
+                <Addons>
+                    <Addon AddonType="AddonType.Start">
+                        <AddonLabel>
+                            <Icon Name="IconName.Table"/>
+                        </AddonLabel>
+                    </Addon>
+                    <Addon AddonType="AddonType.Body">
+                        <TextEdit Placeholder="@L["Placeholder:Write"]"
+                                  Text="@Id.ToString()"
+                                  ReadOnly="true"/>
+                    </Addon>
+                </Addons>
+            </Field>
+        }
+        <Field>
+            <FieldLabel>@L["Field:Id"]</FieldLabel>
+            <Addons>
+                <Addon AddonType="AddonType.Start">
+                    <AddonLabel>
+                        <Icon Name="IconName.Table"/>
+                    </AddonLabel>
+                </Addon>
+                <Addon AddonType="AddonType.Body">
+                    <TextEdit Placeholder="@L["Placeholder:Write"]"
+                              Text="@Id.ToString()"
+                              ReadOnly="true"/>
+                </Addon>
+            </Addons>
+        </Field>
         <Field>
             <FieldLabel>@L["Field:FullName"]</FieldLabel>
             <Addons>
@@ -181,6 +214,7 @@
 
 @code {
     [Parameter] public CreateUpdateAddressDto Address { get; set; }
+    [Parameter] public Guid? Id { get; set; } = null;
     [Parameter] public bool ReadOnly { get; set; } = false;
     [Parameter] public Validations ValidationsRef { get; set; }
     

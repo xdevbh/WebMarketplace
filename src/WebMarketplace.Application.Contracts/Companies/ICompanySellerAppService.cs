@@ -8,9 +8,10 @@ namespace WebMarketplace.Companies;
 public interface ICompanySellerAppService : IApplicationService
 {
     // Task<ListResultDto<CompanyDto>> GetAllAsync();
-    Task<PagedResultDto<CompanyDto>> GetListAsync(PagedAndSortedResultRequestDto input);
-    Task<CompanyDto> GetAsync(Guid id);
+    // Task<PagedResultDto<CompanyDto>> GetListAsync(PagedAndSortedResultRequestDto input);
+    // Task<CompanyDto> GetByNameAsync(string name);
+
+    Task<CompanyDto> GetAsync();
     Task<CompanyLookupDto> GetCompanyLookupAsync();
-    Task<CompanyDto> GetByNameAsync(string name);
-    Task<CompanyDto> UpdateAsync(Guid id, UpdateCompanySellerDto input);
+    Task<CompanyDto> UpdateAsync(UpdateCompanySellerDto input);
 }

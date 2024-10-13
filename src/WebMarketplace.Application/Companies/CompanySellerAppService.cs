@@ -23,33 +23,17 @@ public class CompanySellerAppService : WebMarketplaceAppService, ICompanySellerA
         _companyMembershipRepository = companyMembershipRepository;
     }
 
-    // public async Task<ListResultDto<CompanyDto>> GetAllAsync()
-    // {
-    //     var vendorList = await _vendorRepository.GetListAsync();
-    //     var vendorListDto = ObjectMapper.Map<List<Vendor>, List<CompanyDto>>(vendorList);
-    //     return new ListResultDto<CompanyDto>(vendorListDto);
-    // }
 
-    // [Authorize(WebMarketplacePermissions.Vendors.Default)]
-    public async Task<PagedResultDto<CompanyDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    public async Task<CompanyDto> GetAsync()
     {
-        var vendorList =
-            await _companyRepository.GetPagedListAsync(input.SkipCount, input.MaxResultCount, input.Sorting);
-        var totalCount = await _companyRepository.GetCountAsync();
+        var userId = CurrentUser.GetId();
+        var membership = await _companyMembershipRepository.GetAsync(x => x.UserId == userId);
+        var company = await _companyRepository.GetAsync(membership.CompanyId);
 
-        return new PagedResultDto<CompanyDto>(
-            totalCount,
-            ObjectMapper.Map<List<Company>, List<CompanyDto>>(vendorList)
-        );
-    }
-
-    // [Authorize(WebMarketplacePermissions.Vendors.Default)]
-    public async Task<CompanyDto> GetAsync(Guid id)
-    {
-        var company = await _companyRepository.GetAsync(id);
         var companyDto = ObjectMapper.Map<Company, CompanyDto>(company);
         return companyDto;
     }
+
 
     public async Task<CompanyLookupDto> GetCompanyLookupAsync()
     {
@@ -60,18 +44,12 @@ public class CompanySellerAppService : WebMarketplaceAppService, ICompanySellerA
         return dto;
     }
 
-    // [Authorize(WebMarketplacePermissions.Vendors.Default)]
-    public async Task<CompanyDto> GetByNameAsync(string name)
-    {
-        var company = await _companyRepository.GetAsync(x => x.Name == name);
-        var companyDto = ObjectMapper.Map<Company, CompanyDto>(company);
-        return companyDto;
-    }
 
-    // [Authorize(WebMarketplacePermissions.Vendors.Update)]
-    public async Task<CompanyDto> UpdateAsync(Guid id, UpdateCompanySellerDto input)
+    public async Task<CompanyDto> UpdateAsync(UpdateCompanySellerDto input)
     {
-        var company = await _companyRepository.GetAsync(id);
+        var userId = CurrentUser.GetId();
+        var membership = await _companyMembershipRepository.GetAsync(x => x.UserId == userId);
+        var company = await _companyRepository.GetAsync(membership.CompanyId);
 
         company.ShortDescription = input.ShortDescription;
         company.FullDescription = input.FullDescription;
