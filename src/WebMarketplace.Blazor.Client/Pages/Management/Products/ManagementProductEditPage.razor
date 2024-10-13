@@ -214,7 +214,7 @@
                                 <DropdownToggle Color="Color.Primary">
                                 </DropdownToggle>
                                 <DropdownMenu>
-                                    <DropdownItem Clicked="() => SetDefaultAsync(context.BlobName)" Disabled="!CanEdit">
+                                    <DropdownItem Clicked="() => SetDefaultAsync(context.BlobName)" Disabled="!(CanEdit && !context.IsDefault)">
                                         <Icon Name="IconName.Check" Margin="Margin.Is1.FromEnd" />
                                         @L["Action:SetDefault"]
                                     </DropdownItem>

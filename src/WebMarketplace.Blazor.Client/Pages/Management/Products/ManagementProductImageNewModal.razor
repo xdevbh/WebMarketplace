@@ -24,6 +24,8 @@
                 <Fields>
                     <Field ColumnSize="ColumnSize.Is12.OnDesktop">
                         <FileEdit @ref="@FileEditRef"
+                                  MaxFileSize="@ProductConsts.ProductImageMaxFileSize"
+                                  Filter="@string.Join(", ", ProductConsts.ProductImageAllowedExtensions)"
                                   Changed="@OnImageFileChanged"
                                   Progressed="@OnProgressed"
                                   AutoReset="false" />

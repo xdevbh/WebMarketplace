@@ -109,7 +109,7 @@ public static class WebMarketplaceDbContextModelBuilderExtensions
             b.Property(x => x.BlobName).IsRequired();
             b.Property(x => x.IsDefault).IsRequired();
             b.HasKey(x => new { x.ProductId, BlobId = x.BlobName });
-            b.HasIndex(x => new { x.ProductId, x.IsDefault }).IsUnique().HasFilter("[IsDefault] = 1");
+            //b.HasIndex(x => new { x.ProductId, x.IsDefault }).IsUnique().HasFilter("[IsDefault] = 1");
         });
     }
 

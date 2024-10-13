@@ -74,7 +74,7 @@ public class Product : AuditedAggregateRoot<Guid>
     {
         if(category == ProductCategory.Undefined)
         {
-            throw new ArgumentException(WebMarketplaceDomainErrorCodes.ProductCategoryUndefinedNotAllowed);
+            throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductCategoryUndefinedNotAllowed);
         }
 
         ProductCategory = category;
@@ -85,7 +85,7 @@ public class Product : AuditedAggregateRoot<Guid>
     {
         if (type == ProductType.Undefined)
         {
-            throw new ArgumentException(WebMarketplaceDomainErrorCodes.ProductTypeUndefinedNotAllowed);
+            throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductTypeUndefinedNotAllowed);
         }
 
         ProductType = type;
@@ -163,7 +163,7 @@ public class Product : AuditedAggregateRoot<Guid>
     {
         if (Prices.Any(x => x.Date == date))
         {
-            throw new ArgumentException(WebMarketplaceDomainErrorCodes.ProductReviewUserAlreadyExists);
+            throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductReviewUserAlreadyExists);
         }
 
         var price = new ProductPrice(this.Id, date, amount, currency);
@@ -176,7 +176,7 @@ public class Product : AuditedAggregateRoot<Guid>
         var price = Prices.FirstOrDefault(x => x.Date == date);
         if (price is null)
         {
-            throw new ArgumentException(WebMarketplaceDomainErrorCodes.ProductPriceNotFound);
+            throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductPriceNotFound);
         }
 
         Prices.Remove(price);
@@ -215,7 +215,7 @@ public class Product : AuditedAggregateRoot<Guid>
         var image = Images.FirstOrDefault(x => x.BlobName == blobName);
         if (image is null)
         {
-            throw new ArgumentException(WebMarketplaceDomainErrorCodes.ProductImageNotFound);
+            throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductImageNotFound);
         }
 
         image.IsDefault = isDefault;
@@ -228,13 +228,13 @@ public class Product : AuditedAggregateRoot<Guid>
         var image = Images.FirstOrDefault(x => x.BlobName == blobName);
         if (image is null)
         {
-            throw new ArgumentException(WebMarketplaceDomainErrorCodes.ProductImageNotFound);
+            throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductImageNotFound);
         }
         else
         {
             if (image.IsDefault)
             {
-                throw new ArgumentException(WebMarketplaceDomainErrorCodes.ProductImageDefaultRemoveNotAllowed);
+                throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductImageDefaultRemoveNotAllowed);
             }
         }
 

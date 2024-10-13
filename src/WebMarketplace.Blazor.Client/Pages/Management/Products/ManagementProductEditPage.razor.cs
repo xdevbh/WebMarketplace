@@ -5,15 +5,11 @@ using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars;
-using Volo.Abp.AspNetCore.Components.Web.Theming.Toolbars;
-using WebMarketplace.Blazor.Client.Pages.Administration.Companies.CompanyMemberships;
 using WebMarketplace.Permissions;
 using WebMarketplace.Products;
-using static System.Net.WebRequestMethods;
 using BreadcrumbItem = Volo.Abp.BlazoriseUI.BreadcrumbItem;
 
 namespace WebMarketplace.Blazor.Client.Pages.Management.Products
