@@ -12,7 +12,8 @@ public class WebMarketplaceToolbarContributor : IToolbarContributor
         if (context.Toolbar.Name == StandardToolbars.Main)
         {
             // todo: redirect to login page if user is not authenticated
-            context.Toolbar.Items.Insert(0, new ToolbarItem(typeof(CartToolBarItem)));
+            context.Toolbar.Items.Insert(0, new ToolbarItem(typeof(WmSearchToolBarItem)));
+            context.Toolbar.Items.Insert(1, new ToolbarItem(typeof(WmCartToolBarItem)));
         }
 
         return Task.CompletedTask;

@@ -1,17 +1,266 @@
 ﻿@page "/product/list"
+@using Microsoft.Extensions.Localization
 @using Volo.Abp.Application.Dtos
+@using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars
+@using WebMarketplace.Localization
 @using WebMarketplace.Products
+@inherits WmPageBase
 @inject IProductBuyerAppService ProductBuyerAppService
+@inject IStringLocalizer<WebMarketplaceResource> L
 
-<ProductCardDeck Products="@Products"/>
+
+<WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle"/>
+
+<Row>
+    @if (IsFilterVisible)
+    {
+        <Column Margin="Margin.Is3.FromBottom">
+            <Card>
+                <Div Margin="Margin.Is3.OnX.Is3.FromTop">
+                    <Heading Size="HeadingSize.Is5">
+                        @L["Header:Sorting"]
+                    </Heading>
+                    <Field>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.Sort"></Icon>
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <WmEnumSelect TEnum="ProductSorting"
+                                              @bind-SelectedValue="SelectedSorting"/>
+                            </Addon>
+                        </Addons>
+                    </Field>
+                </Div>
+                <Div Margin="Margin.Is3.OnX.Is3.FromTop">
+                    <Heading Size="HeadingSize.Is5">
+                        @L["Header:Filter"]
+                    </Heading>
+                    <Field >
+                        <FieldLabel>@L["Field:ProductType"]</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.List"></Icon>
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <WmEnumSelect TEnum="ProductType"
+                                              @bind-SelectedValue="SelectedProductType"/>
+                            </Addon>
+                        </Addons>
+                    </Field>
+                    <Field>
+                        <FieldLabel>@L["Field:ProductCategory"]</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.Tag"></Icon>
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <WmEnumSelect TEnum="ProductCategory"
+                                              @bind-SelectedValue="SelectedProductCategory"/>
+                            </Addon>
+                        </Addons>
+                    </Field>
+                    <Field>
+                        <FieldLabel>@L["Field:MinPriceAmount"]</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.MoneyBillAlt"/>
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <NumericPicker TValue="decimal?" @bind-Value="@SelectedMinPriceAmount" Min="0"/>
+                            </Addon>
+                        </Addons>
+                    </Field>
+                    <Field>
+                        <FieldLabel>@L["Field:MaxPriceAmount"]</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.MoneyBillAlt"/>
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <NumericPicker TValue="decimal?" @bind-Value="@SelectedMaxPriceAmount" Min="0"/>
+                            </Addon>
+                        </Addons>
+                    </Field>
+                    <Field>
+                        <FieldLabel>@L["Field:PriceCurrency"]</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.EuroSign"/>
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <WmCurrencyPicker @bind-SelectedValue="@SelectedPriceCurrency"/>
+                            </Addon>
+                        </Addons>
+                    </Field>
+                    <Field>
+                        <FieldLabel>@L["Field:MinRating"]</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.StarHalf"/>
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <NumericPicker TValue="double?" @bind-Value="@SelectedMinRating" Min="0" Max="5"/>
+                            </Addon>
+                        </Addons>
+                    </Field>
+                    <Field>
+                        <FieldLabel>@L["Field:MaxRating"]</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.Star"/>
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <NumericPicker TValue="double?" @bind-Value="@SelectedMaxRating" Min="0" Max="5"/>
+                            </Addon>
+                        </Addons>
+                    </Field>
+                </Div>
+                <Div Margin="Margin.Is3.OnAll">
+                    <Button Color="Color.Primary"
+                            Clicked="() => GetDataAsync()"
+                            Block="true">
+                        <Icon Name="IconName.Search" Margin="Margin.Is1.FromEnd"/>
+                        @L["Action:Apply"]
+                    </Button>
+                    <Button Color="Color.Secondary"
+                            Clicked="() => Clear()"
+                            Block="true">
+                        <Icon Name="IconName.Clear" Margin="Margin.Is1.FromEnd"/>
+                        @L["Action:Clear"]
+                    </Button>
+                </Div>
+            </Card>
+        </Column>
+    }
+    <Column ColumnSize="BodyColumnSize">
+        <WmProductCardDeck Products="@Products"/>
+    </Column>
+</Row>
+
 
 @code {
-    
+
     public List<ProductCardDto> Products { get; set; } = new List<ProductCardDto>();
-    
+
+    protected ProductSorting SelectedSorting { get; set; } = ProductSorting.Popularity;
+    protected ProductType SelectedProductType { get; set; } = ProductType.Undefined;
+    protected ProductCategory SelectedProductCategory { get; set; } = ProductCategory.Undefined;
+    protected double? SelectedMinRating { get; set; } = null;
+    protected double? SelectedMaxRating { get; set; } = null;
+    protected decimal? SelectedMinPriceAmount { get; set; } = null;
+    protected decimal? SelectedMaxPriceAmount { get; set; } = null;
+    protected string SelectedPriceCurrency { get; set; } = String.Empty;
+    protected bool IsFilterVisible = false;
+    protected IFluentColumnWithSize BodyColumnSize { get; set; } = ColumnSize.Is12.OnDesktop;
+    protected int PageSize { get; set; } = LimitedResultRequestDto.DefaultMaxResultCount;
+    protected int CurrentPage { get; set; } = 1;
+    protected int TotalCount { get; set; }
+
+
     protected override async Task OnInitializedAsync()
     {
-        // var result = await ProductBuyerAppService.GetProductCardListAsync(input);
-        // Products = result.Items.ToList();
+        await GetDataAsync();
+        await base.OnInitializedAsync();
     }
+
+    protected override async Task SetToolBarAsync()
+    {
+        PageToolbar = new PageToolbar();
+        if (IsFilterVisible)
+        {
+            PageToolbar.AddButton(L["Action:Filter"],
+                () => ShowFilter(false),
+                IconName.Filter,
+                Color.Primary);
+        }
+        else
+        {
+            PageToolbar.AddButton(L["Action:Filter"],
+                () => ShowFilter(true),
+                IconName.Filter,
+                Color.Primary);
+        }
+
+        await InvokeAsync(StateHasChanged);
+        await base.SetToolBarAsync();
+    }
+
+    protected override Task SetBreadcrumbItemsAsync()
+    {
+        BreadcrumbItems.Add(new BreadcrumbItem(L["Menu:Products"], "/product/list"));
+        return base.SetBreadcrumbItemsAsync();
+    }
+
+    protected async Task ShowFilter(bool visible)
+    {
+        if (visible)
+        {
+            BodyColumnSize = ColumnSize.Is9.OnDesktop;
+            IsFilterVisible = true;
+        }
+        else
+        {
+            BodyColumnSize = ColumnSize.Is12.OnDesktop;
+            IsFilterVisible = false;
+        }
+
+        await SetToolBarAsync();
+    }
+
+    protected async Task Clear()
+    {
+        SelectedProductType = ProductType.Undefined;
+        SelectedProductCategory = ProductCategory.Undefined;
+        SelectedMinRating = null;
+        SelectedMaxRating = null;
+        SelectedMinPriceAmount = null;
+        SelectedMaxPriceAmount = null;
+        SelectedPriceCurrency = String.Empty;
+
+        await GetDataAsync();
+    }
+
+    protected async Task GetDataAsync()
+    {
+        var filter = new ProductCardListFilterDto()
+        {
+            Sorting = SelectedSorting,
+            MaxResultCount = PageSize,
+            SkipCount = (CurrentPage - 1) * PageSize,
+            ProductType = SelectedProductType == ProductType.Undefined ? null : SelectedProductType,
+            ProductCategory = SelectedProductCategory == ProductCategory.Undefined ? null : SelectedProductCategory,
+            MinRating = SelectedMinRating,
+            MaxRating = SelectedMaxRating,
+            MinPriceAmount = SelectedMinPriceAmount,
+            MaxPriceAmount = SelectedMaxPriceAmount,
+            PriceCurrency = SelectedPriceCurrency
+        };
+
+        var result = await ProductBuyerAppService.GetProductCardListAsync(filter);
+        Products = result.Items.ToList();
+        SelectedMinPriceAmount = result.MinPriceAmount;
+        SelectedMaxPriceAmount = result.MaxPriceAmount;
+        SelectedMinRating = result.MinRating;
+        SelectedMaxRating = result.MaxRating;
+        SelectedPriceCurrency = result.PriceCurrency;
+        TotalCount = (int)result.TotalCount;
+    }
+
 }

@@ -11,31 +11,7 @@ public class CurrencyRepository : ICurrencyRepository
     public Task<List<Currency>> GetListAsync()
     {
         var list = new List<Currency>();
-
-        list.Add(new Currency
-        {
-            Name = "US Dollar",
-            Code = "USD",
-            NumericCode = "840",
-            Symbol = "$"
-        });
-
-        list.Add(new Currency
-        {
-            Name = "Euro",
-            Code = "EUR",
-            NumericCode = "978",
-            Symbol = "€"
-        });
-
-        list.Add(new Currency
-        {
-            Name = "British Pound",
-            Code = "GBP",
-            NumericCode = "826",
-            Symbol = "£"
-        });
-
+        
         list.Add(new Currency
         {
             Name = "Czech Koruna",
@@ -43,6 +19,30 @@ public class CurrencyRepository : ICurrencyRepository
             NumericCode = "203",
             Symbol = "Kč"
         });
+
+        // list.Add(new Currency
+        // {
+        //     Name = "US Dollar",
+        //     Code = "USD",
+        //     NumericCode = "840",
+        //     Symbol = "$"
+        // });
+        //
+        // list.Add(new Currency
+        // {
+        //     Name = "Euro",
+        //     Code = "EUR",
+        //     NumericCode = "978",
+        //     Symbol = "€"
+        // });
+        //
+        // list.Add(new Currency
+        // {
+        //     Name = "British Pound",
+        //     Code = "GBP",
+        //     NumericCode = "826",
+        //     Symbol = "£"
+        // });
 
         return Task.FromResult(list);
     }

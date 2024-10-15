@@ -1,0 +1,13 @@
+﻿@using WebMarketplace.Products
+
+<Div Flex="Flex.Wrap.AlignContent.Center" Gap="Gap.Is3" >
+    @foreach (var product in Products)
+    {
+        <WmProductCard Product="product" />
+    }
+</Div>
+
+@code {
+    [Parameter] public List<ProductCardDto> Products { get; set; }
+    
+}

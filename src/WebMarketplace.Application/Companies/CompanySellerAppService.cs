@@ -85,29 +85,18 @@ public class CompanySellerAppService : WebMarketplaceAppService, ICompanySellerA
 
     #region Images 
 
-    public async Task<CompanyImageDto> GetDefaultImageAsync(Guid productId)
+    public async Task<CompanyImageDto> GetDefaultImageAsync()
     {
         var company = await GetMyCompany();
 
-        if (company.Images == null || !company.Images.Any())
+        if (company.Images == null || !company.Images.Any() || company.DefaultImage == null)
         {
             return new CompanyImageDto();
         }
-
-        var dto = new CompanyImageDto();
-
-        if (company.DefaultImage != null)
-        {
-            dto = ObjectMapper.Map<CompanyImage, CompanyImageDto>(company.DefaultImage);
-        }
-        else
-        {
-            dto = ObjectMapper.Map<CompanyImage, CompanyImageDto>(company.Images.FirstOrDefault());
-        }
-
+        
+        var dto = ObjectMapper.Map<CompanyImage, CompanyImageDto>(company.DefaultImage);
         var bytes = await _companyBlobContainer.GetAllBytesOrNullAsync(company.DefaultImage.BlobName);
         dto.Content = bytes;
-
         return dto;
     }
 

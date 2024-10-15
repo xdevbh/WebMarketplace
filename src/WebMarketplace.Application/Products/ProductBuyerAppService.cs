@@ -22,7 +22,8 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
     private readonly IBlobContainer<ProductImageContainer> _productBlobContainer;
 
 
-    public ProductBuyerAppService(IProductRepository productRepository, ProductManager productManager, IRepository<Company, Guid> companyRepository, IBlobContainer<ProductImageContainer> productBlobContainer)
+    public ProductBuyerAppService(IProductRepository productRepository, ProductManager productManager,
+        IRepository<Company, Guid> companyRepository, IBlobContainer<ProductImageContainer> productBlobContainer)
     {
         _productRepository = productRepository;
         _productManager = productManager;
@@ -41,11 +42,31 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
         return dto;
     }
 
-    public async Task<PagedResultDto<ProductCardDto>> GetProductCardListAsync(ProductCardListFilterDto input)
+    public async Task<ProductCardListResultDto> GetProductCardListAsync(ProductCardListFilterDto input)
     {
+        var sorting = string.Empty;
+        switch (input.Sorting)
+        {
+            case ProductSorting.Popularity:
+                sorting = "name ASC"; // todo: order count
+                break;
+            case ProductSorting.RatingAsc:
+                sorting = "rating ASC";
+                break;
+            case ProductSorting.RatingDesc:
+                sorting = "rating DESC";
+                break;
+            case ProductSorting.PriceAsc:
+                sorting = "PriceAmount ASC";
+                break;
+            case ProductSorting.PriceDesc:
+                sorting = "PriceAmount DESC";
+                break;
+        }
+        
         var totalCount = await _productRepository.GetProductDetailCountAsync(
             input.CompanyId,
-            false,
+            true,
             input.Name,
             input.ProductCategory,
             input.ProductType,
@@ -57,12 +78,12 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
         );
 
         var items = await _productRepository.GetProductDetailListAsync(
-            input.Sorting,
+            sorting,
             input.MaxResultCount,
             input.SkipCount,
             input.CompanyId,
-            false,
-            input.Name, 
+            true,
+            input.Name,
             input.ProductCategory,
             input.ProductType,
             input.MinRating,
@@ -78,10 +99,31 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
             var dto = ObjectMapper.Map<ProductDetailQueryRequestItem, ProductCardDto>(item);
             dto.PriceAmount = item.PriceAmount;
             dto.PriceCurrency = item.PriceCurrency;
+            if (!item.DefaultImageBlobName.IsNullOrWhiteSpace())
+            {
+                dto.ImageContent = await _productBlobContainer.GetAllBytesOrNullAsync(item.DefaultImageBlobName);
+            }
+
             dtos.Add(dto);
         }
         
-        return new PagedResultDto<ProductCardDto>(totalCount, dtos);
+        var minPrice = await _productRepository.GetMinPriceAsync();
+        var maxPrice = await _productRepository.GetMaxPriceAsync();
+        var minRating = await _productRepository.GetMinRatingAsync();
+        var maxRating = await _productRepository.GetMaxRatingAsync();
+
+        var result = new ProductCardListResultDto()
+        {
+            TotalCount = totalCount,
+            Items = dtos,
+            MinPriceAmount = input.MinPriceAmount ?? minPrice,
+            MaxPriceAmount = input.MaxPriceAmount ?? maxPrice,
+            MinRating = input.MinRating ?? minRating,
+            MaxRating = input.MaxRating ?? maxRating,
+            PriceCurrency = input.PriceCurrency ?? "CZK"
+        };
+        
+        return result;
     }
 
     #endregion
@@ -117,43 +159,47 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
 
     #region Images
 
-    public async Task<IRemoteStreamContent> GetDefaultImageAsync(Guid productId)
+    public async Task<ProductImageDto> GetDefaultImageAsync(Guid productId)
     {
         var product = await _productRepository.GetAsync(productId);
-        if (product != null || product.DefaultImage == null)
+
+        if (product == null || product.Images == null || !product.Images.Any() || product.DefaultImage != null)
         {
-            return null; 
-        }
-        
-        var imageContent = await _productBlobContainer.GetOrNullAsync(product.DefaultImage.BlobName);
-        if (imageContent == null)
-        {
-            return null;
+            return new ProductImageDto();
         }
 
-        return new RemoteStreamContent(imageContent);
+        var dto = ObjectMapper.Map<ProductImage, ProductImageDto>(product.DefaultImage);
+        var bytes = await _productBlobContainer.GetAllBytesOrNullAsync(product.DefaultImage.BlobName);
+        dto.Content = bytes;
+
+        return dto;
     }
 
-    public async Task<ListResultDto<IRemoteStreamContent>> GetAllImagesAsync(Guid productId)
+    public async Task<ListResultDto<ProductImageDto>> GetAllImagesAsync(Guid productId)
     {
         var product = await _productRepository.GetAsync(productId);
 
         if (product == null || product.Images == null || !product.Images.Any())
         {
-            return new ListResultDto<IRemoteStreamContent>();
+            return new ListResultDto<ProductImageDto>();
         }
 
-        var imageContentList = new List<IRemoteStreamContent>();
+        var imageDtos = new List<ProductImageDto>();
+
         foreach (var image in product.Images)
         {
-            var imageContent = await _productBlobContainer.GetOrNullAsync(image.BlobName);
-            var tt = new RemoteStreamContent(imageContent);
-            imageContentList.Add(tt);
+            var dto = ObjectMapper.Map<ProductImage, ProductImageDto>(image);
+
+
+            var bytes = await _productBlobContainer.GetAllBytesOrNullAsync(image.BlobName);
+            dto.Content = bytes;
+
+            imageDtos.Add(dto);
         }
 
-        return new ListResultDto<IRemoteStreamContent>(imageContentList);
+        return new ListResultDto<ProductImageDto>(imageDtos);
     }
-    
+
     #endregion
 
     #region Mappers
@@ -162,13 +208,13 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
     {
         var productDto = new ProductDto();
         productDto = ObjectMapper.Map<ProductDetailQueryRequestItem, ProductDto>(item);
-        
+
         // var reviews = await GetReviewListAsync(new ProductReviewListFilterDto(item.Id));
         // productDto.Reviews = reviews;
         //
         // var images = await GetAllImagesAsync(item.Id);
         // productDto.Images = images;
-        
+
         return productDto;
     }
 

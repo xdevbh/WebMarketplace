@@ -1,6 +1,23 @@
 ﻿@page "/product/{id:guid}"
-<h3>ProductPage</h3>
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars
+@using WebMarketplace.Localization
+@inherits WmPageBase
+@inject IStringLocalizer<WebMarketplaceResource> L
+
+
+<WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle" />
+
 
 @code {
+    
     [Parameter] public Guid Id { get; set; }
+
+    protected override Task SetBreadcrumbItemsAsync()
+    {
+        BreadcrumbItems.Add(new BreadcrumbItem(L["Menu:Products"], "/product/list"));
+        BreadcrumbItems.Add(new BreadcrumbItem(L["Menu:Product"]));
+        return base.SetBreadcrumbItemsAsync();
+    }
+
 }

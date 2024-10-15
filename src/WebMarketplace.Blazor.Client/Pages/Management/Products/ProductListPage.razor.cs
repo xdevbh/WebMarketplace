@@ -28,7 +28,7 @@ namespace WebMarketplace.Blazor.Client.Pages.Management.Products
         protected double? SelectedMaxRating { get; set; } = null;
         protected decimal? SelectedMinPriceAmount { get; set; } = null;
         protected decimal? SelectedMaxPriceAmount { get; set; } = null;
-        public string SelectedPriceCurrency { get; set; } = null;
+        protected string SelectedPriceCurrency { get; set; } = null;
 
         protected override async Task OnInitializedAsync()
         {

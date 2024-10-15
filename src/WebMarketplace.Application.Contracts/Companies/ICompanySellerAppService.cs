@@ -16,6 +16,7 @@ public interface ICompanySellerAppService : IApplicationService
     Task<CompanyDto> UpdateAsync(UpdateCompanySellerDto input);
 
     // images
+    Task<CompanyImageDto> GetDefaultImageAsync();
     Task<ListResultDto<CompanyImageDto>> GetAllImagesAsync();
 
     Task AddImageAsync(CreateCompanyImageDto input);

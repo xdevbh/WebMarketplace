@@ -17,7 +17,8 @@ public class Company : FullAuditedAggregateRoot<Guid>
     public virtual string? Website { get; set; }
 
     public virtual List<CompanyImage> Images { get; set; }
-    public virtual CompanyImage? DefaultImage => Images?.Where(x => x.IsDefault).FirstOrDefault();
+    public virtual CompanyImage? DefaultImage => 
+        Images?.Where(x => x.IsDefault).FirstOrDefault() ?? Images?.FirstOrDefault();
 
     // todo: add contact information as list with ContactInformationType: mail, phone ... 
 

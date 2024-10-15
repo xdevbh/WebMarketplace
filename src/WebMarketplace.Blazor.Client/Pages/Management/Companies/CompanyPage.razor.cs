@@ -49,9 +49,15 @@ public partial class CompanyPage
 
     protected override async Task SetToolBarAsync()
     {
+        PageToolbar = new PageToolbar();
+        PageToolbar.AddButton(L["Action:View"],
+            () => ViewAsync(),
+            IconName.InfoCircle,
+            Color.Secondary,
+            !CanEdit);
+        
         if (!IsEditMode)
         {
-            PageToolbar = new PageToolbar();
             PageToolbar.AddButton(L["Action:Edit"],
                 () => EnableEditMode(true),
                 IconName.Edit,
@@ -60,7 +66,6 @@ public partial class CompanyPage
         }
         else
         {
-            PageToolbar = new PageToolbar();
             PageToolbar.AddButton(L["Action:Cancel"],
                 () => CancelAsync(),
                 IconName.Times,
@@ -72,7 +77,7 @@ public partial class CompanyPage
                 Color.Primary,
                 !CanEdit);
         }
-        
+
         await InvokeAsync(StateHasChanged);
         await base.SetToolBarAsync();
     }
@@ -96,10 +101,16 @@ public partial class CompanyPage
         IsEditMode = enable;
         await SetToolBarAsync();
     }
-    
+
     protected Task CancelAsync()
     {
         EnableEditMode(false);
+        return Task.CompletedTask;
+    }
+
+    protected Task ViewAsync()
+    {
+        NavigationManager.NavigateTo($"/company/{Company.Id}");
         return Task.CompletedTask;
     }
 

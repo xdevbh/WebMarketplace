@@ -1,0 +1,84 @@
+﻿@using Microsoft.Extensions.Localization
+@using WebMarketplace.Carts
+@using WebMarketplace.Localization
+@using WebMarketplace.Products
+@inject NavigationManager NavigationManager
+@inject IProductBuyerAppService ProductAppService
+@inject ICartAppService CartAppService
+@inject IStringLocalizer<WebMarketplaceResource> L
+
+<Card Flex="Flex.Column"
+      Width="Width.Px(300)"
+      Height="Height.Px(500)">
+    <CardImage Src="@ImageUrl"
+               Width="Width.Is100"
+               Height="Height.Px(300)"
+               Style="object-fit: cover;"
+               @onclick="OpenProductPage"/>
+    <CardBody Flex="Flex.Column">
+        <Div Margin="Margin.Is3.FromBottom" Flex="Flex.Column.Fill">
+            <CardTitle>@Product.Name</CardTitle>
+            <CardSubtitle>@RoundedPriceAmount @Product.PriceCurrency</CardSubtitle>
+            <Div Flex="Flex.Row">
+                <Rating @bind-SelectedValue="@RaingInt" MaxValue="5" ReadOnly="true" Color="Color.Warning"/>
+                <span>(@Product.Rating)</span>
+            </Div>
+            <CardText Style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                @Product.ShortDescription
+            </CardText>
+        </Div>
+        <Div Flex="Flex.ReverseRow.JustifyContent.Between">
+            <ToolbarButton Clicked="() => AddToCart()"
+                           Color="Color.Primary"
+                           Icon="IconName.CartPlus"
+                           Text="@L["Action:AddToCart"]"/>
+        </Div>
+    </CardBody>
+</Card>
+
+@code {
+    [Parameter] public ProductCardDto Product { get; set; }
+
+    protected string ImageUrl { get; set; } = string.Empty;
+    protected int RaingInt { get; set; }
+    protected decimal RoundedPriceAmount { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        RaingInt = Convert.ToInt32(Math.Round(Product.Rating, 0));
+        RoundedPriceAmount = Math.Round(Product.PriceAmount, 2);
+        await SetCoverImageUrlAsync();
+    }
+
+    protected async Task SetCoverImageUrlAsync()
+    {
+        if (Product.ImageContent == null || Product.ImageContent.Length <= 0)
+        {
+            ImageUrl = "https://via.placeholder.com/300";
+            return;
+        }
+
+        ImageUrl = $"data:{Product.ImageContentType};base64,{Convert.ToBase64String(Product.ImageContent)}";
+    }
+
+    protected Task OpenProductPage()
+    {
+        NavigationManager.NavigateTo($"/product/{Product.Id}");
+        return Task.CompletedTask;
+    }
+
+    protected Task AddToCart()
+    {
+        var cartItem = new AddCartItemDto()
+        {
+            ProductId = Product.Id,
+            Quantity = 1
+        };
+
+        CartAppService.AddProductAsync(cartItem);
+        Console.WriteLine($"Product '{Product.Name}' added to cart.");
+        return Task.CompletedTask;
+    }
+
+
+}

@@ -41,7 +41,9 @@ public class WebMarketplaceApplicationAutoMapperProfile : Profile
             .Ignore(x => x.PriceCurrency);
         CreateMap<ProductDetailQueryRequestItem, ProductCardDto>()
             .Ignore(x => x.PriceAmount)
-            .Ignore(x => x.PriceCurrency);
+            .Ignore(x => x.PriceCurrency)
+            .Ignore(x=>x.ImageContent)
+            .Ignore(x=>x.ImageContentType);
         CreateMap<ProductDetailQueryRequestItem, ProductListItemDto>()
             .Ignore(x => x.PriceAmount)
             .Ignore(x => x.PriceCurrency);

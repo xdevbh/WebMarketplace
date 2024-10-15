@@ -161,6 +161,11 @@ public class ProductSellerAppService : WebMarketplaceAppService, IProductSellerA
             throw new AbpAuthorizationException();
         }
 
+        foreach (var image in product.Images)
+        {
+            await _productBlobContainer.DeleteAsync(image.BlobName);
+        }
+        
         await _productRepository.DeleteAsync(id);
     }
 

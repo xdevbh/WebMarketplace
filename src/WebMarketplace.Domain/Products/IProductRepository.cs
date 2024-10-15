@@ -58,6 +58,14 @@ public interface IProductRepository : IRepository<Product, Guid>
 
 
     // ReviewDetail
+
+    Task<double> GetMinRatingAsync(
+        Guid? productId = null,
+        CancellationToken cancellationToken = default);
+    
+    Task<double> GetMaxRatingAsync(
+        Guid? productId = null,
+        CancellationToken cancellationToken = default);
     Task<ProductReviewDetailQueryResultItem> GetReviewDetailAsync(
         Guid id,
         CancellationToken cancellationToken = default);
@@ -83,6 +91,14 @@ public interface IProductRepository : IRepository<Product, Guid>
         CancellationToken cancellationToken = default);
 
     // Price
+    Task<decimal> GetMinPriceAsync(
+        Guid? productId = null,
+        CancellationToken cancellationToken = default);
+    
+    Task<decimal> GetMaxPriceAsync(
+        Guid? productId = null,
+        CancellationToken cancellationToken = default);
+    
     Task<IQueryable<ProductPrice>> GetPriceQueryableAsync(
         Guid? productId = null);
 

@@ -1,0 +1,13 @@
+﻿@using Microsoft.Extensions.Localization
+@using WebMarketplace.Localization
+@inject IStringLocalizer<WebMarketplaceResource> L
+
+<BarLink To="/search">
+    <Icon Name="IconName.Search"/>
+        @L["Menu:Search"]
+</BarLink>
+
+@code {
+
+
+}

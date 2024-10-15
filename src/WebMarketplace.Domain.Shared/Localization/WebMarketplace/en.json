@@ -5,6 +5,7 @@
 
     "Menu:Home": "Home",
     "Menu:Products": "Products",
+    "Menu:Product": "Products",
     "Menu:CreateProduct": "Create product",
     "Menu:UpdateProduct": "Edit product",
     "Menu:Companies": "Companies",
@@ -17,6 +18,7 @@
     "Menu:Administration": "Administration",
     "Menu:Dashboard": "Dashboard",
     "Menu:Customers": "Customers",
+    "Menu:Search": "Search",
 
     "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP framework. For more information visit",
     "Welcome": "Welcome",
@@ -65,6 +67,8 @@
     "Action:Cancel": "Cancel",
     "Action:Back": "Back",
     "Action:Search": "Search",
+    "Action:Apply": "Apply",
+    "Action:Clear": "Clear",
     "Action:AddToCart": "Add to Cart",
     "Action:RemoveFromCart": "Remove from Cart",
     "Action:Checkout": "Checkout",
@@ -75,6 +79,8 @@
     "Action:AddPrice": "Add price",
     "Action:AddImage": "Add image",
     "Action:SetDefault": "Set default",
+    "Action:Filter": "Filter",
+    "Action:More": "More",
 
     "Message:CompanyDeletionConfirmation": "Are you sure you want to delete the company?",
     "Message:CompanyMembershipDeletionConfirmation": "Are you sure you want to delete the company membership?",
@@ -102,6 +108,8 @@
     "Modal:ManagementAddCompanyImage": "Add image",
 
     "Header:Search": "Search",
+    "Header:Filter": "Filter",
+    "Header:Sorting": "Sorting",
     "Header:Companies": "Companies",
     "Header:Company": "Company",
     "Header:CompanyMemberships": "Company Memberships",

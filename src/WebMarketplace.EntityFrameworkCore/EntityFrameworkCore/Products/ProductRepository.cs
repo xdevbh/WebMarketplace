@@ -59,7 +59,8 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
                 Product = product,
                 CompanyName = company.Name,
                 Reviews = product.Reviews,
-                Prices = product.Prices
+                Prices = product.Prices,
+                Images = product.Images
             }
             into result
             select new ProductDetailQueryRequestItem
@@ -73,14 +74,23 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
                 ShortDescription = result.Product.ShortDescription,
                 FullDescription = result.Product.FullDescription,
                 IsPublished = result.Product.IsPublished,
-                Rating = result.Reviews.Any() ? result.Reviews.Average(r => r.Rating) : 0, 
-                //CurrentPrice = result.Prices.Any() ? result.Prices.OrderByDescending(p => p.Date).FirstOrDefault() : null, 
-                PriceAmount = result.Prices.Any() ? result.Prices.OrderByDescending(p => p.Date).FirstOrDefault().Amount : 0,
-                PriceCurrency = result.Prices.Any() ? result.Prices.OrderByDescending(p => p.Date).FirstOrDefault().Currency : string.Empty,
-                PriceDate = result.Prices.Any() ? result.Prices.OrderByDescending(p => p.Date).FirstOrDefault().Date : (DateTime?)null,
+                Rating = result.Reviews.Any() ? result.Reviews.Average(r => r.Rating) : 0,
+                PriceAmount = result.Prices.Any()
+                    ? result.Prices.OrderByDescending(p => p.Date).FirstOrDefault().Amount
+                    : 0,
+                PriceCurrency = result.Prices.Any()
+                    ? result.Prices.OrderByDescending(p => p.Date).FirstOrDefault().Currency
+                    : string.Empty,
+                PriceDate = result.Prices.Any()
+                    ? result.Prices.OrderByDescending(p => p.Date).FirstOrDefault().Date
+                    : (DateTime?)null,
+                DefaultImageBlobName = result.Product.Images.Any()
+                    ? result.Product.Images.FirstOrDefault(x => x.IsDefault) != null
+                        ? result.Product.Images.FirstOrDefault(x => x.IsDefault).BlobName
+                        : result.Images.FirstOrDefault().BlobName
+                    : string.Empty,
                 CreationTime = result.Product.CreationTime
             };
-
 
 
         if (companyId != null)
@@ -159,7 +169,8 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
             name,
             productCategory,
             productType,
-            minRating, maxRating,
+            minRating, 
+            maxRating,
             minPriceAmount,
             maxPriceAmount,
             priceCurrency);
@@ -207,6 +218,43 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
 
     #region Reviews
 
+    public async Task<double> GetMinRatingAsync(
+        Guid? productId = null,
+        CancellationToken cancellationToken = default)
+    {
+        var dbContext = await GetDbContextAsync();
+    
+        var query =
+            from product in dbContext.Set<Product>() 
+            join review in dbContext.Set<ProductReview>() 
+                on product.Id equals review.ProductId into productReviews 
+            from review in productReviews.DefaultIfEmpty() 
+            where productId == null ? true : product.Id == productId 
+            select review != null ? review.Rating : (double?)null; 
+        
+        var minRating = await query.MinAsync(x => x ?? 0, GetCancellationToken(cancellationToken));
+    
+        return minRating;
+    }
+
+    
+    public async Task<double> GetMaxRatingAsync(
+        Guid? productId = null,
+        CancellationToken cancellationToken = default)
+    {
+        var dbContext = await GetDbContextAsync();
+        var query =
+            from product in dbContext.Set<Product>() 
+            join review in dbContext.Set<ProductReview>() 
+                on product.Id equals review.ProductId into productReviews 
+            from review in productReviews.DefaultIfEmpty() 
+            where productId == null || product.Id == productId 
+            select review != null ? review.Rating : (double?)null; 
+        
+        var maxRating = await query.MaxAsync(x => x ?? 0, GetCancellationToken(cancellationToken));
+        return maxRating;
+    }
+
     public async Task<IQueryable<ProductReviewDetailQueryResultItem>> GetReviewDetailQueryableAsync(
         Guid? productId = null,
         double? minRating = null,
@@ -238,8 +286,8 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
     }
 
     public async Task<ProductReviewDetailQueryResultItem> GetReviewDetailAsync(
-    Guid id,
-    CancellationToken cancellationToken = default)
+        Guid id,
+        CancellationToken cancellationToken = default)
     {
         var dbContext = await GetDbContextAsync();
         var query =
@@ -307,7 +355,42 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
     #endregion
 
     #region Price
-
+    public async Task<decimal> GetMinPriceAsync(
+        Guid? productId = null,
+        CancellationToken cancellationToken = default)
+    {
+        var dbContext = await GetDbContextAsync();
+        var query =
+            from price in dbContext.Set<ProductPrice>()
+            select price;
+        
+        if (productId != null)
+        {
+            query = query.Where(x => x.ProductId == productId);
+        }
+        
+        var minPrice = await query.MinAsync(x => x.Amount, GetCancellationToken(cancellationToken));
+        return minPrice;
+    }
+    
+    public async Task<decimal> GetMaxPriceAsync(
+        Guid? productId = null,
+        CancellationToken cancellationToken = default)
+    {
+        var dbContext = await GetDbContextAsync();
+        var query =
+            from price in dbContext.Set<ProductPrice>()
+            select price;
+        
+        if (productId != null)
+        {
+            query = query.Where(x => x.ProductId == productId);
+        }
+        
+        var maxPrice = await query.MaxAsync(x => x.Amount, GetCancellationToken(cancellationToken));
+        return maxPrice;
+    }
+    
     public async Task<IQueryable<ProductPrice>> GetPriceQueryableAsync(
         Guid? productId = null)
     {
@@ -316,7 +399,7 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
             from price in dbContext.Set<ProductPrice>()
             select price;
 
-        if(productId != null)
+        if (productId != null)
         {
             query = query.Where(x => x.ProductId == productId);
         }
@@ -325,8 +408,8 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
     }
 
     public async Task<ProductPrice> GetPriceAsync(
-        Guid productId, 
-        DateTime date, 
+        Guid productId,
+        DateTime date,
         CancellationToken cancellationToken = default)
     {
         var query = await GetPriceQueryableAsync(productId);
@@ -358,7 +441,7 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
     }
 
     public async Task<long> GetPriceCountAsync(
-        Guid? productId = null, 
+        Guid? productId = null,
         CancellationToken cancellationToken = default)
     {
         var query = await GetPriceQueryableAsync(productId);

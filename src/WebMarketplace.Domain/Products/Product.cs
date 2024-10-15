@@ -20,7 +20,7 @@ public class Product : AuditedAggregateRoot<Guid>
     public virtual string? ShortDescription { get; set; }
 
     public virtual string? FullDescription { get; set; }
-    
+
     public virtual bool IsPublished { get; private set; }
 
     public virtual List<ProductReview> Reviews { get; set; }
@@ -30,11 +30,12 @@ public class Product : AuditedAggregateRoot<Guid>
     public virtual List<ProductPrice> Prices { get; set; }
 
     public virtual ProductPrice? CurrentPrice => Prices?.OrderByDescending(x => x.Date).FirstOrDefault();
-    
+
     public virtual List<ProductImage> Images { get; set; }
-    
-    public virtual ProductImage? DefaultImage => Images?.Where(x => x.IsDefault).FirstOrDefault();
-    
+
+    public virtual ProductImage? DefaultImage =>
+        Images?.Where(x => x.IsDefault).FirstOrDefault() ?? Images?.FirstOrDefault();
+
     protected Product()
     {
     }
@@ -72,7 +73,7 @@ public class Product : AuditedAggregateRoot<Guid>
 
     public Product SetCategory(ProductCategory category)
     {
-        if(category == ProductCategory.Undefined)
+        if (category == ProductCategory.Undefined)
         {
             throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductCategoryUndefinedNotAllowed);
         }
@@ -197,7 +198,7 @@ public class Product : AuditedAggregateRoot<Guid>
             defaultImage.IsDefault = false;
         }
 
-        var image = new ProductImage(this.Id, blobName, isDefault);  
+        var image = new ProductImage(this.Id, blobName, isDefault);
         Images.Add(image);
         return this;
     }
