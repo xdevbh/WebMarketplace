@@ -1,9 +1,12 @@
 ﻿@using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Components.Messages
 @using WebMarketplace.Carts
 @using WebMarketplace.Localization
 @using WebMarketplace.Products
 @inject ICartAppService CartAppService
 @inject IStringLocalizer<WebMarketplaceResource> L
+@inject IUiMessageService UiMessageService
+
 
 <ToolbarButton Clicked="() => AddToCart()"
                Color="Color.Primary"
@@ -23,6 +26,8 @@
 
         CartAppService.AddProductAsync(cartItem);
         Console.WriteLine($"Product '{ProductId}' added to cart.");
+        UiMessageService.Success(L["Message:ProductAddedToCart"]);
+
         return Task.CompletedTask;
     }
 }

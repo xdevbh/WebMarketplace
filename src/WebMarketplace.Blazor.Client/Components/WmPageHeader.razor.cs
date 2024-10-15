@@ -26,7 +26,7 @@ public partial class WmPageHeader
     }
 
     [Parameter] public string? Header { get; set; } = null;
-    
+    [Parameter] public bool ShowHeader { get; set; } = true;
     [Parameter] public bool BreadcrumbShowHome { get; set; } = true;
 
     [Parameter] public bool BreadcrumbShowCurrent { get; set; } = true;

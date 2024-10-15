@@ -1,0 +1,76 @@
+﻿@page "/cart"
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars
+@using WebMarketplace.Carts
+@using WebMarketplace.Localization
+@inherits WmPageBase
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject ICartAppService CartAppService
+
+<WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle"/>
+
+@if (Cart.Items.Any())
+{
+    @foreach (var item in Cart.Items)
+    {
+        <WmCartItemCard CartItem="@item"
+                        OnItemChanged="() => GetDataAsync()"/>
+    }
+}
+else
+{
+    <Text>@L["Info:CartIsEmpty"]</Text>
+}
+
+@code {
+    protected CartDto Cart { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        PageHeader = L["Header:Cart"];
+        PageTitle = L["Page:Cart"];
+        await GetDataAsync();
+        await base.OnInitializedAsync();
+    }
+
+    protected override Task SetBreadcrumbItemsAsync()
+    {
+        BreadcrumbItems.Add((new BreadcrumbItem(L["Menu:Cart"], "/cart")));
+        return base.SetBreadcrumbItemsAsync();
+    }
+    
+    protected async Task GetDataAsync()
+    {
+        var result = await CartAppService.GetAsync();
+        Cart = result;
+    }
+
+    protected override Task SetToolBarAsync()
+    {
+        PageToolbar.AddButton(L["Action:RemoveAll"],
+            async () => RemoveAll(),
+            IconName.Delete,
+            Color.Secondary);
+
+        PageToolbar.AddButton(L["Action:Next"],
+            async () => NextAsync(),
+            IconName.ArrowRight,
+            Color.Primary);
+
+        return base.SetToolBarAsync();
+    }
+
+    private async Task RemoveAll()
+    {
+        await CartAppService.ClearAsync();
+        await GetDataAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void NextAsync()
+    {
+        throw new NotImplementedException();
+    }
+    
+
+}

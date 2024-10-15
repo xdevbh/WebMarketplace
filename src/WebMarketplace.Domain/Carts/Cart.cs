@@ -60,6 +60,31 @@ public class Cart : AggregateRoot<Guid>
         item.AddQuantity(-quantity.Value);
         return this;
     }
+    
+    public Cart ChangeItemQuantity(Guid productId, int quantity)
+    {
+        if (quantity < 1)
+        {
+            throw new ArgumentException("Product quantity should be 1 or more!");
+        }
+
+        var item = Items.FirstOrDefault(x => x.ProductId == productId);
+        if (item == null)
+        {
+            throw new ArgumentException("Product not found in the cart!");
+        }
+
+        if (quantity == 0)
+        {
+            RemoveItem(productId);
+        }
+        else
+        {
+            item.ChangeQuantity(quantity);
+        }
+        
+        return this;
+    }
 
     public int GetProductQuantity(Guid productId)
     {

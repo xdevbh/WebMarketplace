@@ -12,7 +12,7 @@
 @if (Options.Value.RenderBreadcrumbs && PageLayout.BreadcrumbItems.Any())
 {
     <Row>
-        <Column ColumnSize="ColumnSize.IsAuto.OnWidescreen" VerticalAlignment="VerticalAlignment.Middle">
+        <Column ColumnSize="ColumnSize.IsAuto.OnWidescreen" Flex="Flex.AlignItems.Center">
             <Breadcrumb Mode="@(BreadcrumbShowCurrent ? BreadcrumbMode.Auto : BreadcrumbMode.None)">
                 @if (BreadcrumbShowHome)
                 {
@@ -39,9 +39,9 @@
     </Row>
 }
 
-<Row>
-    <Column Flex="Flex.AlignContent.Center">
-        @if (Options.Value.RenderPageTitle && Header.IsNullOrWhiteSpace())
+<Row Margin="Margin.Is3.FromBottom">
+    <Column Flex="Flex.AlignItems.Center">
+        @if (Options.Value.RenderPageTitle && ShowHeader)
         {
             <Column ColumnSize="ColumnSize.IsAuto" Flex="Flex.AlignContent.Center">
                 <Heading Size="HeadingSize.Is3">
@@ -50,7 +50,7 @@
             </Column>
         }
     </Column>
-    <Column Flex="Flex.JustifyContent.End.AlignContent.Center">
+    <Column Flex="Flex.JustifyContent.End.AlignItems.Center">
         @if (Toolbar == null)
         {
             @ChildContent

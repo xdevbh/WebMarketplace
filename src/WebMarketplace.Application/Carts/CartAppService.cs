@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp.Authorization;
 using Volo.Abp.Users;
 using WebMarketplace.Products;
 
@@ -25,6 +26,12 @@ public class CartAppService : WebMarketplaceAppService, ICartAppService
             var dto = await GetCartDtoAsync(userCart);
             return dto;
         }
+        else
+        {
+            throw new AbpAuthorizationException(
+                L[WebMarketplaceDomainErrorCodes.UserNotAuthenticated],
+                WebMarketplaceDomainErrorCodes.UserNotAuthenticated);
+        }
 
         return new CartDto();
     }
@@ -40,7 +47,33 @@ public class CartAppService : WebMarketplaceAppService, ICartAppService
             var dto = await GetCartDtoAsync(userCart);
             return dto;
         }
-
+        else
+        {
+            throw new AbpAuthorizationException(
+                L[WebMarketplaceDomainErrorCodes.UserNotAuthenticated],
+                WebMarketplaceDomainErrorCodes.UserNotAuthenticated);
+        }
+        return new CartDto();
+    }
+    
+    public async Task<CartDto> ChangeProductQuantityAsync(ChangeCartItemQuantityDto input)
+    {
+        if (CurrentUser.IsAuthenticated)
+        {
+            var userCart = await _cartRepository.GetAsync(CurrentUser.GetId());
+            userCart.ChangeItemQuantity(input.ProductId, input.Quantity);
+            await _cartRepository.UpdateAsync(userCart);
+            
+            var dto = await GetCartDtoAsync(userCart);
+            return dto;
+        }
+        else
+        {
+            throw new AbpAuthorizationException(
+                L[WebMarketplaceDomainErrorCodes.UserNotAuthenticated],
+                WebMarketplaceDomainErrorCodes.UserNotAuthenticated);
+        }
+        
         return new CartDto();
     }
 
@@ -54,7 +87,13 @@ public class CartAppService : WebMarketplaceAppService, ICartAppService
             var dto = await GetCartDtoAsync(userCart);
             return dto;
         }
-
+        else
+        {
+            throw new AbpAuthorizationException(
+                L[WebMarketplaceDomainErrorCodes.UserNotAuthenticated],
+                WebMarketplaceDomainErrorCodes.UserNotAuthenticated);
+        }
+        
         return new CartDto();
     }
     
@@ -70,10 +109,32 @@ public class CartAppService : WebMarketplaceAppService, ICartAppService
             cartItemDto.ProductName = product.Name;
             cartItemDto.Quantity = item.Quantity;
             cartItemDto.TotalPrice = item.Quantity * product.CurrentPrice?.Amount ?? 0;
+            cartItemDto.Currency = product.CurrentPrice?.Currency ?? "CZK";
             dto.Items.Add(cartItemDto);
         }
         
         dto.TotalPrice = dto.Items.Sum(x => x.TotalPrice);
         return dto;
+    }
+    
+    public async Task<CartDto> ClearAsync()
+    {
+        if (CurrentUser.IsAuthenticated)
+        {
+            var userCart = await _cartRepository.GetAsync(CurrentUser.GetId());
+            userCart.Clear();
+            await _cartRepository.UpdateAsync(userCart);
+            
+            var dto = await GetCartDtoAsync(userCart);
+            return dto;
+        }
+        else
+        {
+            throw new AbpAuthorizationException(
+                L[WebMarketplaceDomainErrorCodes.UserNotAuthenticated],
+                WebMarketplaceDomainErrorCodes.UserNotAuthenticated);
+        }
+        
+        return new CartDto();
     }
 }

@@ -1,0 +1,103 @@
+﻿@using Microsoft.Extensions.Localization
+@using WebMarketplace.Carts
+@using WebMarketplace.Localization
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject ICartAppService CartAppService
+
+
+<Card Margin="Margin.Is3.FromBottom">
+    <CardBody>
+        <Fields>
+            <Field ColumnSize="ColumnSize.Is4.OnDesktop">
+                <FieldLabel>@L["Field:ProductName"]</FieldLabel>
+                <Addons>
+                    <Addon AddonType="AddonType.Start">
+                        <AddonLabel>
+                            <Icon Name="IconName.Receipt"></Icon>
+                        </AddonLabel>
+                    </Addon>
+                    <Addon AddonType="AddonType.Body">
+                        <TextEdit @bind-Text="@CartItem.ProductName"
+                                  ReadOnly="true"/>
+                    </Addon>
+                </Addons>
+            </Field>
+            <Field ColumnSize="ColumnSize.Is3.OnDesktop">
+                <FieldLabel>@L["Field:Quantity"]</FieldLabel>
+                <Addons>
+                    <Addon AddonType="AddonType.Start">
+                        <AddonLabel>
+                            <Icon Name="IconName.CartMinus"></Icon>
+                        </AddonLabel>
+                    </Addon>
+                    <Addon AddonType="AddonType.Body">
+                        <NumericPicker TValue="int"
+                                       Value="@CartItem.Quantity"
+                                       ValueChanged="OnQuantityChanged"
+                                       Min="1"/>
+                    </Addon>
+                </Addons>
+            </Field>
+            <Field ColumnSize="ColumnSize.Is3.OnDesktop">
+                <FieldLabel>@L["Field:TotalPrice"]</FieldLabel>
+                <Addons>
+                    <Addon AddonType="AddonType.Start">
+                        <AddonLabel>
+                            <Icon Name="IconName.EuroSign"></Icon>
+                        </AddonLabel>
+                    </Addon>
+                    <Addon AddonType="AddonType.Body">
+                        <NumericPicker TValue="decimal"
+                                       @bind-Value="@CartItem.TotalPrice"
+                                       Min="1"
+                                       ReadOnly="true"/>
+                    </Addon>
+                    <Addon AddonType="AddonType.End">
+                        <AddonLabel>
+                            @CartItem.Currency
+                        </AddonLabel>
+                    </Addon>
+                </Addons>
+            </Field>
+            <Field ColumnSize="ColumnSize.Is2.OnDesktop"
+                   Flex="Flex.AlignItems.End.JustifyContent.Center">
+                <FieldLabel></FieldLabel>
+                <ToolbarButton Clicked="() => DeleteItem()"
+                               Color="Color.Secondary"
+                               Icon="IconName.Delete"
+                               Text="@L["Action:Remove"]"/>
+            </Field>
+        </Fields>
+    </CardBody>
+</Card>
+
+
+@code {
+    [Parameter] public CartItemDto CartItem { get; set; }
+    [Parameter] public EventCallback<CartItemDto> OnItemChanged { get; set; }
+
+
+    private async Task OnQuantityChanged(int value)
+    {
+        CartItem.Quantity = value;
+        var input = new ChangeCartItemQuantityDto()
+        {
+            ProductId = CartItem.ProductId,
+            Quantity = value
+        };
+
+        await CartAppService.ChangeProductQuantityAsync(input);
+        await OnItemChanged.InvokeAsync(CartItem);
+    }
+
+    private async Task DeleteItem()
+    {
+        var input = new RemoveCartItemDto()
+        {
+            ProductId = CartItem.ProductId
+        };
+        await CartAppService.RemoveProductAsync(input);
+        await OnItemChanged.InvokeAsync(CartItem);
+    }
+
+}

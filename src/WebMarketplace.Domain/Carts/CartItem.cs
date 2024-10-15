@@ -34,4 +34,12 @@ public class CartItem
         Quantity += quantity;
         return this;
     }
+    
+    public CartItem ChangeQuantity(int quantity)
+    {
+        Check.Positive(quantity, nameof(quantity));
+
+        Quantity = quantity;
+        return this;
+    }
 }
