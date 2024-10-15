@@ -11,7 +11,7 @@ public class ProductReview : AuditedEntity<Guid>
     public virtual Guid UserId { get; set; }
     // public virtual IdentityUser User { get; set; } 
     public virtual Guid ProductId { get; set; }
-    public virtual double Rating { get; private set; }
+    public virtual int Rating { get; private set; }
 
     public virtual string? Comment { get; set; }
 
@@ -23,7 +23,7 @@ public class ProductReview : AuditedEntity<Guid>
         Guid id,
         Guid userId,
         Guid productId,
-        double rating,
+        int rating,
         string? comment)
         : base(id)
     {
@@ -33,9 +33,9 @@ public class ProductReview : AuditedEntity<Guid>
         Comment = comment;
     }
 
-    public virtual ProductReview SetRating(double rating)
+    public virtual ProductReview SetRating(int rating)
     {
-        Check.Range(rating, nameof(rating), WebMarketplaceConsts.RatingMinValue, WebMarketplaceConsts.RatingMaxValue);
+        Check.Range(rating, nameof(rating), ProductConsts.RatingMinValue, ProductConsts.RatingMaxValue);
         
         Rating = rating;
         return this;

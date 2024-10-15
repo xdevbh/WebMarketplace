@@ -10,5 +10,8 @@ namespace WebMarketplace.Products
     { 
         public const int ProductImageMaxFileSize = 1 * 1024 * 1024;
         public static string[] ProductImageAllowedExtensions = { ".jpg", ".png" };
+        
+        public const int RatingMinValue = 0;
+        public const int RatingMaxValue = 5;
     }
 }

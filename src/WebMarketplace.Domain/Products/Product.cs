@@ -112,7 +112,7 @@ public class Product : AuditedAggregateRoot<Guid>
     public Product AddReview(
         Guid reviewId,
         Guid userId,
-        double rating,
+        int rating,
         string? comment)
     {
         if (Reviews.Any(x => x.UserId == userId))
@@ -127,7 +127,7 @@ public class Product : AuditedAggregateRoot<Guid>
 
     public Product UpdateReview(
         Guid reviewId,
-        double rating,
+        int rating,
         string? comment)
     {
         var review = Reviews.FirstOrDefault(x => x.Id == reviewId);

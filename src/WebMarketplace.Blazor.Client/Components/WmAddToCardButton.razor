@@ -1,0 +1,28 @@
+﻿@using Microsoft.Extensions.Localization
+@using WebMarketplace.Carts
+@using WebMarketplace.Localization
+@using WebMarketplace.Products
+@inject ICartAppService CartAppService
+@inject IStringLocalizer<WebMarketplaceResource> L
+
+<ToolbarButton Clicked="() => AddToCart()"
+               Color="Color.Primary"
+               Icon="IconName.CartPlus"
+               Text="@L["Action:AddToCart"]"/>
+
+@code {
+    [Parameter] public Guid ProductId { get; set; }
+    
+    protected Task AddToCart()
+    {
+        var cartItem = new AddCartItemDto()
+        {
+            ProductId = ProductId,
+            Quantity = 1
+        };
+
+        CartAppService.AddProductAsync(cartItem);
+        Console.WriteLine($"Product '{ProductId}' added to cart.");
+        return Task.CompletedTask;
+    }
+}

@@ -1,0 +1,14 @@
+﻿@using WebMarketplace.Products
+<Card>
+    <CardBody>
+        <Heading Size="HeadingSize.Is5">@Review.UserName</Heading>
+        <Rating SelectedValue="@((int)Review.Rating)" MaxValue="5" ReadOnly="true" Color="Color.Warning"/>
+        <CardText>@Review.Comment</CardText>
+        <CardText>
+            <Small>@Review.CreationTime</Small>
+        </CardText>
+    </CardBody>
+</Card>
+@code {
+    [Parameter] public ProductReviewDto Review { get; set; }
+}

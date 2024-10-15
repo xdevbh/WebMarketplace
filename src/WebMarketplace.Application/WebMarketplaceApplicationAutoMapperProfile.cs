@@ -51,8 +51,7 @@ public class WebMarketplaceApplicationAutoMapperProfile : Profile
         CreateMap<ProductDto, CreateUpdateProductDto>();
 
 
-        CreateMap<ProductReviewDetailQueryResultItem, ProductReviewDto>()
-            .Ignore(x => x.UserName);
+        CreateMap<ProductReviewDetailQueryResultItem, ProductReviewDto>();
         CreateMap<CreateUpdateProductReviewDto, ProductReviewDto>();
 
         CreateMap<ProductImage, ProductImageDto>()

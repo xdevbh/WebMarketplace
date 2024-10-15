@@ -268,6 +268,7 @@ public class ProductRepository : EfCoreRepository<WebMarketplaceDbContext, Produ
             join product in dbContext.Set<Product>() on review.ProductId equals product.Id
             select new ProductReviewDetailQueryResultItem
             {
+                Id = review.Id,
                 UserId = user.Id,
                 UserName = user.Name ?? user.UserName,
                 ProductId = product.Id,

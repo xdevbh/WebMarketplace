@@ -13,7 +13,7 @@ public interface IProductBuyerAppService : IApplicationService
     Task<ProductCardListResultDto> GetProductCardListAsync(ProductCardListFilterDto input); // Get list of Products
     
     // reviews
-    Task CreateReview(CreateUpdateProductReviewDto input);
+    Task CreateReview(CreateUpdateProductReviewBuyerDto input);
     Task<PagedResultDto<ProductReviewDto>> GetReviewListAsync(ProductReviewListFilterDto input); 
     
     // images

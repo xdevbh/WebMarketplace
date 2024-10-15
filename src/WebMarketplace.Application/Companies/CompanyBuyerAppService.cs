@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Volo.Abp.Application.Dtos;
@@ -10,11 +11,11 @@ namespace WebMarketplace.Companies;
 [AllowAnonymous]
 public class CompanyBuyerAppService : WebMarketplaceAppService, ICompanyBuyerAppService
 {
-    private readonly IRepository<Company, Guid> _vendorRepository;
+    private readonly IRepository<Company, Guid> _companyRepository;
 
-    public CompanyBuyerAppService(IRepository<Company, Guid> vendorRepository)
+    public CompanyBuyerAppService(IRepository<Company, Guid> companyRepository)
     {
-        _vendorRepository = vendorRepository;
+        _companyRepository = companyRepository;
     }
 
     // public async Task<ListResultDto<CompanyDto>> GetAllAsync()
@@ -26,8 +27,8 @@ public class CompanyBuyerAppService : WebMarketplaceAppService, ICompanyBuyerApp
     [AllowAnonymous]
     public async Task<PagedResultDto<CompanyDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
-        var vendorList = await _vendorRepository.GetPagedListAsync(input.SkipCount, input.MaxResultCount, input.Sorting);
-        var totalCount = await _vendorRepository.GetCountAsync();
+        var vendorList = await _companyRepository.GetPagedListAsync(input.SkipCount, input.MaxResultCount, input.Sorting);
+        var totalCount = await _companyRepository.GetCountAsync();
         
         return new PagedResultDto<CompanyDto>(
             totalCount,
@@ -36,9 +37,22 @@ public class CompanyBuyerAppService : WebMarketplaceAppService, ICompanyBuyerApp
     }
     
     [AllowAnonymous]
+    public async Task<ListResultDto<CompanySelectItemDto>> GetSelectItemListAsync()
+    {
+        var companies = await _companyRepository.GetListAsync();
+        var dtos = companies.Select(c => new CompanySelectItemDto()
+        {
+            Id = c.Id,
+            DisplayName = c.DisplayName
+        }).ToList();
+        
+        return new ListResultDto<CompanySelectItemDto>(dtos);
+    }
+    
+    [AllowAnonymous]
     public async Task<CompanyDto> GetAsync(Guid id)
     {
-        var vendor = await _vendorRepository.GetAsync(id);
+        var vendor = await _companyRepository.GetAsync(id);
         var vendorDto = ObjectMapper.Map<Company, CompanyDto>(vendor);
         return vendorDto;
     }
@@ -46,7 +60,7 @@ public class CompanyBuyerAppService : WebMarketplaceAppService, ICompanyBuyerApp
     [AllowAnonymous]
     public async Task<CompanyDto> GetByNameAsync(string name)
     {
-        var vendor = await _vendorRepository.GetAsync(x=>x.Name == name);
+        var vendor = await _companyRepository.GetAsync(x=>x.Name == name);
         var vendorDto = ObjectMapper.Map<Company, CompanyDto>(vendor);
         return vendorDto;    
     }

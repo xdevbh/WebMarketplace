@@ -13,7 +13,7 @@ public class CreateUpdateProductReviewDto
     public virtual Guid ProductId { get; set; }
     
     [Required]
-    public virtual double Rating { get;  set; }
+    public virtual int Rating { get;  set; }
     
     public virtual string? Comment { get; set; }
 }

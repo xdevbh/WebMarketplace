@@ -23,6 +23,7 @@
     "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP framework. For more information visit",
     "Welcome": "Welcome",
 
+    "Exception:UserNotAuthenticated": "User is not authenticated.",
     "Exception:CompanyNameAlreadyExists": "The company with name '{Name}' already exists.",
     "Exception:CompanyDisplayNameAlreadyExists": "The company with display name '{DisplayName}' already exists.",
     "Exception:CompanyIdentificationNumberAlreadyExists": "The company with identification number '{CompanyIdentificationNumber}' already exists.",
@@ -32,6 +33,7 @@
     "Exception:CompanyNotFoundForUser": "The company associated with the user could not be found.",
     "Exception:ProductReviewUserAlreadyExists": "A review for this product by this user already exists.",
     "Exception:ProductReviewNotFound": "Product review not found.",
+    "Exception:ProductReviewRantingRange": "Rating must out of range.",
     "Exception:PriceNotNegative": "Price cannot be negative.",
     "Exception:CurrencyAlreadySet": "Currency is already set.",
     "Exception:ProductImageNotFound": "Product image not found.",
@@ -81,6 +83,7 @@
     "Action:SetDefault": "Set default",
     "Action:Filter": "Filter",
     "Action:More": "More",
+    "Action:WriteReview": "Write a review",
 
     "Message:CompanyDeletionConfirmation": "Are you sure you want to delete the company?",
     "Message:CompanyMembershipDeletionConfirmation": "Are you sure you want to delete the company membership?",
@@ -101,11 +104,17 @@
     "Page:ManagementProducts": "Products | Management | WebMarketplace",
     "Page:ManagementCreateProduct": "Create new products | Management | WebMarketplace",
     "Page:ManagementUpdateProduct": "Edit products | Management | WebMarketplace",
+    "Page:Product": "Product | WebMarketplace",
+    "Page:Products": "Products | WebMarketplace",
 
     "Modal:ManagementAddProductPrice": "Add price",
     "Modal:ManagementAddProductImage": "Add image",
     "Modal:AdministrationCreateCompanyMembership": "Create membership for company ",
     "Modal:ManagementAddCompanyImage": "Add image",
+    "Modal:AddProductReview": "Add review",
+    
+    "Tab:Description": "Description",
+    "Tab:Reviews": "Reviews",
 
     "Header:Search": "Search",
     "Header:Filter": "Filter",
@@ -116,6 +125,7 @@
     "Header:CompanyMembership": "Company Membership",
     "Header:Products": "Products",
     "Header:Product": "Product",
+    "Header:SimilarProducts": "Similar products",
     "Header:CreateProduct": "Create new product",
     "Header:UpdateProduct": "Edit product",
     "Header:Price": "Price",
@@ -162,6 +172,8 @@
     "Field:MinRating": "Min rating",
     "Field:MaxRating": "Max rating",
     "Field:Date": "Date",
-    "Field:Image": "Image"
+    "Field:Image": "Image",
+    
+    "Text:ReviewsCount" : "reviews"
   }
 }

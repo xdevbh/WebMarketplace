@@ -1,23 +1,240 @@
 ﻿@page "/product/{id:guid}"
 @using Microsoft.Extensions.Localization
-@using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars
+@using Volo.Abp.Application.Dtos
 @using WebMarketplace.Localization
+@using WebMarketplace.Orders
+@using WebMarketplace.Products
 @inherits WmPageBase
 @inject IStringLocalizer<WebMarketplaceResource> L
+@inject IProductBuyerAppService ProductAppService
+@* @inject IOrderBuyerAppService OrderAppService *@
 
 
-<WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle" />
+<WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle"/>
 
+<Row Height="Height.Is100" Margin="Margin.Is3">
+    <Column ColumnSize="ColumnSize.Is6.OnDesktop">
+        <Carousel @bind-SelectedSlide="@selectedSlide" Height="Height.Is100" Autoplay="false">
+            @foreach (var image in Images)
+            {
+                <CarouselSlide Name="@image.BlobName">
+                    @{
+                        var imageDataUrl = $"data:{image.ContentType};base64,{Convert.ToBase64String(image.Content)}";
+                        <Image Source="@imageDataUrl"
+                               Text="@image.BlobName"
+                               Display="Display.Block"
+                               Width="Width.Is100"
+                               Height="Height.Px(500)"
+                               Style="object-fit: cover;"/>
+                    }
+                </CarouselSlide>
+            }
+        </Carousel>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is6.OnDesktop">
+        <Card Height="Height.Is100" Margin="Margin.Is0">
+            <CardBody>
+                <Div Flex="Flex.Column.Fill">
+                    <Row>
+                        <Heading Size="HeadingSize.Is3">@Product.Name</Heading>
+                    </Row>
+                    <Row Margin="Margin.Is3.FromBottom">
+                        <Column ColumnSize="ColumnSize.Is8" Flex="Flex.Row">
+                            <Rating @bind-SelectedValue="@RatingInt" MaxValue="5" ReadOnly="true" Color="Color.Warning"/>
+                            (@Product.Rating)
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is4" TextAlignment="TextAlignment.End">
+                            <Small> @Reviews.Count @L["Text:ReviewsCount"]</Small>
+                        </Column>
+                    </Row>
+                    <Row Margin="Margin.Is3.FromBottom">
+                        <Column>
+                            @Product.ShortDescription
+                        </Column>
+                    </Row>
+                </Div>
+                <Row Flex="Flex.Row.JustifyContent.Between.AlignItems.Center">
+                    <Column ColumnSize="ColumnSize.IsAuto">
+                        <Alert Color="Color.Info"
+                               Visible="true">
+                            @Product.PriceAmount @Product.PriceCurrency
+                        </Alert>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.IsAuto">
+                        <WmAddToCardButton ProductId="Product.Id"/>
+                    </Column>
+                </Row>
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
+
+<Row Margin="Margin.Is3">
+    <Column>
+        <Card>
+            <CardBody>
+                <Tabs RenderMode="TabsRenderMode.LazyLoad"
+                      Justified="true"
+                      SelectedTab="@selectedTab">
+                    <Items>
+                        <Tab Name="Description">
+                            <Icon Name="IconName.FileAlt"/>
+                            @L["Tab:Description"]
+                        </Tab>
+                        <Tab Name="Reviews">
+                            <Icon Name="IconName.Star"/>
+                            @L["Tab:Reviews"]
+                        </Tab>
+                    </Items>
+                    <Content>
+                        <TabPanel Name="Description">
+                            <Row>
+                                <Column>
+                                    @Product.FullDescription
+                                </Column>
+                            </Row>
+                        </TabPanel>
+
+                        <TabPanel Name="Reviews">
+                            <Row>
+                                <Column>
+                                    <Row Flex="Flex.JustifyContent.End.AlignContent.Center">
+                                        <Column Flex="Flex.Row">
+                                            <Rating @bind-SelectedValue="@RatingInt" MaxValue="5" ReadOnly="true" Color="Color.Warning"/>
+                                            (@Product.Rating)
+                                            <Small> @Reviews.Count @L["Text:ReviewsCount"]</Small>
+                                        </Column>
+                                        <Column ColumnSize="ColumnSize.IsAuto" Class="px-1 py-2" Width="Width.Max100">
+                                            <ToolbarButton Clicked="() => WriteReview()"
+                                                           Color="Color.Primary"
+                                                           Icon="IconName.Pen"
+                                                           Text="@L["Action:WriteReview"]"
+                                                           Disabled="!CanWriteReview"/>
+                                        </Column>
+                                    </Row>
+                                    <Row>
+                                        @foreach (var review in Reviews)
+                                        {
+                                            <WmProductReviewCard Review="review"/>
+                                        }
+                                    </Row>
+                                </Column>
+                            </Row>
+                        </TabPanel>
+                    </Content>
+                </Tabs>
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
+
+<Row Margin="Margin.Is3">
+    <Heading Size="HeadingSize.Is4">@L["Header:SimilarProducts"]</Heading>
+    <WmProductCardDeck Products="SimilarProducts"></WmProductCardDeck>
+</Row>
+
+
+<ProductReviewNewModal @ref="ReviewNewModalRef"
+                       ProductId="Product.Id"
+                       OnCreated="() => GetReviewsAsync()"/>
 
 @code {
-    
+
     [Parameter] public Guid Id { get; set; }
+    protected ProductDetailDto Product { get; set; } = new();
+    protected IReadOnlyList<ProductImageDto> Images { get; set; } = new List<ProductImageDto>();
+    protected IReadOnlyList<ProductReviewDto> Reviews { get; set; } = new List<ProductReviewDto>();
+    protected IReadOnlyList<ProductCardDto> SimilarProducts { get; set; } = new List<ProductCardDto>();
+
+    protected ProductReviewNewModal ReviewNewModalRef { get; set; }
+    protected int RatingInt { get; set; }
+    protected bool CanWriteReview { get; set; } = false;
+    protected string selectedSlide = String.Empty;
+    private string selectedTab = String.Empty;
+    protected int ReviewPageSize { get; set; } = LimitedResultRequestDto.DefaultMaxResultCount;
+    protected int ReviewCurrentPage { get; set; } = 1;
+    protected int ReviewTotalCount { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetDataAsync();
+
+        if (Images != null && Images.Any())
+        {
+            selectedSlide = Images.FirstOrDefault().BlobName;
+        }
+        
+        if (string.IsNullOrEmpty(selectedTab))
+        {
+            selectedTab = "Description";
+        }
+
+        PageHeader = null;
+        PageTitle = Product != null ? Product.Name : L["Page:Product"];
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task SetPermissionsAsync()
+    {
+        // CanWriteReview = await OrderAppService.HasPurchasedProduct(Id);
+        CanWriteReview = CurrentUser.IsAuthenticated;
+        await base.SetPermissionsAsync();
+    }
 
     protected override Task SetBreadcrumbItemsAsync()
     {
-        BreadcrumbItems.Add(new BreadcrumbItem(L["Menu:Products"], "/product/list"));
-        BreadcrumbItems.Add(new BreadcrumbItem(L["Menu:Product"]));
+        BreadcrumbItems.Add(new BreadcrumbItem(L["Menu:Products"], $"/product/list/"));
+        BreadcrumbItems.Add(new BreadcrumbItem(Product.CompanyName, $"/product/list/company/{Product.CompanyId}"));
+        BreadcrumbItems.Add(new BreadcrumbItem(Product.Name, $"/product/{Id}"));
         return base.SetBreadcrumbItemsAsync();
     }
+
+    protected async Task GetDataAsync()
+    {
+        Product = await ProductAppService.GetProductDetailAsync(Id);
+
+        var resultImages = await ProductAppService.GetAllImagesAsync(Id);
+        Images = resultImages.Items;
+
+        await GetReviewsAsync();
+
+        await GetSimilarProductsAsync();
+    }
+
+    protected async Task GetReviewsAsync()
+    {
+        var reviewFilter = new ProductReviewListFilterDto()
+        {
+            Sorting = null,
+            MaxResultCount = ReviewPageSize,
+            SkipCount = (ReviewCurrentPage - 1) * ReviewPageSize,
+            ProductId = Id,
+        };
+        var resultReviews = await ProductAppService.GetReviewListAsync(reviewFilter);
+        Reviews = resultReviews.Items;
+        ReviewTotalCount = (int)resultReviews.TotalCount;
+    }
+
+    protected async Task GetSimilarProductsAsync()
+    {
+        var similarProductsFilter = new ProductCardListFilterDto()
+        {
+            Sorting = ProductSorting.Popularity,
+            MaxResultCount = 4,
+            SkipCount = 0,
+            ProductType = Product.ProductType,
+            ProductCategory = Product.ProductCategory,
+            ExcludedProductIds = new List<Guid>() { Product.Id }
+        };
+        var resultSimilarProducts = await ProductAppService.GetProductCardListAsync(similarProductsFilter);
+        SimilarProducts = resultSimilarProducts.Items;
+    }
+
+    private Task WriteReview()
+    {
+        ReviewNewModalRef.Show();
+        return Task.CompletedTask;
+    }
+
 
 }

@@ -9,16 +9,16 @@
 
 <PageTitle>@PageLayout.Title</PageTitle>
 
-<Row>
-    @if (Options.Value.RenderBreadcrumbs && PageLayout.BreadcrumbItems.Any())
-    {
+@if (Options.Value.RenderBreadcrumbs && PageLayout.BreadcrumbItems.Any())
+{
+    <Row>
         <Column ColumnSize="ColumnSize.IsAuto.OnWidescreen" VerticalAlignment="VerticalAlignment.Middle">
             <Breadcrumb Mode="@(BreadcrumbShowCurrent ? BreadcrumbMode.Auto : BreadcrumbMode.None)">
                 @if (BreadcrumbShowHome)
                 {
                     <BreadcrumbItem>
                         <BreadcrumbLink To="/">
-                            <Icon Name="IconName.Home" />
+                            <Icon Name="IconName.Home"/>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                 }
@@ -28,7 +28,7 @@
                         <BreadcrumbLink To="@item.Url">
                             @if (item.Icon != null)
                             {
-                                <Icon Name="@item.Icon" />
+                                <Icon Name="@item.Icon"/>
                             }
                             @item.Text
                         </BreadcrumbLink>
@@ -36,20 +36,21 @@
                 }
             </Breadcrumb>
         </Column>
-    }
-</Row>
+    </Row>
+}
+
 <Row>
-    <Column VerticalAlignment="VerticalAlignment.Middle">
-        @if (Options.Value.RenderPageTitle)
+    <Column Flex="Flex.AlignContent.Center">
+        @if (Options.Value.RenderPageTitle && Header.IsNullOrWhiteSpace())
         {
-            <Column ColumnSize="ColumnSize.IsAuto">
+            <Column ColumnSize="ColumnSize.IsAuto" Flex="Flex.AlignContent.Center">
                 <Heading Size="HeadingSize.Is3">
                     @Header
                 </Heading>
             </Column>
         }
     </Column>
-    <Column Flex="Flex.JustifyContent.End" VerticalAlignment="VerticalAlignment.Middle">
+    <Column Flex="Flex.JustifyContent.End.AlignContent.Center">
         @if (Toolbar == null)
         {
             @ChildContent

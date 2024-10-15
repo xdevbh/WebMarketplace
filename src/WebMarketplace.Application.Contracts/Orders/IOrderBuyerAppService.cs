@@ -11,4 +11,5 @@ public interface IOrderBuyerAppService : IApplicationService
     Task<List<OrderCardDto>> GetListAsync(OrderFilterDto input);
     Task<OrderDto> CreateAsync(CreateUpdateOrderDto input);
     Task<OrderDto> CancelAsync(Guid id);
+    Task<bool> HasPurchasedProduct (Guid id);
 }

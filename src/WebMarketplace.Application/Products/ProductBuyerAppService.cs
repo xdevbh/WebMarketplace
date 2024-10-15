@@ -5,10 +5,12 @@ using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.Authorization;
 using Volo.Abp.BlobStoring;
 using Volo.Abp.Content;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
+using Volo.Abp.Users;
 using WebMarketplace.Companies;
 
 namespace WebMarketplace.Products;
@@ -20,8 +22,7 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
     private readonly ProductManager _productManager;
     private readonly IRepository<Company, Guid> _companyRepository;
     private readonly IBlobContainer<ProductImageContainer> _productBlobContainer;
-
-
+    
     public ProductBuyerAppService(IProductRepository productRepository, ProductManager productManager,
         IRepository<Company, Guid> companyRepository, IBlobContainer<ProductImageContainer> productBlobContainer)
     {
@@ -63,7 +64,7 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
                 sorting = "PriceAmount DESC";
                 break;
         }
-        
+
         var totalCount = await _productRepository.GetProductDetailCountAsync(
             input.CompanyId,
             true,
@@ -106,7 +107,7 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
 
             dtos.Add(dto);
         }
-        
+
         var minPrice = await _productRepository.GetMinPriceAsync();
         var maxPrice = await _productRepository.GetMaxPriceAsync();
         var minRating = await _productRepository.GetMinRatingAsync();
@@ -122,7 +123,7 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
             MaxRating = input.MaxRating ?? maxRating,
             PriceCurrency = input.PriceCurrency ?? "CZK"
         };
-        
+
         return result;
     }
 
@@ -130,10 +131,20 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
 
     #region Reviews
 
-    public async Task CreateReview(CreateUpdateProductReviewDto input) // todo: if product is in user orders
+    [Authorize]
+    public async Task CreateReview(CreateUpdateProductReviewBuyerDto input) // todo: if product is in user orders
     {
         var product = await _productRepository.GetAsync(input.ProductId);
-        await _productManager.AddProductReviewAsync(product, input.UserId, input.Rating, input.Comment);
+        var userId = CurrentUser.GetId();
+
+        if (userId == Guid.Empty)
+        {
+            throw new AbpAuthorizationException(
+                L[WebMarketplaceDomainErrorCodes.UserNotAuthenticated],
+                WebMarketplaceDomainErrorCodes.UserNotAuthenticated);
+        }
+
+        await _productManager.AddProductReviewAsync(product, userId, input.Rating, input.Comment);
     }
 
     public async Task<PagedResultDto<ProductReviewDto>> GetReviewListAsync(ProductReviewListFilterDto input)

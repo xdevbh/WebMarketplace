@@ -13,17 +13,19 @@
     <CardImage Src="@ImageUrl"
                Width="Width.Is100"
                Height="Height.Px(300)"
-               Style="object-fit: cover;"
+               Style="object-fit: cover; "
                @onclick="OpenProductPage"/>
     <CardBody Flex="Flex.Column">
-        <Div Margin="Margin.Is3.FromBottom" Flex="Flex.Column.Fill">
-            <CardTitle>@Product.Name</CardTitle>
+        <Div Flex="Flex.Column.Fill">
+            <CardTitle Size="5">
+                @Product.Name
+            </CardTitle>
             <CardSubtitle>@RoundedPriceAmount @Product.PriceCurrency</CardSubtitle>
             <Div Flex="Flex.Row">
-                <Rating @bind-SelectedValue="@RaingInt" MaxValue="5" ReadOnly="true" Color="Color.Warning"/>
+                <Rating @bind-SelectedValue="@RatingInt" MaxValue="5" ReadOnly="true" Color="Color.Warning"/>
                 <span>(@Product.Rating)</span>
             </Div>
-            <CardText Style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+            <CardText Style="overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; ">
                 @Product.ShortDescription
             </CardText>
         </Div>
@@ -40,12 +42,12 @@
     [Parameter] public ProductCardDto Product { get; set; }
 
     protected string ImageUrl { get; set; } = string.Empty;
-    protected int RaingInt { get; set; }
+    protected int RatingInt { get; set; }
     protected decimal RoundedPriceAmount { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
-        RaingInt = Convert.ToInt32(Math.Round(Product.Rating, 0));
+        RatingInt = Convert.ToInt32(Math.Round(Product.Rating, 0));
         RoundedPriceAmount = Math.Round(Product.PriceAmount, 2);
         await SetCoverImageUrlAsync();
     }

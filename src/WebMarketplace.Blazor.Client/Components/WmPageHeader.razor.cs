@@ -25,8 +25,8 @@ public partial class WmPageHeader
         set => PageLayout.Title = value;
     }
 
-    [Parameter] public string? Header { get; set; }
-
+    [Parameter] public string? Header { get; set; } = null;
+    
     [Parameter] public bool BreadcrumbShowHome { get; set; } = true;
 
     [Parameter] public bool BreadcrumbShowCurrent { get; set; } = true;

@@ -1,15 +1,18 @@
 ﻿@page "/product/list"
+@page "/product/list/company/{companyId:guid}"
 @using Microsoft.Extensions.Localization
 @using Volo.Abp.Application.Dtos
 @using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars
+@using WebMarketplace.Companies
 @using WebMarketplace.Localization
 @using WebMarketplace.Products
 @inherits WmPageBase
-@inject IProductBuyerAppService ProductBuyerAppService
+@inject IProductBuyerAppService ProductAppService
+@inject ICompanyBuyerAppService CompanyAppService
 @inject IStringLocalizer<WebMarketplaceResource> L
 
 
-<WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle"/>
+<WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle" />
 
 <Row>
     @if (IsFilterVisible)
@@ -38,6 +41,25 @@
                     <Heading Size="HeadingSize.Is5">
                         @L["Header:Filter"]
                     </Heading>
+                    <Field >
+                        <FieldLabel>@L["Field:Company"]</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.Store"></Icon>
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <SelectList TItem="CompanySelectItemDto"
+                                            TValue="Guid?"
+                                            Data="@Companies"
+                                            TextField="@((item) => item.DisplayName)"
+                                            ValueField="@((item) => item.Id)"
+                                            @bind-SelectedValue="@SelectedCompanyId"
+                                            DefaultItemText="@L["Placeholder:Select"]"/>
+                            </Addon>
+                        </Addons>
+                    </Field>
                     <Field >
                         <FieldLabel>@L["Field:ProductType"]</FieldLabel>
                         <Addons>
@@ -156,12 +178,16 @@
 
 
 @code {
+    [Parameter] public Guid? CompanyId { get; set; }
 
-    public List<ProductCardDto> Products { get; set; } = new List<ProductCardDto>();
+    protected IReadOnlyList<ProductCardDto> Products { get; set; } = new List<ProductCardDto>();
+    protected CompanySelectItemDto Company { get; set; } = new CompanySelectItemDto();
+    protected IReadOnlyList<CompanySelectItemDto> Companies { get; set; } = new List<CompanySelectItemDto>();
 
     protected ProductSorting SelectedSorting { get; set; } = ProductSorting.Popularity;
     protected ProductType SelectedProductType { get; set; } = ProductType.Undefined;
     protected ProductCategory SelectedProductCategory { get; set; } = ProductCategory.Undefined;
+    protected Guid? SelectedCompanyId { get; set; } = null;
     protected double? SelectedMinRating { get; set; } = null;
     protected double? SelectedMaxRating { get; set; } = null;
     protected decimal? SelectedMinPriceAmount { get; set; } = null;
@@ -176,8 +202,15 @@
 
     protected override async Task OnInitializedAsync()
     {
+        PageHeader = L["Header:Products"];
         await GetDataAsync();
         await base.OnInitializedAsync();
+    }
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        await SetBreadcrumbItemsAsync();
+        await base.OnParametersSetAsync();
     }
 
     protected override async Task SetToolBarAsync()
@@ -202,10 +235,18 @@
         await base.SetToolBarAsync();
     }
 
-    protected override Task SetBreadcrumbItemsAsync()
+    protected override async Task SetBreadcrumbItemsAsync()
     {
+        BreadcrumbItems.Clear();
         BreadcrumbItems.Add(new BreadcrumbItem(L["Menu:Products"], "/product/list"));
-        return base.SetBreadcrumbItemsAsync();
+        
+        if (CompanyId is not null && Company is not null)
+        {
+            BreadcrumbItems.Add(new BreadcrumbItem(Company.DisplayName, $"/product/list/company/{CompanyId}"));
+        }
+
+        await InvokeAsync(StateHasChanged);
+        await base.SetBreadcrumbItemsAsync();
     }
 
     protected async Task ShowFilter(bool visible)
@@ -239,6 +280,15 @@
 
     protected async Task GetDataAsync()
     {
+        var resultCompany = await CompanyAppService.GetSelectItemListAsync();
+        Companies = resultCompany.Items;
+
+        if (CompanyId is not null)
+        {
+            Company = Companies.FirstOrDefault(x => x.Id == CompanyId);
+            SelectedCompanyId = Company.Id;
+        }
+
         var filter = new ProductCardListFilterDto()
         {
             Sorting = SelectedSorting,
@@ -246,6 +296,7 @@
             SkipCount = (CurrentPage - 1) * PageSize,
             ProductType = SelectedProductType == ProductType.Undefined ? null : SelectedProductType,
             ProductCategory = SelectedProductCategory == ProductCategory.Undefined ? null : SelectedProductCategory,
+            CompanyId = CompanyId,
             MinRating = SelectedMinRating,
             MaxRating = SelectedMaxRating,
             MinPriceAmount = SelectedMinPriceAmount,
@@ -253,7 +304,7 @@
             PriceCurrency = SelectedPriceCurrency
         };
 
-        var result = await ProductBuyerAppService.GetProductCardListAsync(filter);
+        var result = await ProductAppService.GetProductCardListAsync(filter);
         Products = result.Items.ToList();
         SelectedMinPriceAmount = result.MinPriceAmount;
         SelectedMaxPriceAmount = result.MaxPriceAmount;

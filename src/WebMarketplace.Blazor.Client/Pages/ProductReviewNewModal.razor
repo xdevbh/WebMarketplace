@@ -1,0 +1,112 @@
+﻿@using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Components.Web
+@using Volo.Abp.Users
+@using WebMarketplace.Localization
+@using WebMarketplace.Products
+@inject IProductBuyerAppService ProductAppService
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject AbpBlazorMessageLocalizerHelper<WebMarketplaceResource> LH
+
+<Modal @ref="ModalRef">
+    <ModalContent Centered="true">
+        <Form>
+            <ModalHeader>
+                <ModalTitle>@ModalTitle</ModalTitle>
+                <CloseButton Clicked="() => Close()"/>
+            </ModalHeader>
+            <ModalBody>
+                <Fields>
+                    <Field ColumnSize="ColumnSize.Is12.OnDesktop">
+                        <Rating Color="Color.Primary" @bind-SelectedValue="@NewReview.Rating" MaxValue="ProductConsts.RatingMaxValue" GetTooltip="@GetTooltip"/>
+                    </Field>
+                </Fields>
+                <Fields>
+                    <Field>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.Pen"/>
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <MemoEdit bind-Text="@NewReview.Comment"></MemoEdit>
+                            </Addon>
+                        </Addons>
+                    </Field>
+                </Fields>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Danger"
+                        Clicked="Close">
+                    <Icon Name="IconName.Times"/>
+                    @L["Cancel"]
+                </Button>
+                <Button Color="Color.Primary"
+                        Type="@ButtonType.Submit"
+                        PreventDefaultOnSubmit="true"
+                        Clicked="Create">
+                    <Icon Name="IconName.Save"/>
+                    @L["Save"]
+                </Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+@code {
+    [Parameter] public Guid ProductId { get; set; }
+    [Parameter] public EventCallback OnCreated { get; set; }
+
+    protected CreateUpdateProductReviewBuyerDto NewReview { get; set; } = new();
+
+    protected string ModalTitle { get; set; }
+    protected Modal ModalRef { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ModalTitle = @L["Modal:AddProductReview"];
+        await GetDataAsync();
+        await base.OnInitializedAsync();
+    }
+
+    RatingTooltip GetTooltip(int value)
+    {
+        if (value <= 1)
+            return new RatingTooltip("Very bad");
+        else if (value <= 2)
+            return new RatingTooltip("Bad");
+        else if (value <= 3)
+            return new RatingTooltip("Fair");
+        else if (value <= 4)
+            return new RatingTooltip("Good");
+        else if (value <= 5)
+            return new RatingTooltip("Very good");
+
+        return null;
+    }
+
+    protected async Task GetDataAsync()
+    {
+    }
+
+    protected async Task Create()
+    {
+        NewReview.ProductId = ProductId;
+        await ProductAppService.CreateReview(NewReview);
+        await ModalRef.Hide();
+        await OnCreated.InvokeAsync();
+    }
+
+    public Task Close()
+    {
+        ModalRef.Hide();
+        return Task.CompletedTask;
+    }
+
+    public Task Show()
+    {
+        ModalRef.Show();
+        return Task.CompletedTask;
+    }
+
+}

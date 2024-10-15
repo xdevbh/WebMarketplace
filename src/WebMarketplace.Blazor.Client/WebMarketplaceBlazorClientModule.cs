@@ -50,13 +50,7 @@ namespace WebMarketplace.Blazor.Client;
         ConfigureMenu(context);
         ConfigureToolBar(context);
         ConfigureAutoMapper(context);
-        
-        Configure<PageHeaderOptions>(options => 
-        {
-            options.RenderPageTitle = true;
-            options.RenderBreadcrumbs = true;
-            options.RenderToolbar = true;
-        });
+        ConfigurePageHeader(context);
     }
     
     private void ConfigureLocalization()
@@ -126,6 +120,16 @@ namespace WebMarketplace.Blazor.Client;
         Configure<AbpAutoMapperOptions>(options =>
         {
             options.AddMaps<WebMarketplaceBlazorClientModule>();
+        });
+    }
+    
+    private void ConfigurePageHeader(ServiceConfigurationContext context)
+    {
+        Configure<PageHeaderOptions>(options =>
+        {
+            options.RenderPageTitle = true;
+            options.RenderBreadcrumbs = true;
+            options.RenderToolbar = true;
         });
     }
 }

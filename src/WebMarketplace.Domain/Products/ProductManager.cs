@@ -84,7 +84,7 @@ namespace WebMarketplace.Products
         public async Task AddProductReviewAsync(
             Product product,
             Guid userId,
-            double rating,
+            int rating,
             string? comment)
         {
             product.AddReview(GuidGenerator.Create(), userId, rating, comment);
@@ -93,7 +93,7 @@ namespace WebMarketplace.Products
         public async Task UpdateProductReviewAsync(
             Product product,
             Guid reviewId,
-            double rating,
+            int rating,
             string? comment)
         {
             product.UpdateReview(reviewId, rating, comment);
