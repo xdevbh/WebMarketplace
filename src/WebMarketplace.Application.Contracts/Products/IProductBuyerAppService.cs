@@ -11,6 +11,7 @@ public interface IProductBuyerAppService : IApplicationService
     // products
     Task<ProductDetailDto> GetProductDetailAsync(Guid id); // get Product Card
     Task<ProductCardListResultDto> GetProductCardListAsync(ProductCardListFilterDto input); // Get list of Products
+    Task<PagedResultDto<ProductCardDto>> GetSimilarProductCardListAsync(SimilarProductCardListFilterDto input); // Get list of similar products
     
     // reviews
     Task CreateReview(CreateUpdateProductReviewBuyerDto input);

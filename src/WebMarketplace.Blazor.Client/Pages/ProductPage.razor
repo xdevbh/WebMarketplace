@@ -217,16 +217,14 @@
 
     protected async Task GetSimilarProductsAsync()
     {
-        var similarProductsFilter = new ProductCardListFilterDto()
+        var input = new SimilarProductCardListFilterDto()
         {
-            Sorting = ProductSorting.Popularity,
+            ProductId = Id,
             MaxResultCount = 4,
-            SkipCount = 0,
-            ProductType = Product.ProductType,
-            ProductCategory = Product.ProductCategory,
-            ExcludedProductIds = new List<Guid>() { Product.Id }
+            SkipCount = 0
         };
-        var resultSimilarProducts = await ProductAppService.GetProductCardListAsync(similarProductsFilter);
+        
+        var resultSimilarProducts = await ProductAppService.GetSimilarProductCardListAsync(input);
         SimilarProducts = resultSimilarProducts.Items;
     }
 

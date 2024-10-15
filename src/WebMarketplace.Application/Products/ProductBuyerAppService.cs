@@ -127,6 +127,37 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
         return result;
     }
 
+    public async Task<PagedResultDto<ProductCardDto>> GetSimilarProductCardListAsync(SimilarProductCardListFilterDto input)
+    {
+        var product = await _productRepository.GetAsync(input.ProductId);
+        
+        var query = await _productRepository.GetProductDetailQueryableAsync(null, true);
+        query = query.Where(x => x.Id != input.ProductId);
+        query = query.Where(x=>x.ProductCategory == product.ProductCategory);
+        query = query.Where(x=>x.ProductType == product.ProductType);
+
+        var totalCount = await AsyncExecuter.CountAsync(query);
+        query = query
+            .OrderBy(x => x.Rating)
+            .PageBy(input.SkipCount, input.MaxResultCount);
+        
+        var items = await AsyncExecuter.ToListAsync(query);
+        var dtos = new List<ProductCardDto>();
+        foreach (var item in items)
+        {
+            var dto = ObjectMapper.Map<ProductDetailQueryRequestItem, ProductCardDto>(item);
+            dto.PriceAmount = item.PriceAmount;
+            dto.PriceCurrency = item.PriceCurrency;
+            if (!item.DefaultImageBlobName.IsNullOrWhiteSpace())
+            {
+                dto.ImageContent = await _productBlobContainer.GetAllBytesOrNullAsync(item.DefaultImageBlobName);
+            }
+
+            dtos.Add(dto);
+        }
+
+        return new PagedResultDto<ProductCardDto>(totalCount, dtos);
+    }
     #endregion
 
     #region Reviews

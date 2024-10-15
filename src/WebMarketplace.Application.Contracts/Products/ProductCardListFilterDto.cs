@@ -16,6 +16,4 @@ public class ProductCardListFilterDto : PagedResultRequestDto
     public decimal? MaxPriceAmount { get; set; }
     public string? PriceCurrency { get; set; }
     public ProductSorting Sorting { get; set; }
-
-    public List<Guid> ExcludedProductIds { get; set; } = new List<Guid>();
 }
