@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Authorization;
 using Volo.Abp.BlobStoring;
@@ -15,14 +16,14 @@ using WebMarketplace.Companies;
 
 namespace WebMarketplace.Products;
 
-[AllowAnonymous]
+[Authorize]
 public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerAppService
 {
     private readonly IProductRepository _productRepository;
     private readonly ProductManager _productManager;
     private readonly IRepository<Company, Guid> _companyRepository;
     private readonly IBlobContainer<ProductImageContainer> _productBlobContainer;
-    
+
     public ProductBuyerAppService(IProductRepository productRepository, ProductManager productManager,
         IRepository<Company, Guid> companyRepository, IBlobContainer<ProductImageContainer> productBlobContainer)
     {
@@ -34,6 +35,7 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
 
     #region Products
 
+    [AllowAnonymous]
     public async Task<ProductDetailDto> GetProductDetailAsync(Guid id)
     {
         var item = await _productRepository.GetProductDetailAsync(id);
@@ -43,6 +45,7 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
         return dto;
     }
 
+    [AllowAnonymous]
     public async Task<ProductCardListResultDto> GetProductCardListAsync(ProductCardListFilterDto input)
     {
         var sorting = string.Empty;
@@ -127,20 +130,21 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
         return result;
     }
 
+    [AllowAnonymous]
     public async Task<PagedResultDto<ProductCardDto>> GetSimilarProductCardListAsync(SimilarProductCardListFilterDto input)
     {
         var product = await _productRepository.GetAsync(input.ProductId);
-        
+
         var query = await _productRepository.GetProductDetailQueryableAsync(null, true);
         query = query.Where(x => x.Id != input.ProductId);
-        query = query.Where(x=>x.ProductCategory == product.ProductCategory);
-        query = query.Where(x=>x.ProductType == product.ProductType);
+        query = query.Where(x => x.ProductCategory == product.ProductCategory);
+        query = query.Where(x => x.ProductType == product.ProductType);
 
         var totalCount = await AsyncExecuter.CountAsync(query);
         query = query
             .OrderBy(x => x.Rating)
             .PageBy(input.SkipCount, input.MaxResultCount);
-        
+
         var items = await AsyncExecuter.ToListAsync(query);
         var dtos = new List<ProductCardDto>();
         foreach (var item in items)
@@ -158,6 +162,7 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
 
         return new PagedResultDto<ProductCardDto>(totalCount, dtos);
     }
+
     #endregion
 
     #region Reviews
@@ -175,9 +180,18 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
                 WebMarketplaceDomainErrorCodes.UserNotAuthenticated);
         }
 
+        if (product.Reviews.Any(x => x.UserId == userId))
+        {
+            throw new BusinessException(
+                L[WebMarketplaceDomainErrorCodes.UserHasProductReview]);
+        }
+
+        var existedReview = await _productRepository.GetPriceQueryableAsync();
+
         await _productManager.AddProductReviewAsync(product, userId, input.Rating, input.Comment);
     }
 
+    [AllowAnonymous]
     public async Task<PagedResultDto<ProductReviewDto>> GetReviewListAsync(ProductReviewListFilterDto input)
     {
         var totalCount = await _productRepository.GetReviewDetailCountAsync(
@@ -197,10 +211,24 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
         return new PagedResultDto<ProductReviewDto>(totalCount, dtos);
     }
 
+    public async Task<bool> HasReviewAsync(Guid productId)
+    {
+        var userId = CurrentUser.GetId();
+        var product = await _productRepository.GetAsync(productId);
+        
+        if (product.Reviews.Any(x => x.UserId == userId))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     #endregion
 
     #region Images
 
+    [AllowAnonymous]
     public async Task<ProductImageDto> GetDefaultImageAsync(Guid productId)
     {
         var product = await _productRepository.GetAsync(productId);
@@ -217,6 +245,7 @@ public class ProductBuyerAppService : WebMarketplaceAppService, IProductBuyerApp
         return dto;
     }
 
+    [AllowAnonymous]
     public async Task<ListResultDto<ProductImageDto>> GetAllImagesAsync(Guid productId)
     {
         var product = await _productRepository.GetAsync(productId);

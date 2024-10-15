@@ -15,7 +15,8 @@ public interface IProductBuyerAppService : IApplicationService
     
     // reviews
     Task CreateReview(CreateUpdateProductReviewBuyerDto input);
-    Task<PagedResultDto<ProductReviewDto>> GetReviewListAsync(ProductReviewListFilterDto input); 
+    Task<PagedResultDto<ProductReviewDto>> GetReviewListAsync(ProductReviewListFilterDto input);
+    Task<bool> HasReviewAsync(Guid productId);
     
     // images
     Task<ProductImageDto> GetDefaultImageAsync(Guid productId);

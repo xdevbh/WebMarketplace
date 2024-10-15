@@ -16,6 +16,7 @@ public static class WebMarketplaceDomainErrorCodes
     public const string ProductReviewUserAlreadyExists = "Exception:ProductReviewUserAlreadyExists";
     public const string ProductReviewNotFound = "Exception:ProductReviewNotFound";
     public const string ProductReviewRantingRange = "Exception:ProductReviewRantingRange";
+    public const string UserHasProductReview = "Exception:UserHasProductReview";
     public const string ProductImageNotFound = "Exception:ProductImageNotFound";
     public const string ProductImageDefaultRemoveNotAllowed = "Exception:ProductImageDefaultRemoveNotAllowed";
     public const string ProductCategoryUndefinedNotAllowed = "Exception:ProductCategoryUndefinedNotAllowed";

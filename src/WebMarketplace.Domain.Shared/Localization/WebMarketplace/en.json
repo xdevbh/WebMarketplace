@@ -34,6 +34,7 @@
     "Exception:ProductReviewUserAlreadyExists": "A review for this product by this user already exists.",
     "Exception:ProductReviewNotFound": "Product review not found.",
     "Exception:ProductReviewRantingRange": "Rating must out of range.",
+    "Exception:UserHasProductReview": "User has already reviewed this product.",
     "Exception:PriceNotNegative": "Price cannot be negative.",
     "Exception:CurrencyAlreadySet": "Currency is already set.",
     "Exception:ProductImageNotFound": "Product image not found.",

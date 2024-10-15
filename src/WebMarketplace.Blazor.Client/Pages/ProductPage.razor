@@ -177,7 +177,8 @@
     protected override async Task SetPermissionsAsync()
     {
         // CanWriteReview = await OrderAppService.HasPurchasedProduct(Id);
-        CanWriteReview = CurrentUser.IsAuthenticated;
+        CanWriteReview = CurrentUser.IsAuthenticated 
+                         && !(await ProductAppService.HasReviewAsync(Id));
         await base.SetPermissionsAsync();
     }
 
