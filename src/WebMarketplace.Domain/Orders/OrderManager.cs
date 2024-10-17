@@ -47,6 +47,11 @@ namespace WebMarketplace.Orders
         {
             Check.Positive(quantity, nameof(quantity));
         }
+        
+        public async Task<bool> CanCancelAsync(Order order)
+        {
+            return order.Status.IsIn(OrderStatus.New, OrderStatus.PendingPayment, OrderStatus.Paid, OrderStatus.Processing);
+        } 
 
         #endregion
 
@@ -92,6 +97,16 @@ namespace WebMarketplace.Orders
         public async Task<Order> ChangeStatusAsync(Guid orderId, OrderStatus status)
         {
             var order = await _orderRepository.GetAsync(orderId);
+            if(order == null)
+            {
+                throw new BusinessException(WebMarketplaceDomainErrorCodes.OrderNotFound).WithData("Id", orderId);
+            }
+            
+            if(await CanCancelAsync(order))
+            {
+                throw new BusinessException(WebMarketplaceDomainErrorCodes.OrderCannotBeCancelled).WithData("Id", orderId);
+            }
+            
             order.ChangeStatus(status);
             return await _orderRepository.UpdateAsync(order);
         }

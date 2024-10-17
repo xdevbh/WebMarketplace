@@ -8,6 +8,7 @@ using WebMarketplace.Orders;
 using WebMarketplace.Products;
 using WebMarketplace.Companies;
 using WebMarketplace.Companies.Memberships;
+using WebMarketplace.Users.UserAddresses;
 
 namespace WebMarketplace.EntityFrameworkCore;
 
@@ -21,6 +22,7 @@ public static class WebMarketplaceDbContextModelBuilderExtensions
         builder.ConfigureCompanies();
         builder.ConfigureProducts();
         builder.ConfigureOrders();
+        builder.ConfigureUsers();
         // builder.ConfigureCarts();
     }
 
@@ -157,6 +159,20 @@ public static class WebMarketplaceDbContextModelBuilderExtensions
             b.Property(x => x.UnitPrice).HasColumnType("decimal(18,2)").IsRequired();
             b.Property(x => x.TotalPrice).HasColumnType("decimal(18,2)").IsRequired();
             b.Property(x => x.Currency).IsRequired().HasMaxLength(WebMarketplaceConsts.CurrencyCodeLength);
+        });
+    }
+    
+    private static void ConfigureUsers([NotNull] this ModelBuilder builder)
+    {
+        Check.NotNull(builder, nameof(builder));
+        
+        builder.Entity<UserAddress>(b =>
+        {
+            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "UserAddresses", WebMarketplaceConsts.DbSchema);
+            b.ConfigureByConvention();
+            b.HasOne<Address>().WithMany().HasForeignKey(x => x.AddressId).IsRequired();
+            b.HasOne<IdentityUser>().WithMany().HasForeignKey(x => x.UserId).IsRequired();
+            b.HasIndex(x => new { Addressid = x.AddressId, x.UserId }).IsUnique();
         });
     }
 }

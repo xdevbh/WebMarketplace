@@ -20,7 +20,7 @@ public class AddressAppService : WebMarketplaceAppService, IAddressAppService
         _addressManager = addressManager;
     }
 
-    public async Task<PagedResultDto<AddressDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    public async Task<PagedResultDto<AddressDto>> GetListAsync(AddressFilterDto input)
     {
         var addresses =
             await _addressRepository.GetPagedListAsync(input.SkipCount, input.MaxResultCount, input.Sorting);

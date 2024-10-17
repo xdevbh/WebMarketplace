@@ -5,6 +5,9 @@ namespace WebMarketplace.Companies.Memberships;
 
 public class CompanyMembership : CreationAuditedAggregateRoot<Guid>
 {
+    public virtual Guid UserId { get; private set; }
+    public virtual Guid CompanyId { get; private set; }
+    
     protected CompanyMembership()
     {
     }
@@ -15,7 +18,4 @@ public class CompanyMembership : CreationAuditedAggregateRoot<Guid>
         UserId = userId;
         CompanyId = companyId;
     }
-
-    public virtual Guid UserId { get; private set; }
-    public virtual Guid CompanyId { get; private set; }
 }

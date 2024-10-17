@@ -9,6 +9,8 @@ using WebMarketplace.Products;
 using WebMarketplace.Companies;
 using WebMarketplace.Companies.Memberships;
 using WebMarketplace.Currencies;
+using WebMarketplace.Orders;
+using WebMarketplace.Users.UserAddresses;
 
 namespace WebMarketplace;
 
@@ -57,5 +59,13 @@ public class WebMarketplaceApplicationAutoMapperProfile : Profile
         CreateMap<ProductImage, ProductImageDto>()
             .Ignore(x => x.Content);
         CreateMap<ProductPrice, ProductPriceDto>();
+
+        CreateMap<Order, OrderDto>()
+            .Ignore(x=>x.Items);
+        CreateMap<OrderItem, OrderItemDto>();
+        CreateMap<Order, OrderCardDto>();
+
+        CreateMap<UserAddressDetailQueryResultItem, UserAddressDto>();
+
     }
 }

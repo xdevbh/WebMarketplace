@@ -23,9 +23,11 @@ public static class WebMarketplaceDomainErrorCodes
     public const string ProductTypeUndefinedNotAllowed = "Exception:ProductTypeUndefinedNotAllowed";
     public const string ProductPriceNotFound = "Exception:ProductPriceNotFound";
     
+    public const string OrderNotFound = "Exception:OrderNotFound";
+    public const string OrderCannotBeCancelled = "Exception:OrderCannotBeCancelled";
+    
     public const string PriceNotNegative = "Exception:PriceNotNegative"; 
     public const string CurrencyAlreadySet = "Exception:CurrencyAlreadySet";
     public const string CurrencyNotFound = "Exception:CurrencyNotFound";
     public const string ImageContentIsEmpty = "Exception:ImageContentIsEmpty";
-
 }

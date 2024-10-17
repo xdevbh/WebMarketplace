@@ -193,7 +193,7 @@
 
     private async Task CreateAsync()
     {
-        if (await _wmAddressEditRef.ValidateAll() && await CompanyValidationsRef.ValidateAll())
+        if (await _wmAddressEditRef.ValidateAllAsync() && await CompanyValidationsRef.ValidateAll())
         {
             var addressDto = await AddressAppService.CreateAsync(Address);
 

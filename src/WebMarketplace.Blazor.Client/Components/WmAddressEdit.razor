@@ -203,7 +203,7 @@
     [Parameter] public bool ReadOnly { get; set; } = false;
     [Parameter] public Validations ValidationsRef { get; set; }
     
-    public async Task<bool> ValidateAll()
+    public async Task<bool> ValidateAllAsync()
     {
         var isValid = await ValidationsRef.ValidateAll();
         return isValid;

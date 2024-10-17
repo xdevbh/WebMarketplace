@@ -6,5 +6,6 @@ namespace WebMarketplace.Orders;
 public class OrderFilterDto : PagedAndSortedResultRequestDto
 {
     public Guid? BuyerId { get; set; }
+    public Guid? AddressId { get; set; }
     public OrderStatus? Status { get; set; }
 }

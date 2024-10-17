@@ -1,0 +1,108 @@
+﻿@page "/order"
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars
+@using WebMarketplace.Addresses
+@using WebMarketplace.Carts
+@using WebMarketplace.Localization
+@using WebMarketplace.Users.UserAddresses
+@inherits WmPageBase
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject ICartAppService CartAppService
+@inject NavigationManager NavigationManager
+@inject IUserAddressAppService UserAddressAppService
+
+<WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle"/>
+
+<WmCartEdit Cart="@Cart"
+            OnNeedData="() => GetDataAsync()"
+            ReadOnly="true"/>
+<Card>
+    <CardBody>
+        <Div Flex="Flex.JustifyContent.Between"
+             Margin="Margin.Is3.FromBottom">
+            <Heading Size="HeadingSize.Is5"
+                     Flex="Flex.Fill">
+                @L["Header:ChooseAddress"]
+            </Heading>
+            <Div Float="Float.End" Flex="Flex.JustifyContent.End.AlignItems.Center">
+                <ToolbarButton Clicked="() => AddAddressAsync()"
+                               Color="Color.Secondary"
+                               Icon="IconName.Add"
+                               Text="@L["Action:AddAddress"]"/>
+            </Div>
+        </Div>
+        <SelectList TItem="UserAddressSelectItemDto"
+                    TValue="Guid"
+                    Data="@Addresses"
+                    TextField="@((item)=>item.Text)"
+                    ValueField="@((item)=>item.Id)"
+                    @bind-SelectedValue="@SelectedAddressId"
+                    DefaultItemText="" />
+    </CardBody>
+</Card>
+
+<WmAddressNewModal @ref="WmAddressNewModalRef" OnCreated="OnAddressCreated"/>
+
+@code {
+    protected CartDto Cart { get; set; } = new();
+    protected IReadOnlyList<UserAddressSelectItemDto> Addresses { get; set; } = new List<UserAddressSelectItemDto>();
+    protected Guid SelectedAddressId { get; set; }
+    protected WmAddressNewModal WmAddressNewModalRef { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        PageHeader = "Header:CreateOrder";
+        PageTitle = "Page:CreateOrder";
+        await GetDataAsync();
+        await base.OnInitializedAsync();
+    }
+
+    protected override Task SetBreadcrumbItemsAsync()
+    {
+        BreadcrumbItems = new();
+        BreadcrumbItems.Add((new BreadcrumbItem(L["Menu:Cart"], "/cart")));
+        BreadcrumbItems.Add((new BreadcrumbItem(L["Menu:CreateOrder"], "/order")));
+        return base.SetBreadcrumbItemsAsync();
+    }
+
+    protected override Task SetToolBarAsync()
+    {
+        PageToolbar.AddButton(L["Action:CreateOrder"],
+            () => CreateOrderAsync(),
+            IconName.Receipt,
+            Color.Primary);
+        return base.SetToolBarAsync();
+    }
+
+    protected async Task GetDataAsync()
+    {
+        var cartResult = await CartAppService.GetAsync();
+        Cart = cartResult;
+
+        var addressResult = await UserAddressAppService.GetMySelectItemListListAsync();
+        Addresses = addressResult.Items;
+    }
+
+    private Task CreateOrderAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    private Task AddAddressAsync()
+    {
+        WmAddressNewModalRef.Show();
+        return Task.CompletedTask;
+    }
+
+    private async Task OnAddressCreated(AddressDto address)
+    {
+        if(address == null)
+        {
+            return;
+        }
+        
+        await UserAddressAppService.CreateMyAsync(address.Id);
+        await GetDataAsync();
+    }
+
+}

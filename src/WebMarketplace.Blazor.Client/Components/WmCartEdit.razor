@@ -1,0 +1,30 @@
+﻿@using Microsoft.Extensions.Localization
+@using WebMarketplace.Carts
+@using WebMarketplace.Localization
+@inject IStringLocalizer<WebMarketplaceResource> L
+
+@if (Cart.Items.Any())
+{
+    @foreach (var item in Cart.Items)
+    {
+        <WmCartItemCard CartItem="@item"
+                        OnItemChanged="() => OnItemChanged()"
+                        ReadOnly="ReadOnly"/>
+    }
+}
+else
+{
+    <Text>@L["Info:CartIsEmpty"]</Text>
+}
+
+@code {
+    [Parameter] public CartDto Cart { get; set; } = new();
+    [Parameter] public EventCallback<CartDto> OnNeedData { get; set; }
+    [Parameter] public bool ReadOnly { get; set; } = false;
+
+    private async Task OnItemChanged()
+    {
+        await OnNeedData.InvokeAsync(Cart);
+    }
+
+}

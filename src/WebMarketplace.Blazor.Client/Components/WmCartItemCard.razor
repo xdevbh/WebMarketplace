@@ -13,7 +13,7 @@
                 <Addons>
                     <Addon AddonType="AddonType.Start">
                         <AddonLabel>
-                            <Icon Name="IconName.Receipt"></Icon>
+                            <Icon Name="IconName.Shapes"></Icon>
                         </AddonLabel>
                     </Addon>
                     <Addon AddonType="AddonType.Body">
@@ -34,7 +34,8 @@
                         <NumericPicker TValue="int"
                                        Value="@CartItem.Quantity"
                                        ValueChanged="OnQuantityChanged"
-                                       Min="1"/>
+                                       Min="1"
+                                       ReadOnly="ReadOnly"/>
                     </Addon>
                 </Addons>
             </Field>
@@ -65,7 +66,8 @@
                 <ToolbarButton Clicked="() => DeleteItem()"
                                Color="Color.Secondary"
                                Icon="IconName.Delete"
-                               Text="@L["Action:Remove"]"/>
+                               Text="@L["Action:Remove"]"
+                               Disabled="ReadOnly"/>
             </Field>
         </Fields>
     </CardBody>
@@ -75,6 +77,7 @@
 @code {
     [Parameter] public CartItemDto CartItem { get; set; }
     [Parameter] public EventCallback<CartItemDto> OnItemChanged { get; set; }
+    [Parameter] public bool ReadOnly { get; set; } = false;
 
 
     private async Task OnQuantityChanged(int value)

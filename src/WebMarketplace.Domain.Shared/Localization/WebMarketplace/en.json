@@ -19,6 +19,7 @@
     "Menu:Dashboard": "Dashboard",
     "Menu:Customers": "Customers",
     "Menu:Search": "Search",
+    "Menu:CreateOrder": "Create order",
 
     "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP framework. For more information visit",
     "Welcome": "Welcome",
@@ -44,6 +45,8 @@
     "Exception:ProductPriceNotFound": "Product price not found.",
     "Exception:CurrencyNotFound": "Currency {Code} not found.",
     "Exception:ImageContentIsEmpty": "Image content is empty.",
+    "Exception:OrderNotFound": "Order '{Id}' not found.",
+    "Exception:OrderCannotBeCancelled": "Order '{Id}' cannot be cancelled.",
 
     "Permission:WebMarketplace": "WebMarketplace Management",
     "Permission:Companies": "Company Management",
@@ -88,6 +91,8 @@
     "Action:More": "More",
     "Action:WriteReview": "Write a review",
     "Action:Next": "Next",
+    "Action:CreateOrder": "Create order",
+    "Action:AddAddress": "Add address",
 
     "Message:CompanyDeletionConfirmation": "Are you sure you want to delete the company?",
     "Message:CompanyMembershipDeletionConfirmation": "Are you sure you want to delete the company membership?",
@@ -112,12 +117,14 @@
     "Page:Product": "Product",
     "Page:Products": "Products",
     "Page:Cart": "Cart",
+    "Page:CreateOrder": "Create order",
 
     "Modal:ManagementAddProductPrice": "Add price",
     "Modal:ManagementAddProductImage": "Add image",
     "Modal:AdministrationCreateCompanyMembership": "Create membership for company ",
     "Modal:ManagementAddCompanyImage": "Add image",
     "Modal:AddProductReview": "Add review",
+    "Modal:AddAddress": "Add address",
     
     "Tab:Description": "Description",
     "Tab:Reviews": "Reviews",
@@ -142,6 +149,8 @@
     "Header:FullDescription": "Full description",
     "Header:Images": "Images",
     "Header:Cart": "Cart",
+    "Header:CreateOrder": "Create order",
+    "Header:ChooseAddress": "Choose address",
 
     "Field:Id": "ID",
     "Field:UserName": "UserName",

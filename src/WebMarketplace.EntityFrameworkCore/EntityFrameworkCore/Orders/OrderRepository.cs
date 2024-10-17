@@ -23,7 +23,7 @@ public class OrderRepository : EfCoreRepository<WebMarketplaceDbContext, Order, 
         return (await GetQueryableAsync()).IncludeDetails();
     }
 
-    public async Task<IQueryable<Order>> GetQueryableAsync(
+    public async Task<IQueryable<Order>> GetFilteredQueryableAsync(
         Guid? buyerId = null,
         Guid? addressId = null,
         OrderStatus? status = null)
@@ -37,7 +37,7 @@ public class OrderRepository : EfCoreRepository<WebMarketplaceDbContext, Order, 
         return query;
     }
 
-    public async Task<List<Order>> GetListAsync(
+    public async Task<List<Order>> GetFilteredListAsync(
         string? sorting = null,
         int maxResultCount = int.MaxValue,
         int skipCount = 0,
@@ -47,7 +47,7 @@ public class OrderRepository : EfCoreRepository<WebMarketplaceDbContext, Order, 
         CancellationToken cancellationToken = default
     )
     {
-        var query = await GetQueryableAsync(buyerId, addressId, status);
+        var query = await GetFilteredQueryableAsync(buyerId, addressId, status);
 
         if (sorting.IsNullOrWhiteSpace())
         {
@@ -61,13 +61,13 @@ public class OrderRepository : EfCoreRepository<WebMarketplaceDbContext, Order, 
     }
     
     
-    public async Task<long> GetCountAsync(
+    public async Task<long> GetFilteredCountAsync(
         Guid? buyerId = null,
         Guid? addressId = null,
         OrderStatus? status = null,
         CancellationToken cancellationToken = default)
     {
-        var query = await GetQueryableAsync(buyerId, addressId, status);
+        var query = await GetFilteredQueryableAsync(buyerId, addressId, status);
         var count= await query.LongCountAsync(GetCancellationToken(cancellationToken));
         return count;
     }
@@ -85,5 +85,20 @@ public class OrderRepository : EfCoreRepository<WebMarketplaceDbContext, Order, 
         query = query.WhereIf(productId.HasValue, x => x.OrderItem.ProductId == productId);
 
         return query;
+    }
+    
+    public async Task<List<Guid>> GetOrderedProductIdListAsync(
+        Guid buyerId,
+        CancellationToken cancellationToken = default)
+    {
+        var dbContext = await GetDbContextAsync();
+        var query = 
+            from items in dbContext.Set<OrderItem>()
+            join orders in dbContext.Set<Order>() on items.OrderId equals orders.Id
+            where orders.BuyerId == buyerId
+            select items.ProductId;
+
+        var list = await query.ToListAsync(GetCancellationToken(cancellationToken));
+        return list;
     }
 }

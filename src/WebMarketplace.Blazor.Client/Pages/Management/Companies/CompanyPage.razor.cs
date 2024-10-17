@@ -84,7 +84,7 @@ public partial class CompanyPage
 
     protected async Task UpdateAsync()
     {
-        if (await WmAddressEditRef.ValidateAll() && await CompanyValidationsRef.ValidateAll())
+        if (await WmAddressEditRef.ValidateAllAsync() && await CompanyValidationsRef.ValidateAll())
         {
             var addressDto = await AddressAppService.UpdateAsync(Company.AddressId, EditAddress);
 

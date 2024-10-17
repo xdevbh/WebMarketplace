@@ -1,0 +1,74 @@
+﻿@using Microsoft.Extensions.Localization
+@using WebMarketplace.Addresses
+@using WebMarketplace.Localization
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject IAddressAppService AddressAppService
+
+
+<Modal @ref="ModalRef">
+    <ModalContent Centered="true">
+        <Form>
+            <ModalHeader>
+                <ModalTitle>@ModalTitle</ModalTitle>
+                <CloseButton Clicked="() => Close()"/>
+            </ModalHeader>
+            <ModalBody>
+                <WmAddressEdit Address="NewAddress"
+                               @ref="WmAddressEditRef"/>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Danger"
+                        Clicked="Close">
+                    <Icon Name="IconName.Times"/>
+                    @L["Cancel"]
+                </Button>
+                <Button Color="Color.Primary"
+                        Type="@ButtonType.Submit"
+                        PreventDefaultOnSubmit="true"
+                        Clicked="Create">
+                    <Icon Name="IconName.Save"/>
+                    @L["Save"]
+                </Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+@code {
+    [Parameter] public EventCallback<AddressDto> OnCreated { get; set; }
+
+    protected CreateUpdateAddressDto NewAddress { get; set; } = new();
+
+    protected string ModalTitle { get; set; }
+    protected Modal ModalRef { get; set; }
+    protected WmAddressEdit WmAddressEditRef { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ModalTitle = @L["Modal:AddAddress"];
+        await base.OnInitializedAsync();
+    }
+
+    public Task Close()
+    {
+        ModalRef.Hide();
+        return Task.CompletedTask;
+    }
+    
+    public Task Show()
+    {
+        ModalRef.Show();
+        return Task.CompletedTask;
+    }
+
+    private async Task Create()
+    {
+        if (await WmAddressEditRef.ValidateAllAsync())
+        {
+            var dto = await AddressAppService.CreateAsync(NewAddress);
+            await ModalRef.Hide();
+            await OnCreated.InvokeAsync(dto);
+        }
+    }
+
+}

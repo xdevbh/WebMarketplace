@@ -6,21 +6,13 @@
 @inherits WmPageBase
 @inject IStringLocalizer<WebMarketplaceResource> L
 @inject ICartAppService CartAppService
+@inject NavigationManager NavigationManager
 
 <WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle"/>
 
-@if (Cart.Items.Any())
-{
-    @foreach (var item in Cart.Items)
-    {
-        <WmCartItemCard CartItem="@item"
-                        OnItemChanged="() => GetDataAsync()"/>
-    }
-}
-else
-{
-    <Text>@L["Info:CartIsEmpty"]</Text>
-}
+<WmCartEdit Cart="@Cart"
+            OnNeedData="() => GetDataAsync()"
+            ReadOnly="false"/>
 
 @code {
     protected CartDto Cart { get; set; } = new();
@@ -47,15 +39,18 @@ else
 
     protected override Task SetToolBarAsync()
     {
+        PageToolbar = new();
         PageToolbar.AddButton(L["Action:RemoveAll"],
             async () => RemoveAll(),
             IconName.Delete,
             Color.Secondary);
 
+        var canCreateOrder = Cart != null && Cart.Items.Any();
         PageToolbar.AddButton(L["Action:Next"],
             async () => NextAsync(),
             IconName.ArrowRight,
-            Color.Primary);
+            Color.Primary,
+            !canCreateOrder);
 
         return base.SetToolBarAsync();
     }
@@ -69,7 +64,7 @@ else
 
     private void NextAsync()
     {
-        throw new NotImplementedException();
+        NavigationManager.NavigateTo("/order");
     }
     
 
