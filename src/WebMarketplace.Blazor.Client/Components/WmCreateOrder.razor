@@ -1,0 +1,28 @@
+﻿@using Microsoft.Extensions.Localization
+@using WebMarketplace.Localization
+@using WebMarketplace.Orders
+@inject IStringLocalizer<WebMarketplaceResource> L
+
+<Card Margin="Margin.Is3.FromBottom">
+    <CardBody>
+        <Row Margin="Margin.Is3.FromBottom">
+            <Column Flex="Flex.Row.JustifyContent.Between">
+                <Heading Size="HeadingSize.Is5">
+                    @Order.CompanyName
+                </Heading>
+                <Heading Size="HeadingSize.Is6">
+                    @Order.TotalPrice @Order.Currency
+                </Heading>
+            </Column>
+        </Row>
+        @foreach (var item in Order.Items)
+        {
+            <WmCreateOrderItem OrderItem="@item"/>
+        }
+    </CardBody>
+</Card>
+
+
+@code {
+    [Parameter] public CreateOrderBuyerDto Order { get; set; }
+}

@@ -1,21 +1,27 @@
 ﻿@page "/order"
 @using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Components.Messages
 @using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars
 @using WebMarketplace.Addresses
 @using WebMarketplace.Carts
 @using WebMarketplace.Localization
+@using WebMarketplace.Orders
 @using WebMarketplace.Users.UserAddresses
 @inherits WmPageBase
 @inject IStringLocalizer<WebMarketplaceResource> L
 @inject ICartAppService CartAppService
+@inject IOrderBuyerAppService OrderAppService
+@inject IUiMessageService UiMessageService
 @inject NavigationManager NavigationManager
 @inject IUserAddressAppService UserAddressAppService
 
 <WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle"/>
 
-<WmCartEdit Cart="@Cart"
-            OnNeedData="() => GetDataAsync()"
-            ReadOnly="true"/>
+@foreach (var order in Orders)
+{
+    <WmCreateOrder Order="@order"/>
+}
+
 <Card>
     <CardBody>
         <Div Flex="Flex.JustifyContent.Between"
@@ -34,10 +40,11 @@
         <SelectList TItem="UserAddressSelectItemDto"
                     TValue="Guid"
                     Data="@Addresses"
-                    TextField="@((item)=>item.Text)"
-                    ValueField="@((item)=>item.Id)"
-                    @bind-SelectedValue="@SelectedAddressId"
-                    DefaultItemText="" />
+                    TextField="@((item) => item.Text)"
+                    ValueField="@((item) => item.Id)"
+                    SelectedValue="@SelectedAddressId"
+                    SelectedValueChanged="OnAddressChanged"
+                    DefaultItemText=""/>
     </CardBody>
 </Card>
 
@@ -47,13 +54,16 @@
     protected CartDto Cart { get; set; } = new();
     protected IReadOnlyList<UserAddressSelectItemDto> Addresses { get; set; } = new List<UserAddressSelectItemDto>();
     protected Guid SelectedAddressId { get; set; }
-    protected WmAddressNewModal WmAddressNewModalRef { get; set; }
+    protected WmAddressNewModal WmAddressNewModalRef { get; set; } = new();
+    protected List<CreateOrderBuyerDto> Orders { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
-        PageHeader = "Header:CreateOrder";
-        PageTitle = "Page:CreateOrder";
+        PageHeader = L["Header:CreateOrders"];
+        PageTitle = L["Page:CreateOrders"];
+        
         await GetDataAsync();
+        
         await base.OnInitializedAsync();
     }
 
@@ -62,6 +72,7 @@
         BreadcrumbItems = new();
         BreadcrumbItems.Add((new BreadcrumbItem(L["Menu:Cart"], "/cart")));
         BreadcrumbItems.Add((new BreadcrumbItem(L["Menu:CreateOrder"], "/order")));
+        
         return base.SetBreadcrumbItemsAsync();
     }
 
@@ -71,6 +82,7 @@
             () => CreateOrderAsync(),
             IconName.Receipt,
             Color.Primary);
+        
         return base.SetToolBarAsync();
     }
 
@@ -78,14 +90,57 @@
     {
         var cartResult = await CartAppService.GetAsync();
         Cart = cartResult;
-
+        
         var addressResult = await UserAddressAppService.GetMySelectItemListListAsync();
         Addresses = addressResult.Items;
+        
+        await MapCartToOrderAsync();
     }
 
-    private Task CreateOrderAsync()
+    protected Task MapCartToOrderAsync()
     {
-        throw new NotImplementedException();
+        var orders = Cart.Items
+            .GroupBy(item => new { item.CompanyId, item.CompanyName, item.Currency })
+            .Select(group => new CreateOrderBuyerDto
+            {
+                CompanyId = group.Key.CompanyId,
+                CompanyName = group.Key.CompanyName,
+                Currency = group.Key.Currency,
+                TotalPrice = group.Sum(x => x.TotalPrice),
+                Items = group.Select(item => new CreateOrderItemBuyerDto
+                {
+                    ProductId = item.ProductId,
+                    ProductName = item.ProductName,
+                    Quantity = item.Quantity,
+                    UnitPrice = item.UnitPrice,
+                    Currency = item.Currency
+                }).ToList()
+            }).ToList();
+
+        Orders = orders;
+        return Task.CompletedTask;
+    }
+
+
+    private async Task CreateOrderAsync()
+    {
+        foreach (var order in Orders)
+        {
+            await OrderAppService.CreateAsync(order);
+        }
+
+        if (Orders.Count == 1)
+        {
+            UiMessageService.Success(L["Message:OrderCreatedSuccessfully"]);
+
+        }
+        else if (Orders.Count > 1)
+        {
+            UiMessageService.Success(L["Message:OrdersCreatedSuccessfully"]);
+        }
+        
+        await CartAppService.ClearAsync();
+        NavigationManager.NavigateTo("/");
     }
 
     private Task AddAddressAsync()
@@ -96,13 +151,20 @@
 
     private async Task OnAddressCreated(AddressDto address)
     {
-        if(address == null)
+        if (address == null)
         {
             return;
         }
-        
+
         await UserAddressAppService.CreateMyAsync(address.Id);
         await GetDataAsync();
     }
+
+    private Task OnAddressChanged(Guid addressId)
+    {
+        SelectedAddressId = addressId;
+        Orders.ForEach(order => order.AddressId = addressId);
+        return Task.CompletedTask;
+    }   
 
 }

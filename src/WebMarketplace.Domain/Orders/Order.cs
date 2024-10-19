@@ -58,7 +58,7 @@ public class Order : FullAuditedAggregateRoot<Guid>
         Check.Length(currency, nameof(currency), WebMarketplaceConsts.CurrencyCodeLength,
             WebMarketplaceConsts.CurrencyCodeLength);
 
-        if(Currency.IsNullOrEmpty())
+        if(Currency.IsNullOrEmpty()) 
         {
             Currency = currency;
         }

@@ -1,0 +1,79 @@
+﻿@using Microsoft.Extensions.Localization
+@using WebMarketplace.Localization
+@using WebMarketplace.Orders
+@inject IStringLocalizer<WebMarketplaceResource> L
+
+
+<Card Margin="Margin.Is3.FromBottom">
+    <CardBody>
+        <Fields>
+            <Field ColumnSize="ColumnSize.Is3.OnDesktop">
+                <FieldLabel>@L["Field:ProductName"]</FieldLabel>
+                <Addons>
+                    <Addon AddonType="AddonType.Start">
+                        <AddonLabel>
+                            <Icon Name="IconName.Shapes"/>
+                        </AddonLabel>
+                    </Addon>
+                    <Addon AddonType="AddonType.Body">
+                        <TextEdit @bind-Text="@OrderItem.ProductName"
+                                  ReadOnly="true"/>
+                    </Addon>
+                </Addons>
+            </Field>
+            <Field ColumnSize="ColumnSize.Is3.OnDesktop">
+                <FieldLabel>@L["Field:Quantity"]</FieldLabel>
+                <Addons>
+                    <Addon AddonType="AddonType.Start">
+                        <AddonLabel>
+                            <Icon Name="IconName.CartMinus"/>
+                        </AddonLabel>
+                    </Addon>
+                    <Addon AddonType="AddonType.Body">
+                        <NumericPicker TValue="int"
+                                       Value="@OrderItem.Quantity"
+                                       Min="1"
+                                       ReadOnly="true"/>
+                    </Addon>
+                </Addons>
+            </Field>
+            <Field ColumnSize="ColumnSize.Is3.OnDesktop">
+                <FieldLabel>@L["Field:UnitPrice"]</FieldLabel>
+                <Addons>
+                    <Addon AddonType="AddonType.Body">
+                        <NumericPicker TValue="decimal"
+                                       @bind-Value="@OrderItem.UnitPrice"
+                                       Min="1"
+                                       ReadOnly="true"/>
+                    </Addon>
+                    <Addon AddonType="AddonType.End">
+                        <AddonLabel>
+                            @OrderItem.Currency
+                        </AddonLabel>
+                    </Addon>
+                </Addons>
+            </Field>
+            <Field ColumnSize="ColumnSize.Is3.OnDesktop">
+                <FieldLabel>@L["Field:TotalPrice"]</FieldLabel>
+                <Addons>
+                    <Addon AddonType="AddonType.Body">
+                        <NumericPicker TValue="decimal"
+                                       Value="@(OrderItem.Quantity * OrderItem.UnitPrice)"
+                                       Min="1"
+                                       ReadOnly="true"/>
+                    </Addon>
+                    <Addon AddonType="AddonType.End">
+                        <AddonLabel>
+                            @OrderItem.Currency
+                        </AddonLabel>
+                    </Addon>
+                </Addons>
+            </Field>
+        </Fields>
+    </CardBody>
+</Card>
+
+
+@code {
+    [Parameter] public CreateOrderItemBuyerDto OrderItem { get; set; }
+}

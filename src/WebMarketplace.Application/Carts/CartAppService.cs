@@ -103,13 +103,16 @@ public class CartAppService : WebMarketplaceAppService, ICartAppService
 
         foreach (var item in cart.Items)
         {
-            var product = await _productRepository.GetAsync(item.ProductId);
+            var product = await _productRepository.GetProductDetailAsync(item.ProductId);
             var cartItemDto = new CartItemDto();
             cartItemDto.ProductId = product.Id;
             cartItemDto.ProductName = product.Name;
+            cartItemDto.CompanyId = product.CompanyId;
+            cartItemDto.CompanyName = product.CompanyName;
             cartItemDto.Quantity = item.Quantity;
-            cartItemDto.TotalPrice = item.Quantity * product.CurrentPrice?.Amount ?? 0;
-            cartItemDto.Currency = product.CurrentPrice?.Currency ?? "CZK";
+            cartItemDto.UnitPrice = product.PriceAmount;
+            cartItemDto.TotalPrice = item.Quantity * product.PriceAmount;
+            cartItemDto.Currency = product.PriceCurrency;
             dto.Items.Add(cartItemDto);
         }
         

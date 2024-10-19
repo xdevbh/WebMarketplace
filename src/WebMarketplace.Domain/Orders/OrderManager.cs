@@ -4,8 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
+using WebMarketplace.Addresses;
+using WebMarketplace.Companies;
 using WebMarketplace.Currencies;
+using WebMarketplace.Products;
 
 namespace WebMarketplace.Orders
 {
@@ -13,13 +17,17 @@ namespace WebMarketplace.Orders
     {
         private readonly IOrderRepository _orderRepository;
         private readonly ICurrencyRepository _currencyRepository;
+        private readonly IRepository<Address, Guid> _addressRepository;
+        private readonly IProductRepository _productRepository;
+        private readonly ICompanyRepository _companyRepository;
 
-        public OrderManager(
-            IOrderRepository orderRepository, 
-            ICurrencyRepository currencyRepository)
+        public OrderManager(IOrderRepository orderRepository, ICurrencyRepository currencyRepository, IRepository<Address, Guid> addressRepository, IProductRepository productRepository, ICompanyRepository companyRepository)
         {
             _orderRepository = orderRepository;
             _currencyRepository = currencyRepository;
+            _addressRepository = addressRepository;
+            _productRepository = productRepository;
+            _companyRepository = companyRepository;
         }
 
         #region Verify
@@ -29,13 +37,14 @@ namespace WebMarketplace.Orders
             Check.NotNullOrWhiteSpace(currency, nameof(currency));
             Check.Length(currency, nameof(currency), WebMarketplaceConsts.CurrencyCodeLength, WebMarketplaceConsts.CurrencyCodeLength);
 
-            if (await _currencyRepository.Exists(currency))
+            var exist = await _currencyRepository.Exists(currency);
+            if (!exist)
             {
                 throw new BusinessException(WebMarketplaceDomainErrorCodes.CurrencyNotFound).WithData("Code", currency);
             }
         }
 
-        public async Task VerifyUnitPriceAsync(decimal price)
+        public async Task VerifyPriceAsync(decimal price)
         {
             if (price < 0)
             {
@@ -46,6 +55,33 @@ namespace WebMarketplace.Orders
         public async Task VerifyQuantityAsync(int quantity)
         {
             Check.Positive(quantity, nameof(quantity));
+        }
+        
+        public async Task VerifyProductAsync(Guid productId)
+        {
+            var exist = await _productRepository.GetAsync(productId) != null;
+            if (!exist)
+            {
+                throw new BusinessException(WebMarketplaceDomainErrorCodes.ProductNotFound);
+            }
+        }
+        
+        public async Task VerifyAddressAsync(Guid productId)
+        {
+            var exist = await _addressRepository.GetAsync(productId) != null;
+            if (!exist)
+            {
+                throw new BusinessException(WebMarketplaceDomainErrorCodes.AddressNotFound);
+            }
+        }
+        
+        public async Task VerifyCompanyAsync(Guid productId)
+        {
+            var exist = await _companyRepository.GetAsync(productId) != null;
+            if (!exist)
+            {
+                throw new BusinessException(WebMarketplaceDomainErrorCodes.CompanyNotFound);
+            }
         }
         
         public async Task<bool> CanCancelAsync(Order order)
@@ -62,25 +98,39 @@ namespace WebMarketplace.Orders
             string companyName,
             List<(Guid productId, string productName, int quantity, decimal unitPrice, string currency)> orderItems)
         {
+            var OrderTotalPrice = orderItems.Sum(x => x.quantity * x.unitPrice);
+            await VerifyPriceAsync(OrderTotalPrice);
+            
+            var OrderCurrency = orderItems.First().currency.ToUpper();
+            await VerifyCurrencyAsync(OrderCurrency);
+
+            await VerifyAddressAsync(addressId);
+
+            await VerifyCompanyAsync(companyId);
+            
             var order = new Order(
                 GuidGenerator.Create(),
                 buyerId,
                 addressId,
                 companyId,
-                companyName
+                companyName,
+                OrderTotalPrice,
+                OrderCurrency
             );
 
             foreach (var orderItem in orderItems)
             {
                 var currency = orderItem.currency.ToUpper();
                 await VerifyCurrencyAsync(currency);
-
+            
                 var unitPrice = orderItem.unitPrice;
-                await VerifyUnitPriceAsync(unitPrice);
-
+                await VerifyPriceAsync(unitPrice);
+            
                 var quantity = orderItem.quantity;
                 await VerifyQuantityAsync(quantity);
-
+                
+                await VerifyProductAsync(orderItem.productId);
+            
                 order.AddItem(
                     GuidGenerator.Create(), 
                     orderItem.productId,
@@ -91,7 +141,7 @@ namespace WebMarketplace.Orders
                 );
             }
 
-            return await _orderRepository.InsertAsync(order);
+            return await _orderRepository.InsertAsync(order, true);
         }
 
         public async Task<Order> ChangeStatusAsync(Guid orderId, OrderStatus status)
@@ -108,7 +158,7 @@ namespace WebMarketplace.Orders
             }
             
             order.ChangeStatus(status);
-            return await _orderRepository.UpdateAsync(order);
+            return order;
         }
     }
 }

@@ -5,6 +5,7 @@ public static class WebMarketplaceDomainErrorCodes
     /* You can add your business exception error codes here, as constants */
     public const string UserNotAuthenticated = "Exception:UserNotAuthenticated";
     
+    public const string CompanyNotFound = "Exception:CompanyNotFound";
     public const string CompanyNameAlreadyExists = "Exception:CompanyNameAlreadyExists"; 
     public const string CompanyDisplayNameAlreadyExists = "Exception:CompanyDisplayNameAlreadyExists"; 
     public const string CompanyIdentificationNumberAlreadyExists = "Exception:CompanyIdentificationNumberAlreadyExists"; 
@@ -13,6 +14,7 @@ public static class WebMarketplaceDomainErrorCodes
     public const string CompanyImageDefaultRemoveNotAllowed = "Exception:CompanyImageDefaultRemoveNotAllowed";
     public const string CompanyNotFoundForUser = "Exception:CompanyNotFoundForUser";
 
+    public const string ProductNotFound = "Exception:ProductNotFound";
     public const string ProductReviewUserAlreadyExists = "Exception:ProductReviewUserAlreadyExists";
     public const string ProductReviewNotFound = "Exception:ProductReviewNotFound";
     public const string ProductReviewRantingRange = "Exception:ProductReviewRantingRange";
@@ -25,6 +27,8 @@ public static class WebMarketplaceDomainErrorCodes
     
     public const string OrderNotFound = "Exception:OrderNotFound";
     public const string OrderCannotBeCancelled = "Exception:OrderCannotBeCancelled";
+    
+    public const string AddressNotFound = "Exception:";
     
     public const string PriceNotNegative = "Exception:PriceNotNegative"; 
     public const string CurrencyAlreadySet = "Exception:CurrencyAlreadySet";

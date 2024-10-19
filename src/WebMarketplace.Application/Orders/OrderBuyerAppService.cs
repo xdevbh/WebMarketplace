@@ -6,8 +6,10 @@ using Microsoft.AspNetCore.Authorization;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Authorization;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.ObjectMapping;
 using Volo.Abp.Users;
+using WebMarketplace.Addresses;
 
 namespace WebMarketplace.Orders;
 
@@ -17,10 +19,7 @@ public class OrderBuyerAppService : WebMarketplaceAppService, IOrderBuyerAppServ
     private readonly IOrderRepository _orderRepository;
     private readonly OrderManager _orderManager;
 
-    public OrderBuyerAppService(
-        IOrderRepository orderRepository,
-        OrderManager orderManager
-    )
+    public OrderBuyerAppService(IOrderRepository orderRepository, OrderManager orderManager)
     {
         _orderRepository = orderRepository;
         _orderManager = orderManager;
@@ -33,7 +32,7 @@ public class OrderBuyerAppService : WebMarketplaceAppService, IOrderBuyerAppServ
         {
             throw new BusinessException(WebMarketplaceDomainErrorCodes.OrderNotFound).WithData("Id", id);
         }
-        
+
         var dto = ObjectMapper.Map<Order, OrderDto>(order);
         dto.Items = ObjectMapper.Map<List<OrderItem>, List<OrderItemDto>>(order.Items);
         return dto;
@@ -48,7 +47,7 @@ public class OrderBuyerAppService : WebMarketplaceAppService, IOrderBuyerAppServ
                 L[WebMarketplaceDomainErrorCodes.UserNotAuthenticated],
                 WebMarketplaceDomainErrorCodes.UserNotAuthenticated);
         }
-        
+
         var totalCount = await _orderRepository.GetFilteredCountAsync(
             userId,
             null,
@@ -63,7 +62,7 @@ public class OrderBuyerAppService : WebMarketplaceAppService, IOrderBuyerAppServ
             null,
             input.Status
         );
-        
+
         var dtos = ObjectMapper.Map<List<Order>, List<OrderCardDto>>(orders);
         return new PagedResultDto<OrderCardDto>(totalCount, dtos);
     }
@@ -85,7 +84,7 @@ public class OrderBuyerAppService : WebMarketplaceAppService, IOrderBuyerAppServ
             input.CompanyName,
             input.Items.Select(x => (x.ProductId, x.ProductName, x.Quantity, x.UnitPrice, x.Currency)).ToList()
         );
-        
+
         var dto = ObjectMapper.Map<Order, OrderDto>(order);
         dto.Items = ObjectMapper.Map<List<OrderItem>, List<OrderItemDto>>(order.Items);
         return dto;
@@ -100,15 +99,15 @@ public class OrderBuyerAppService : WebMarketplaceAppService, IOrderBuyerAppServ
                 L[WebMarketplaceDomainErrorCodes.UserNotAuthenticated],
                 WebMarketplaceDomainErrorCodes.UserNotAuthenticated);
         }
-        
+
         var order = await _orderRepository.GetAsync(id);
         if (order == null || order.BuyerId != userId)
         {
             throw new BusinessException(WebMarketplaceDomainErrorCodes.OrderNotFound).WithData("Id", id);
         }
-        
+
         await _orderManager.ChangeStatusAsync(order.Id, OrderStatus.Cancelled);
-        
+
         var dto = ObjectMapper.Map<Order, OrderDto>(order);
         dto.Items = ObjectMapper.Map<List<OrderItem>, List<OrderItemDto>>(order.Items);
         return dto;

@@ -72,7 +72,7 @@ public class WebMarketplaceMenuContributor : IMenuContributor
             WebMarketplaceMenus.Products,
             l["Menu:Products"],
             "/product/list",
-            icon: "fa fa-book",
+            icon: "fa fa-shapes",
             order: 2
         ));
     }
@@ -133,7 +133,7 @@ public class WebMarketplaceMenuContributor : IMenuContributor
             WebMarketplaceMenus.ManagementProduct,
             l["Menu:Products"],
             "/management/product/list",
-            icon: "fa fa-book",
+            icon: "fa fa-shapes",
             order: 4
         );
         management.AddItem(managementProducts);
@@ -189,9 +189,16 @@ public class WebMarketplaceMenuContributor : IMenuContributor
 
         context.Menu.AddItem(new ApplicationMenuItem(
             WebMarketplaceMenus.Orders,
-            l["Menu:Orders"],
-            $"{authServerUrl.EnsureEndsWith('/')}order/list",
+            l["Menu:MyOrders"],
+            $"{authServerUrl.EnsureEndsWith('/')}account/order/list",
             icon: "fa fa-list",
+            order: 1).RequireAuthenticated());
+        
+        context.Menu.AddItem(new ApplicationMenuItem(
+            WebMarketplaceMenus.Orders,
+            l["Menu:MyAddresses"],
+            $"{authServerUrl.EnsureEndsWith('/')}account/address/list",
+            icon: "fa fa-map-location-dot",
             order: 1).RequireAuthenticated());
 
         context.Menu.AddItem(new ApplicationMenuItem(

@@ -8,6 +8,7 @@ public class CreateOrderBuyerDto
     public Guid AddressId { get; set; }
     public Guid CompanyId { get; set; }
     public string CompanyName { get; set; }
-    // public decimal? TotalPrice { get; set; }
+    public decimal? TotalPrice { get; set; }
+    public string Currency { get; set; }
     public List<CreateOrderItemBuyerDto> Items { get; set; }
 }

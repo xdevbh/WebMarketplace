@@ -13,15 +13,16 @@ using WebMarketplace.Users.UserAddresses;
 
 namespace WebMarketplace.EntityFrameworkCore.Users.UserAddresses;
 
-public class UserAddressRepository: EfCoreRepository<WebMarketplaceDbContext, UserAddress, Guid>,
+public class UserAddressRepository : EfCoreRepository<WebMarketplaceDbContext, UserAddress, Guid>,
     IUserAddressRepository
 {
-    public UserAddressRepository(IDbContextProvider<WebMarketplaceDbContext> dbContextProvider) : base(dbContextProvider)
+    public UserAddressRepository(IDbContextProvider<WebMarketplaceDbContext> dbContextProvider)
+        : base(dbContextProvider)
     {
     }
 
     public async Task<IQueryable<UserAddressDetailQueryResultItem>> GetDetailQueryableAsync(
-        Guid? userId = null, 
+        Guid? userId = null,
         Guid? addressId = null)
     {
         var dbContext = await GetDbContextAsync();
@@ -45,22 +46,22 @@ public class UserAddressRepository: EfCoreRepository<WebMarketplaceDbContext, Us
                 PhoneNumber = address.PhoneNumber,
                 Email = user.Email,
             };
-            
-        if(userId != null)
+
+        if (userId != null)
         {
             query = query.Where(x => x.UserId == userId);
         }
-        
-        if(addressId != null)
+
+        if (addressId != null)
         {
             query = query.Where(x => x.AddressId == addressId);
         }
-        
+
         return query;
     }
 
     public async Task<UserAddressDetailQueryResultItem> GetDetailAsync(
-        Guid id, 
+        Guid id,
         CancellationToken cancellationToken = default)
     {
         var query = await GetDetailQueryableAsync();
@@ -68,10 +69,10 @@ public class UserAddressRepository: EfCoreRepository<WebMarketplaceDbContext, Us
         var item = await query.FirstOrDefaultAsync(GetCancellationToken(cancellationToken));
         return item;
     }
-    
+
     public async Task<UserAddressDetailQueryResultItem> GetDetailAsync(
-        Guid userId, 
-        Guid addressId, 
+        Guid userId,
+        Guid addressId,
         CancellationToken cancellationToken = default)
     {
         var query = await GetDetailQueryableAsync(userId, addressId);
@@ -80,11 +81,11 @@ public class UserAddressRepository: EfCoreRepository<WebMarketplaceDbContext, Us
     }
 
     public async Task<List<UserAddressDetailQueryResultItem>> GetDetailListAsync(
-        string? sorting = null, 
-        int maxResultCount = Int32.MaxValue, 
+        string? sorting = null,
+        int maxResultCount = Int32.MaxValue,
         int skipCount = 0,
-        Guid? userId = null, 
-        Guid? addressId = null, 
+        Guid? userId = null,
+        Guid? addressId = null,
         CancellationToken cancellationToken = default)
     {
         var query = await GetDetailQueryableAsync(userId, addressId);
@@ -100,8 +101,8 @@ public class UserAddressRepository: EfCoreRepository<WebMarketplaceDbContext, Us
     }
 
     public async Task<long> GetDetailCountAsync(
-        Guid? userId = null, 
-        Guid? addressId = null, 
+        Guid? userId = null,
+        Guid? addressId = null,
         CancellationToken cancellationToken = default)
     {
         var query = await GetDetailQueryableAsync(userId, addressId);

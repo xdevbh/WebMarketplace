@@ -5,7 +5,7 @@ using Volo.Abp.Domain.Services;
 
 namespace WebMarketplace.Users.UserAddresses;
 
-public class UserAddressManager: DomainService
+public class UserAddressManager : DomainService
 {
     private readonly IUserAddressRepository _userAddressRepository;
 
@@ -13,7 +13,7 @@ public class UserAddressManager: DomainService
     {
         _userAddressRepository = userAddressRepository;
     }
-    
+
     public async Task AddAsync(
         Guid userId,
         Guid addressId)
@@ -31,7 +31,7 @@ public class UserAddressManager: DomainService
             )
         );
     }
-    
+
     public async Task<bool> IsAddedAsync(
         Guid userId,
         Guid addressId)

@@ -20,6 +20,8 @@
     "Menu:Customers": "Customers",
     "Menu:Search": "Search",
     "Menu:CreateOrder": "Create order",
+    "Menu:MyOrders": "My orders",
+    "Menu:MyAddresses": "My addresses",
 
     "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP framework. For more information visit",
     "Welcome": "Welcome",
@@ -94,9 +96,11 @@
     "Action:CreateOrder": "Create order",
     "Action:AddAddress": "Add address",
 
+    "Message:CompanyNotFound": "Company not found.",
     "Message:CompanyDeletionConfirmation": "Are you sure you want to delete the company?",
     "Message:CompanyMembershipDeletionConfirmation": "Are you sure you want to delete the company membership?",
     "Message:CompanyImageDeletionConfirmation": "Are you sure you want to delete the image?",
+    "Message:ProductNotFound": "Are you sure you want to delete the product?",
     "Message:ProductDeletionConfirmation": "Are you sure you want to delete the product?",
     "Message:ProductPublicationConfirmation": "Are you sure you want to publish the product?",
     "Message:ProductCancelPublicationConfirmation": "Are you sure you want to unpublish the product?",
@@ -105,6 +109,9 @@
     "Message:SaveBeforeUpload": "You need to save the product before you can upload pictures or videos for this product page.",
     "Message:SavedSuccessfully": "Saved successfully.",
     "Message:ProductAddedToCart": "Product added to cart.",
+    "Message:OrderCreatedSuccessfully": "Order created successfully.",
+    "Message:OrdersCreatedSuccessfully": "Orders created successfully.",
+    "Message:AddressNotFound": "Address not found.",
 
     "Page:AdministrationCompanies": "Companies | Administration",
     "Page:AdministrationCreateCompany": "Create Company | Administration",
@@ -118,6 +125,7 @@
     "Page:Products": "Products",
     "Page:Cart": "Cart",
     "Page:CreateOrder": "Create order",
+    "Page:CreateOrders": "Create orders",
 
     "Modal:ManagementAddProductPrice": "Add price",
     "Modal:ManagementAddProductImage": "Add image",
@@ -150,6 +158,7 @@
     "Header:Images": "Images",
     "Header:Cart": "Cart",
     "Header:CreateOrder": "Create order",
+    "Header:CreateOrders": "Create orders",
     "Header:ChooseAddress": "Choose address",
 
     "Field:Id": "ID",

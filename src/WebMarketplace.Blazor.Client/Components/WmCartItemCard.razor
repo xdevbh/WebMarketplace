@@ -8,12 +8,26 @@
 <Card Margin="Margin.Is3.FromBottom">
     <CardBody>
         <Fields>
-            <Field ColumnSize="ColumnSize.Is4.OnDesktop">
+            <Field ColumnSize="ColumnSize.Is3.OnDesktop">
+                <FieldLabel>@L["Field:Company"]</FieldLabel>
+                <Addons>
+                    <Addon AddonType="AddonType.Start">
+                        <AddonLabel>
+                            <Icon Name="IconName.Store"/>
+                        </AddonLabel>
+                    </Addon>
+                    <Addon AddonType="AddonType.Body">
+                        <TextEdit @bind-Text="@CartItem.CompanyName"
+                                  ReadOnly="true"/>
+                    </Addon>
+                </Addons>
+            </Field>
+            <Field ColumnSize="ColumnSize.Is3.OnDesktop">
                 <FieldLabel>@L["Field:ProductName"]</FieldLabel>
                 <Addons>
                     <Addon AddonType="AddonType.Start">
                         <AddonLabel>
-                            <Icon Name="IconName.Shapes"></Icon>
+                            <Icon Name="IconName.Shapes"/>
                         </AddonLabel>
                     </Addon>
                     <Addon AddonType="AddonType.Body">
@@ -22,12 +36,12 @@
                     </Addon>
                 </Addons>
             </Field>
-            <Field ColumnSize="ColumnSize.Is3.OnDesktop">
+            <Field ColumnSize="ColumnSize.Is2.OnDesktop">
                 <FieldLabel>@L["Field:Quantity"]</FieldLabel>
                 <Addons>
                     <Addon AddonType="AddonType.Start">
                         <AddonLabel>
-                            <Icon Name="IconName.CartMinus"></Icon>
+                            <Icon Name="IconName.CartMinus"/>
                         </AddonLabel>
                     </Addon>
                     <Addon AddonType="AddonType.Body">
@@ -39,12 +53,12 @@
                     </Addon>
                 </Addons>
             </Field>
-            <Field ColumnSize="ColumnSize.Is3.OnDesktop">
+            <Field ColumnSize="ColumnSize.Is2.OnDesktop">
                 <FieldLabel>@L["Field:TotalPrice"]</FieldLabel>
                 <Addons>
                     <Addon AddonType="AddonType.Start">
                         <AddonLabel>
-                            <Icon Name="IconName.EuroSign"></Icon>
+                            <Icon Name="IconName.EuroSign"/>
                         </AddonLabel>
                     </Addon>
                     <Addon AddonType="AddonType.Body">

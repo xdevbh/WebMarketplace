@@ -24,5 +24,6 @@ public class WebMarketplaceMenus
     
     private const string Account = "Account";
     public const string Orders = Account + ".Orders";
+    public const string Addresses = Account + ".Addresses";
     public const string AccountManage = Account + ".Manage";
 }
