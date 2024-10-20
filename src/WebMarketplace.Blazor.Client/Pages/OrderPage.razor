@@ -124,6 +124,11 @@
 
     private async Task CreateOrderAsync()
     {
+        if(SelectedAddressId == Guid.Empty)
+        {
+            UiMessageService.Error(L["Message:AddressIsRequired"]);
+            return;
+        }
         foreach (var order in Orders)
         {
             await OrderAppService.CreateAsync(order);
