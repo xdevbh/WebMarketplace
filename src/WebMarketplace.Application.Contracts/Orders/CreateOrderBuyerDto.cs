@@ -10,5 +10,5 @@ public class CreateOrderBuyerDto
     public string CompanyName { get; set; }
     public decimal? TotalPrice { get; set; }
     public string Currency { get; set; }
-    public List<CreateOrderItemBuyerDto> Items { get; set; }
+    public List<CreateOrderItemBuyerDto> Items { get; set; } = new();
 }

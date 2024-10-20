@@ -135,12 +135,10 @@ public static class WebMarketplaceDbContextModelBuilderExtensions
         {
             b.ToTable(WebMarketplaceConsts.DbTablePrefix + "Orders", WebMarketplaceConsts.DbSchema);
             b.ConfigureByConvention(); //auto configure for the base class props
-            b.HasOne<IdentityUser>().WithMany().HasForeignKey(x => x.BuyerId).IsRequired()
-                .OnDelete(DeleteBehavior.NoAction);
-            b.HasOne<Address>().WithMany().HasForeignKey(x => x.AddressId).IsRequired()
-                .OnDelete(DeleteBehavior.NoAction);
             b.HasOne<Company>().WithMany().HasForeignKey(x => x.CompanyId).IsRequired()
                 .OnDelete(DeleteBehavior.NoAction);
+            b.OwnsOne(o => o.ShippingAddress, a => { a.WithOwner(); });
+            b.OwnsOne(o => o.Buyer, a => { a.WithOwner(); });
             b.Property(x => x.CompanyName).IsRequired();
             b.Property(x => x.Status).IsRequired();
             b.Property(x => x.TotalPrice).HasColumnType("decimal(18,2)").IsRequired();

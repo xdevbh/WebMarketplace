@@ -33,8 +33,7 @@ public class OrderBuyerAppService : WebMarketplaceAppService, IOrderBuyerAppServ
             throw new BusinessException(WebMarketplaceDomainErrorCodes.OrderNotFound).WithData("Id", id);
         }
 
-        var dto = ObjectMapper.Map<Order, OrderDto>(order);
-        dto.Items = ObjectMapper.Map<List<OrderItem>, List<OrderItemDto>>(order.Items);
+        var dto = await MapAsync(order);
         return dto;
     }
 
@@ -49,8 +48,8 @@ public class OrderBuyerAppService : WebMarketplaceAppService, IOrderBuyerAppServ
         }
 
         var totalCount = await _orderRepository.GetFilteredCountAsync(
-            userId,
             null,
+            userId,
             input.Status
         );
 
@@ -58,8 +57,8 @@ public class OrderBuyerAppService : WebMarketplaceAppService, IOrderBuyerAppServ
             input.Sorting,
             input.MaxResultCount,
             input.SkipCount,
-            userId,
             null,
+            userId,
             input.Status
         );
 
@@ -76,7 +75,7 @@ public class OrderBuyerAppService : WebMarketplaceAppService, IOrderBuyerAppServ
                 L[WebMarketplaceDomainErrorCodes.UserNotAuthenticated],
                 WebMarketplaceDomainErrorCodes.UserNotAuthenticated);
         }
-        
+
         var order = await _orderManager.CreateAsync(
             userId,
             input.AddressId,
@@ -85,8 +84,7 @@ public class OrderBuyerAppService : WebMarketplaceAppService, IOrderBuyerAppServ
             input.Items.Select(x => (x.ProductId, x.ProductName, x.Quantity, x.UnitPrice, x.Currency)).ToList()
         );
 
-        var dto = ObjectMapper.Map<Order, OrderDto>(order);
-        dto.Items = ObjectMapper.Map<List<OrderItem>, List<OrderItemDto>>(order.Items);
+        var dto =  await MapAsync(order);
         return dto;
     }
 
@@ -101,15 +99,14 @@ public class OrderBuyerAppService : WebMarketplaceAppService, IOrderBuyerAppServ
         }
 
         var order = await _orderRepository.GetAsync(id);
-        if (order == null || order.BuyerId != userId)
+        if (order == null || order.Buyer.Id != userId)
         {
             throw new BusinessException(WebMarketplaceDomainErrorCodes.OrderNotFound).WithData("Id", id);
         }
 
         await _orderManager.ChangeStatusAsync(order.Id, OrderStatus.Cancelled);
 
-        var dto = ObjectMapper.Map<Order, OrderDto>(order);
-        dto.Items = ObjectMapper.Map<List<OrderItem>, List<OrderItemDto>>(order.Items);
+        var dto =  await MapAsync(order);
         return dto;
     }
 
@@ -125,5 +122,14 @@ public class OrderBuyerAppService : WebMarketplaceAppService, IOrderBuyerAppServ
 
         var products = await _orderRepository.GetOrderedProductIdListAsync(userId);
         return products.Contains(id);
+    }
+
+    private async Task<OrderDto> MapAsync(Order order)
+    {
+        var dto = ObjectMapper.Map<Order, OrderDto>(order);
+        dto.Items = ObjectMapper.Map<List<OrderItem>, List<OrderItemDto>>(order.Items);
+        dto.Buyer = ObjectMapper.Map<Buyer, BuyerDto>(order.Buyer);
+        dto.ShippingAddress = ObjectMapper.Map<ShippingAddress, ShippingAddressDto>(order.ShippingAddress);
+        return dto;
     }
 }

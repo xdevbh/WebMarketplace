@@ -27,6 +27,8 @@
     "Welcome": "Welcome",
 
     "Exception:UserNotAuthenticated": "User is not authenticated.",
+    "Exception:UserNotFound": "User not found.",
+    "Exception:UserNotCompanyMember": "User is not a member of the company.",
     "Exception:CompanyNameAlreadyExists": "The company with name '{Name}' already exists.",
     "Exception:CompanyDisplayNameAlreadyExists": "The company with display name '{DisplayName}' already exists.",
     "Exception:CompanyIdentificationNumberAlreadyExists": "The company with identification number '{CompanyIdentificationNumber}' already exists.",
@@ -49,6 +51,7 @@
     "Exception:ImageContentIsEmpty": "Image content is empty.",
     "Exception:OrderNotFound": "Order '{Id}' not found.",
     "Exception:OrderCannotBeCancelled": "Order '{Id}' cannot be cancelled.",
+    "Exception:AddressNotFound": "Address not found.",
 
     "Permission:WebMarketplace": "WebMarketplace Management",
     "Permission:Companies": "Company Management",
@@ -75,6 +78,7 @@
     "Action:RemoveAll": "Remove all",
     "Action:Save": "Save",
     "Action:Cancel": "Cancel",
+    "Action:Confirm": "Confirm",
     "Action:Back": "Back",
     "Action:Search": "Search",
     "Action:Apply": "Apply",
@@ -111,8 +115,9 @@
     "Message:ProductAddedToCart": "Product added to cart.",
     "Message:OrderCreatedSuccessfully": "Order created successfully.",
     "Message:OrdersCreatedSuccessfully": "Orders created successfully.",
-    "Message:AddressNotFound": "Address not found.",
-
+    "Message:OrderCancelConfirmation": "Are you sure you want to cancel the order?",
+    "Message:AddressIsRequired": "Address is required.",
+    
     "Page:AdministrationCompanies": "Companies | Administration",
     "Page:AdministrationCreateCompany": "Create Company | Administration",
     "Page:AdministrationEditCompany": "Edit Company | Administration",
@@ -121,6 +126,8 @@
     "Page:ManagementProducts": "Products | Management",
     "Page:ManagementCreateProduct": "Create new products | Management",
     "Page:ManagementUpdateProduct": "Edit products | Management",
+    "Page:ManagementOrders": "Orders | Management",
+    "Page:ManagementUpdateOrder": "Edit order | Management",
     "Page:Product": "Product",
     "Page:Products": "Products",
     "Page:Cart": "Cart",
@@ -160,6 +167,10 @@
     "Header:CreateOrder": "Create order",
     "Header:CreateOrders": "Create orders",
     "Header:ChooseAddress": "Choose address",
+    "Header:UpdateOrder": "Edit order",
+    "Header:Orders": "Orders",
+    "Header:OrderItems": "Order items",
+    "Header:ShippingAddress": "Shipping address",
 
     "Field:Id": "ID",
     "Field:UserName": "UserName",
@@ -187,6 +198,7 @@
     "Field:PriceAmount": "Price",
     "Field:Price": "Price",
     "Field:TotalPrice": "Total price",
+    "Field:UnitPrice": "Unit price",
     "Field:Amount": "Amount",
     "Field:Currency": "Currency",
     "Field:MinPriceAmount": "Min price",
@@ -202,6 +214,12 @@
     "Field:Date": "Date",
     "Field:Image": "Image",
     "Field:Quantity": "Quantity",
+    "Field:Status": "Status",
+    "Field:Buyer": "Buyer",
+    "Field:BuyerUserName": "Buyer username",
+    "Field:BuyerEmail": "Buyer email",
+    "Field:CreationTime": "Creation time",
+    "Field:EnableSearch": "Enable search",
     
     "Text:ReviewsCount" : "reviews",
     "Info:CartIsEmpty": "Cart is empty."

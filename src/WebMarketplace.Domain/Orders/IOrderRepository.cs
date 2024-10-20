@@ -11,22 +11,22 @@ namespace WebMarketplace.Orders
     public interface IOrderRepository : IRepository<Order, Guid>
     {
         Task<IQueryable<Order>> GetFilteredQueryableAsync(
+            Guid? companyId = null,
             Guid? buyerId = null,
-            Guid? addressId = null,
             OrderStatus? status = null);
 
         Task<List<Order>> GetFilteredListAsync(
             string? sorting = null,
             int maxResultCount = int.MaxValue,
             int skipCount = 0,
+            Guid? companyId = null,
             Guid? buyerId = null,
-            Guid? addressId = null,
             OrderStatus? status = null,
             CancellationToken cancellationToken = default);
 
         Task<long> GetFilteredCountAsync(
+            Guid? companyId = null,
             Guid? buyerId = null,
-            Guid? addressId = null,
             OrderStatus? status = null,
             CancellationToken cancellationToken = default);
 

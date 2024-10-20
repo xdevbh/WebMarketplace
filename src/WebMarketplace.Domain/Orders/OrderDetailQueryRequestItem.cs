@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace WebMarketplace.Orders;
 
-public class CreateUpdateOrderDto
+public class OrderDetailQueryRequestItem
 {
+    public Guid BuyerId { get; set; }
     public Guid AddressId { get; set; }
     public Guid CompanyId { get; set; }
     public string CompanyName { get; set; }
     public OrderStatus Status { get; set; }
-    public decimal? TotalPrice { get; set; }
-    
-    public List<CreateUpdateOrderItemDto> Items { get; set; }
+    public decimal TotalPrice { get; set; }
+    public string Currency { get; set; }
 }

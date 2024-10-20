@@ -29,6 +29,8 @@ public static class WebMarketplaceEfCoreQueryableExtensions
         }
 
         return queryable
+            .Include(x=>x.Buyer)
+            .Include(x=>x.ShippingAddress)
             .Include(x=>x.Items);
     }
 

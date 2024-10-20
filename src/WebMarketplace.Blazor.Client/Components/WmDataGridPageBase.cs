@@ -18,6 +18,11 @@ public abstract class WmDataGridPageBase : WmPageBase
     
     protected abstract Task GetDataAsync();
 
+    protected virtual Task ViewAsync(Guid id)
+    {
+        return Task.CompletedTask;
+    }
+    
     protected virtual Task CreateAsync()
     {
         return Task.CompletedTask;

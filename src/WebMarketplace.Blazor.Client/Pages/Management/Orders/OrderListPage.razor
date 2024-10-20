@@ -1,6 +1,275 @@
 ﻿@page "/management/order/list"
-<h3>ManagementOrderListPage</h3>
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Components.Messages
+@using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars
+@using WebMarketplace.Localization
+@using WebMarketplace.Orders
+@using WebMarketplace.Permissions
+@attribute [Authorize("SellerOnly")]
+@inherits WmDataGridPageBase
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject IOrderSellerAppService OrderAppService
+@inject NavigationManager NavigationManager
+@inject IUiMessageService UiMessageService
+
+
+
+<WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle"/>
+
+<Accordion Margin="Margin.Is3.FromBottom">
+    <Collapse>
+        <CollapseHeader>
+            <Heading Size="HeadingSize.Is3">
+                <AccordionToggle>
+                    <Icon Name="IconName.Search" Margin="Margin.Is1.FromEnd"/>
+                    @L["Header:Search"]
+                </AccordionToggle>
+            </Heading>
+        </CollapseHeader>
+        <CollapseBody>
+            <Field>
+                <Switch TValue="bool"
+                        Checked="@EnableSearch"
+                        CheckedChanged="@((bool value) => OnEnableSearchChanged(value))">
+                    @L["Field:EnableSearch"]
+                </Switch>
+            </Field>
+            <Fields>
+                <Field>
+                    <FieldLabel>@L["Field:Status"]</FieldLabel>
+                    <Addons>
+                        <Addon AddonType="AddonType.Start">
+                            <AddonLabel>
+                                <Icon Name="IconName.CheckCircle"></Icon>
+                            </AddonLabel>
+                        </Addon>
+                        <Addon AddonType="AddonType.Body">
+                            <WmEnumSelect TEnum="OrderStatus"
+                                          SelectedValue="SelectedOrderStatus"
+                                          SelectedValueChanged="@((OrderStatus value) => OnStatusChanged(value))"/>
+                        </Addon>
+                    </Addons>
+                </Field>
+            </Fields>
+        </CollapseBody>
+    </Collapse>
+</Accordion>
+
+
+<Card>
+    <CardBody>
+        <DataGrid TItem="OrderListItemDto"
+                  Data="Orders"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  ShowPageSizes="true"
+                  PageSize="PageSize"
+                  Filterable="false"
+                  Responsive="true"
+                  Resizable="true"
+                  FixedHeader="false">
+            <DataGridColumns>
+                <DataGridColumn TItem="OrderListItemDto" Filterable="false">
+                    <DisplayTemplate>
+                        <Dropdown>
+                            <DropdownToggle Color="Color.Primary"/>
+                            <DropdownMenu>
+                                <DropdownItem Clicked="() => ViewAsync(context.Id)">
+                                    <Icon Name="IconName.InfoCircle" Margin="Margin.Is1.FromEnd"/>
+                                    @L["Action:View"]
+                                </DropdownItem>
+
+                                @if (context.Status == OrderStatus.New)
+                                {
+                                    <DropdownItem Clicked="() => ConfirmOrderAsync(context.Id)" Disabled="!CanDelete">
+                                        <Icon Name="IconName.CheckCircle" Margin="Margin.Is1.FromEnd"/>
+                                        @L["Action:Confirm"]
+                                    </DropdownItem>
+                                }
+                                @if (context.Status != OrderStatus.Cancelled)
+                                {
+                                    <DropdownItem Clicked="() => CancelOrderAsync(context.Id)" Disabled="!CanDelete">
+                                        <Icon Name="IconName.TimesCircle" Margin="Margin.Is1.FromEnd"/>
+                                        @L["Action:Cancel"]
+                                    </DropdownItem>
+                                }
+                            </DropdownMenu>
+                        </Dropdown>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="OrderListItemDto"
+                                Field="@nameof(OrderListItemDto.Status)"
+                                Caption="@L["Field:Status"]">
+                    <DisplayTemplate>
+                        <WmOrderStatusBadge Status="@context.Status"/>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="OrderListItemDto"
+                                Field="@nameof(OrderListItemDto.Buyer)"
+                                Caption="@L["Field:Buyer"]"
+                                Filterable="false">
+                    <DisplayTemplate>
+                        <Div Flex="Flex.Row.JustifyContent.Between">
+                            <Text>@context.Buyer.Name</Text>
+                            <Text TextColor="TextColor.Secondary">@context.Buyer.Email</Text>
+                        </Div>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="OrderListItemDto"
+                                Field="@nameof(OrderListItemDto.TotalPrice)"
+                                Caption="@L["Field:TotalPrice"]"/>
+                <DataGridColumn TItem="OrderListItemDto"
+                                Field="@nameof(OrderListItemDto.Currency)"
+                                Caption="@L["Field:Currency"]"/>
+                <DataGridDateColumn TItem="OrderListItemDto"
+                                    Field="@nameof(OrderListItemDto.CreationTime)"
+                                    Caption="@L["Field:CreationTime"]"
+                                    DisplayFormat="{0:dd.MM.yyyy HH:mm:ss}"/>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+
 
 @code {
-    
+    protected IReadOnlyList<OrderListItemDto> Orders { get; set; } = new List<OrderListItemDto>();
+    protected OrderStatus SelectedOrderStatus { get; set; }
+    protected bool EnableSearch { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        PageHeader = L["Header:Orders"];
+        PageTitle = L["Page:ManagementOrders"];
+
+        await base.OnInitializedAsync();
+    }
+
+    protected override Task SetBreadcrumbItemsAsync()
+    {
+        BreadcrumbItems = new();
+        BreadcrumbItems.Add((new BreadcrumbItem(L["Menu:Management"], "/management")));
+        BreadcrumbItems.Add((new BreadcrumbItem(L["Menu:Orders"], "/management/order/list")));
+
+        return base.SetBreadcrumbItemsAsync();
+    }
+
+    protected override Task SetToolBarAsync()
+    {
+        PageToolbar = new();
+
+        PageToolbar.AddButton(L["Action:ReloadData"],
+            () => GetDataAsync(),
+            IconName.Redo,
+            Color.Secondary);
+
+        // PageToolbar.AddButton(L["Action:New"],
+        //     () => CreateAsync(),
+        //     IconName.Add,
+        //     Color.Primary,
+        //     !CanCreate);
+
+        return base.SetToolBarAsync();
+    }
+
+    protected override async Task SetPermissionsAsync()
+    {
+        CanView = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.Orders.Default);
+        CanCreate = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.Orders.Create);
+        CanEdit = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.Orders.Create);
+        CanDelete = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.Orders.Create);
+
+        await base.SetPermissionsAsync();
+    }
+
+
+    protected override async Task GetDataAsync()
+    {
+        var filter = new OrderFilterSellerDto
+        {
+            Sorting = CurrentSorting,
+            MaxResultCount = PageSize,
+            SkipCount = CurrentPage * PageSize,
+            Status = EnableSearch ? SelectedOrderStatus : null
+        };
+        var result = await OrderAppService.GetListAsync(filter);
+        Orders = result.Items;
+        TotalCount = (int)result.TotalCount;
+    }
+
+    private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<OrderListItemDto> e)
+    {
+        PageSize = e.PageSize;
+        CurrentPage = e.Page - 1;
+        CurrentSorting = string.Join(",", e.Columns
+            .Where(c => c.SortDirection != SortDirection.Default)
+            .Select(c => $"{c.Field} {(c.SortDirection == SortDirection.Descending ? "DESC" : "")}"));
+
+        await GetDataAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+
+    protected override Task ViewAsync(Guid id)
+    {
+        NavigationManager.NavigateTo($"/management/order/edit/{id}");
+        return Task.CompletedTask;
+    }
+
+    protected override Task CreateAsync()
+    {
+        NavigationManager.NavigateTo("/management/order/new");
+        return Task.CompletedTask;
+    }
+
+    protected override Task EditAsync(Guid id)
+    {
+        NavigationManager.NavigateTo($"/management/order/edit/{id}");
+        return Task.CompletedTask;
+    }
+
+    protected async Task ConfirmOrderAsync(Guid id)
+    {
+        var changeStatusDto = new ChangeStatusDto()
+        {
+            OrderId = id,
+            Status = OrderStatus.Processing
+        };
+
+        await OrderAppService.ChangeStatusAsync(changeStatusDto);
+        await GetDataAsync();
+    }
+
+    protected async Task CancelOrderAsync(Guid id)
+    {
+        var confirmMessage = L["Message:OrderCancelConfirmation"];
+        var message = confirmMessage;
+        if (!await UiMessageService.Confirm(message))
+        {
+            return;
+        }
+        
+        var changeStatusDto = new ChangeStatusDto()
+        {
+            OrderId = id,
+            Status = OrderStatus.Cancelled
+        };
+
+        await OrderAppService.ChangeStatusAsync(changeStatusDto);
+        await GetDataAsync();
+    }
+
+    private async Task OnEnableSearchChanged(bool value)
+    {
+        EnableSearch = value;
+        await GetDataAsync();
+    }
+
+    private async Task OnStatusChanged(OrderStatus value)
+    {
+        SelectedOrderStatus = value;
+        await GetDataAsync();
+    }
+
 }

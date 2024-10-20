@@ -1,6 +1,276 @@
-﻿@page "/management/order/{id:guid}"
-<h3>ManagementOrderEditPage</h3>
+﻿@page "/management/order/edit/{id:guid}"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Components.Messages
+@using Volo.Abp.AspNetCore.Components.Web
+@using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars
+@using WebMarketplace.Localization
+@using WebMarketplace.Orders
+@using WebMarketplace.Permissions
+@attribute [Authorize("SellerOnly")]
+@inherits WmPageBase
+@inject AbpBlazorMessageLocalizerHelper<WebMarketplaceResource> LH
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject IUiMessageService UiMessageService
+@inject NavigationManager NavigationManager
+@inject IOrderSellerAppService OrderAppService
+
+<WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle"/>
+
+<Accordion Margin="Margin.Is3.FromBottom">
+    <AccordionItem Visible="true">
+        <AccordionHeader>
+            <Heading Size="HeadingSize.Is3">
+                <AccordionToggle>@L["Header:BasicInfo"]</AccordionToggle>
+            </Heading>
+        </AccordionHeader>
+        <AccordionBody>
+            <Field>
+                <FieldLabel>@L["Field:Id"]</FieldLabel>
+                <Addons>
+                    <Addon AddonType="AddonType.Start">
+                        <AddonLabel>
+                            <Icon Name="IconName.Table"/>
+                        </AddonLabel>
+                    </Addon>
+                    <Addon AddonType="AddonType.Body">
+                        <TextEdit Text="@Id.ToString()"
+                                  ReadOnly="true"/>
+                    </Addon>
+                </Addons>
+            </Field>
+            <Field>
+                <FieldLabel>@L["Field:CreationTime"]</FieldLabel>
+                <Addons>
+                    <Addon AddonType="AddonType.Body">
+                        <DateEdit TValue="DateTime"
+                                  Date="@Order.CreationTime"
+                                  InputMode="DateInputMode.DateTime"
+                                  ReadOnly="true"/>
+                    </Addon>
+                </Addons>
+            </Field>
+            <Field>
+                <FieldLabel>@L["Field:BuyerEmail"]</FieldLabel>
+                <Addons>
+                    <Addon AddonType="AddonType.Start">
+                        <AddonLabel>
+                            <Icon Name="IconName.User"/>
+                        </AddonLabel>
+                    </Addon>
+                    <Addon AddonType="AddonType.Body">
+                        <TextEdit Text="@Order.Buyer.Name"
+                                  ReadOnly="true"/>
+                    </Addon>
+                </Addons>
+            </Field>
+            <Field>
+                <FieldLabel>@L["Field:BuyerUserName"]</FieldLabel>
+                <Addons>
+                    <Addon AddonType="AddonType.Start">
+                        <AddonLabel>
+                            <Icon Name="IconName.Mail"/>
+                        </AddonLabel>
+                    </Addon>
+                    <Addon AddonType="AddonType.Body">
+                        <TextEdit Text="@Order.Buyer.Email"
+                                  ReadOnly="true"/>
+                    </Addon>
+                </Addons>
+            </Field>
+            <Field>
+                <FieldLabel>@L["Field:Status"]</FieldLabel>
+                <Addons>
+                    <Addon AddonType="AddonType.Start">
+                        <AddonLabel>
+                            <Icon Name="IconName.CheckCircle"/>
+                        </AddonLabel>
+                    </Addon>
+                    <Addon AddonType="AddonType.Body">
+                        <WmEnumSelect TEnum="OrderStatus"
+                                      @bind-SelectedValue="@SelectedStatus"/>
+                    </Addon>
+                </Addons>
+            </Field>
+            <Field>
+                <FieldLabel>@L["Field:TotalPrice"]</FieldLabel>
+                <Addons>
+                    <Addon AddonType="AddonType.Body">
+                        <Addon AddonType="AddonType.Body">
+                            <NumericPicker TValue="decimal"
+                                           @bind-Value="@Order.TotalPrice"
+                                           Min="1"
+                                           ReadOnly="true"/>
+                        </Addon>
+                    </Addon>
+                    <Addon AddonType="AddonType.End">
+                        <AddonLabel>
+                            @Order.Currency
+                        </AddonLabel>
+                    </Addon>
+                </Addons>
+            </Field>
+        </AccordionBody>
+    </AccordionItem>
+</Accordion>
+
+
+<Accordion Margin="Margin.Is3.FromBottom">
+    <AccordionItem>
+        <AccordionHeader>
+            <Heading Size="HeadingSize.Is3">
+                <AccordionToggle>@L["Header:ShippingAddress"]</AccordionToggle>
+            </Heading>
+        </AccordionHeader>
+        <AccordionBody>
+            <WmShippingAddressEdit Address="Order.ShippingAddress"
+                                   ReadOnly="true"/>
+        </AccordionBody>
+    </AccordionItem>
+</Accordion>
+
+<Accordion Margin="Margin.Is3.FromBottom">
+    <AccordionItem>
+        <AccordionHeader>
+            <Heading Size="HeadingSize.Is3">
+                <AccordionToggle>@L["Header:OrderItems"]</AccordionToggle>
+            </Heading>
+        </AccordionHeader>
+        <AccordionBody>
+            <DataGrid TItem="OrderItemDto"
+                      Data="Order.Items"
+                      TotalItems="ItemsTotalCount"
+                      ShowPager="false"
+                      ShowPageSizes="false"
+                      PageSize="ItemsTotalCount"
+                      Filterable="false"
+                      Responsive="true"
+                      Resizable="true">
+                <DataGridColumns>
+                    <DataGridColumn TItem="OrderItemDto" Filterable="false">
+                        <DisplayTemplate>
+                            <Dropdown>
+                                <DropdownToggle Color="Color.Primary">
+                                </DropdownToggle>
+                                <DropdownMenu>
+
+                                </DropdownMenu>
+                            </Dropdown>
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="OrderItemDto"
+                                    Field="@nameof(OrderItemDto.ProductName)"
+                                    Caption="@L["Field:ProductName"]"/>
+                    <DataGridColumn TItem="OrderItemDto"
+                                    Field="@nameof(OrderItemDto.UnitPrice)"
+                                    Caption="@L["Field:UnitPrice"]"/>
+                    <DataGridColumn TItem="OrderItemDto"
+                                    Field="@nameof(OrderItemDto.Quantity)"
+                                    Caption="@L["Field:Quantity"]"/>
+                    <DataGridColumn TItem="OrderItemDto"
+                                    Field="@nameof(OrderItemDto.TotalPrice)"
+                                    Caption="@L["Field:TotalPrice"]"/>
+                    <DataGridColumn TItem="OrderItemDto"
+                                    Field="@nameof(OrderItemDto.Currency)"
+                                    Caption="@L["Field:Currency"]"/>
+                </DataGridColumns>
+            </DataGrid>
+        </AccordionBody>
+    </AccordionItem>
+</Accordion>
+
 
 @code {
     [Parameter] public Guid Id { get; set; }
+    protected OrderDto Order { get; set; } = new();
+    protected OrderStatus SelectedStatus { get; set; }
+    protected bool CanEdit { get; set; } = false;
+    protected int ItemsTotalCount { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        PageTitle = L["Page:ManagementUpdateOrder"];
+        PageHeader = L["Header:UpdateOrder"];
+
+        await GetDataAsync();
+        await base.OnInitializedAsync();
+    }
+
+    protected override Task SetToolBarAsync()
+    {
+        PageToolbar.AddButton(L["Action:Cancel"],
+            () => Cancel(),
+            IconName.Times,
+            Color.Danger);
+
+        PageToolbar.AddButton(L["Action:Save"],
+            () => UpdateAsync(),
+            IconName.Save,
+            Color.Primary,
+            !CanEdit);
+
+        return Task.CompletedTask;
+    }
+
+    protected override Task SetBreadcrumbItemsAsync()
+    {
+        BreadcrumbItems = new();
+        BreadcrumbItems.Add(new BreadcrumbItem(L["Menu:Management"], "/management"));
+        BreadcrumbItems.Add(new BreadcrumbItem(L["Menu:Orders"], "/management/order/list"));
+        BreadcrumbItems.Add(new BreadcrumbItem(L["Menu:UpdateProduct"]));
+
+        return Task.CompletedTask;
+    }
+
+    protected override async Task SetPermissionsAsync()
+    {
+        CanEdit = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.Orders.Update);
+        await base.SetPermissionsAsync();
+    }
+
+    protected async Task GetDataAsync()
+    {
+        Order = await OrderAppService.GetAsync(Id);
+        ItemsTotalCount = Order.Items.Count;
+        SelectedStatus = Order.Status;
+
+        await Task.CompletedTask;
+    }
+
+    protected async Task UpdateAsync()
+    {
+        if(SelectedStatus == OrderStatus.Cancelled)
+        {
+            var confirmMessage = L["Message:OrderCancelConfirmation"];
+            var message = confirmMessage;
+            if (!await UiMessageService.Confirm(message))
+            {
+                return;
+            }
+        }
+        
+        var changeStatusDto = new ChangeStatusDto()
+        {
+            OrderId = Order.Id,
+            Status = SelectedStatus
+        };
+        
+        await OrderAppService.ChangeStatusAsync(changeStatusDto);
+        await UiMessageService.Success(L["Message:SavedSuccessfully"]);
+        await GoToList();
+    }
+
+    private Task GoToList()
+    {
+        NavigationManager.NavigateTo("/management/order/list");
+        return Task.CompletedTask;
+    }
+
+    protected Task Cancel()
+    {
+        GoToList();
+        return Task.CompletedTask;
+    }
+
+
 }

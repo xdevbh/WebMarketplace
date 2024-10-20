@@ -44,8 +44,8 @@ public class WebMarketplaceApplicationAutoMapperProfile : Profile
         CreateMap<ProductDetailQueryRequestItem, ProductCardDto>()
             .Ignore(x => x.PriceAmount)
             .Ignore(x => x.PriceCurrency)
-            .Ignore(x=>x.ImageContent)
-            .Ignore(x=>x.ImageContentType);
+            .Ignore(x => x.ImageContent)
+            .Ignore(x => x.ImageContentType);
         CreateMap<ProductDetailQueryRequestItem, ProductListItemDto>()
             .Ignore(x => x.PriceAmount)
             .Ignore(x => x.PriceCurrency);
@@ -61,11 +61,16 @@ public class WebMarketplaceApplicationAutoMapperProfile : Profile
         CreateMap<ProductPrice, ProductPriceDto>();
 
         CreateMap<Order, OrderDto>()
-            .Ignore(x=>x.Items);
+            .Ignore(x => x.Buyer)
+            .Ignore(x => x.ShippingAddress)
+            .Ignore(x => x.Items);
         CreateMap<OrderItem, OrderItemDto>();
         CreateMap<Order, OrderCardDto>();
+        CreateMap<Order, OrderListItemDto>()
+            .Ignore(x => x.Buyer);
+        CreateMap<Buyer, BuyerDto>();
+        CreateMap<ShippingAddress, ShippingAddressDto>();
 
         CreateMap<UserAddressDetailQueryResultItem, UserAddressDto>();
-
     }
 }

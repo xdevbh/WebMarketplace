@@ -4,6 +4,8 @@ public static class WebMarketplaceDomainErrorCodes
 {
     /* You can add your business exception error codes here, as constants */
     public const string UserNotAuthenticated = "Exception:UserNotAuthenticated";
+    public const string UserNotFound = "Exception:UserNotFound";
+    public const string UserNotCompanyMember = "Exception:UserNotCompanyMember";
     
     public const string CompanyNotFound = "Exception:CompanyNotFound";
     public const string CompanyNameAlreadyExists = "Exception:CompanyNameAlreadyExists"; 
@@ -28,7 +30,7 @@ public static class WebMarketplaceDomainErrorCodes
     public const string OrderNotFound = "Exception:OrderNotFound";
     public const string OrderCannotBeCancelled = "Exception:OrderCannotBeCancelled";
     
-    public const string AddressNotFound = "Exception:";
+    public const string AddressNotFound = "Exception:AddressNotFound";
     
     public const string PriceNotNegative = "Exception:PriceNotNegative"; 
     public const string CurrencyAlreadySet = "Exception:CurrencyAlreadySet";

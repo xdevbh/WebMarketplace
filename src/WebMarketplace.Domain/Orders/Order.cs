@@ -9,16 +9,17 @@ namespace WebMarketplace.Orders;
 
 public class Order : FullAuditedAggregateRoot<Guid>
 {
-    public virtual Guid BuyerId { get; set; }
-    public virtual Guid AddressId { get; set; }
+    public virtual Buyer Buyer { get; private set; }
     public virtual Guid CompanyId { get; set; }
     public virtual string CompanyName { get; private set; }
     public virtual OrderStatus Status { get; private set; }
+    public virtual decimal TotalPrice { get; private set; }
+    public virtual string Currency { get; private set; }
     public virtual List<OrderItem> Items { get; private set; }
-    public decimal TotalPrice { get; private set; }
-    public string Currency { get; private set; }
+    
+    public virtual ShippingAddress ShippingAddress { get; private set; }
     public int ItemsCount => Items.Count;
-    public int TotalItems => Items.Sum(x => x.Quantity);
+    public int TotalQuantity => Items.Sum(x => x.Quantity);
 
     protected Order()
     {
@@ -26,22 +27,22 @@ public class Order : FullAuditedAggregateRoot<Guid>
 
     public Order(
         Guid id,
-        Guid buyerId, 
-        Guid addressId, 
+        Buyer buyer,
         Guid companyId, 
         string companyName, 
+        ShippingAddress shippingAddress,
         decimal? totalPrice = null, 
         string? currency = null)
     : base(id)
     {
-        BuyerId = buyerId;
-        AddressId = addressId;
+        Buyer = buyer;
         CompanyId = companyId;
         SetCompanyName(companyName);
         Status = OrderStatus.New;
         Items = new();
         SetTotalPrice(totalPrice);
         SetCurrency(currency);
+        ShippingAddress = shippingAddress;
     }
 
     public Order SetCompanyName(string companyName)
