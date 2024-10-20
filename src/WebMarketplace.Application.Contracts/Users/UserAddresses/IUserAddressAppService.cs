@@ -10,6 +10,7 @@ public interface IUserAddressAppService :IApplicationService
     Task<UserAddressDto> GetAsync(Guid id);
     
     Task<PagedResultDto<UserAddressDto>> GetListAsync(UserAddressFilterDto input);
+    Task<PagedResultDto<UserAddressDto>> GetMyListAsync(PagedAndSortedResultRequestDto input);
     
     Task<ListResultDto<UserAddressSelectItemDto>> GetMySelectItemListListAsync();
     

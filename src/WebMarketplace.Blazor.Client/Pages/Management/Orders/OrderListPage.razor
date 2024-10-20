@@ -13,8 +13,6 @@
 @inject NavigationManager NavigationManager
 @inject IUiMessageService UiMessageService
 
-
-
 <WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle"/>
 
 <Accordion Margin="Margin.Is3.FromBottom">
@@ -109,7 +107,7 @@
                 <DataGridColumn TItem="OrderListItemDto"
                                 Field="@nameof(OrderListItemDto.Buyer)"
                                 Caption="@L["Field:Buyer"]"
-                                Filterable="false">
+                                Sortable="false">
                     <DisplayTemplate>
                         <Div Flex="Flex.Row.JustifyContent.Between">
                             <Text>@context.Buyer.Name</Text>

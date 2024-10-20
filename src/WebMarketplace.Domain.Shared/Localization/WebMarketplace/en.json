@@ -117,6 +117,7 @@
     "Message:OrdersCreatedSuccessfully": "Orders created successfully.",
     "Message:OrderCancelConfirmation": "Are you sure you want to cancel the order?",
     "Message:AddressIsRequired": "Address is required.",
+    "Message:AddressDeletionConfirmation": "Are you sure you want to delete the address?",
     
     "Page:AdministrationCompanies": "Companies | Administration",
     "Page:AdministrationCreateCompany": "Create Company | Administration",

@@ -1,0 +1,87 @@
+﻿@using Microsoft.Extensions.Localization
+@using WebMarketplace.Addresses
+@using WebMarketplace.Localization
+@inherits AbpComponentBase
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject IAddressAppService AddressAppService
+
+<Modal @ref="ModalRef">
+    <ModalContent Centered="true">
+        <Form>
+            <ModalHeader>
+                <ModalTitle>@ModalTitle</ModalTitle>
+                <CloseButton Clicked="() => CloseAsync()"/>
+            </ModalHeader>
+            <ModalBody>
+                <WmAddressEdit Address="NewAddress"
+                               @ref="WmAddressEditRef"/>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Danger"
+                        Clicked="CloseAsync">
+                    <Icon Name="IconName.Times"/>
+                    @L["Cancel"]
+                </Button>
+                <Button Color="Color.Primary"
+                        Type="@ButtonType.Submit"
+                        PreventDefaultOnSubmit="true"
+                        Clicked="CreateAsync">
+                    <Icon Name="IconName.Save"/>
+                    @L["Save"]
+                </Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+    [Parameter] public EventCallback<AddressDto> OnUpdated { get; set; }
+    protected AddressDto Address { get; set; } = new();
+    protected CreateUpdateAddressDto NewAddress { get; set; } = new();
+
+    protected string ModalTitle { get; set; }
+    protected Modal ModalRef { get; set; }
+    protected WmAddressEdit WmAddressEditRef { get; set; }
+    
+    protected async Task GetDataAsync()
+    {
+        Address = await AddressAppService.GetAsync(Id);
+        NewAddress = ObjectMapper.Map<AddressDto, CreateUpdateAddressDto>(Address);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        ModalTitle = @L["Modal:AddAddress"];
+        await base.OnInitializedAsync();
+    }
+    
+    public Task SetIdAsync(Guid id)
+    {
+        Id = id;
+        return Task.CompletedTask;
+    }
+
+    public Task CloseAsync()
+    {
+        ModalRef.Hide();
+        return Task.CompletedTask;
+    }
+    
+    public async Task ShowAsync()
+    {
+        await GetDataAsync();
+        ModalRef.Show();
+    }
+
+    private async Task CreateAsync()
+    {
+        if (await WmAddressEditRef.ValidateAllAsync())
+        {
+            var dto = await AddressAppService.UpdateAsync(Id, NewAddress);
+            await ModalRef.Hide();
+            await OnUpdated.InvokeAsync(dto);
+        }
+    }
+
+}

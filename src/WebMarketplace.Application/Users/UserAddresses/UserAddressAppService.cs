@@ -38,15 +38,38 @@ public class UserAddressAppService : WebMarketplaceAppService, IUserAddressAppSe
     public async Task<PagedResultDto<UserAddressDto>> GetListAsync(UserAddressFilterDto input)
     {
         var totalCount = await _userAddressRepository.GetDetailCountAsync(
-            input.AddressId,
-            input.UserId);
+            input.UserId,
+            input.AddressId);
 
         var items = await _userAddressRepository.GetDetailListAsync(
             input.Sorting,
             input.MaxResultCount,
             input.SkipCount,
-            input.AddressId,
-            input.UserId
+            input.UserId,
+            input.AddressId
+        );
+
+        var dtos = ObjectMapper.Map<List<UserAddressDetailQueryResultItem>, List<UserAddressDto>>(items);
+        return new PagedResultDto<UserAddressDto>(totalCount, dtos);
+    }
+    
+    public async Task<PagedResultDto<UserAddressDto>> GetMyListAsync(PagedAndSortedResultRequestDto input)
+    {
+        var userId = CurrentUser.GetId();
+        if (userId == Guid.Empty)
+        {
+            throw new AbpAuthorizationException(
+                L[WebMarketplaceDomainErrorCodes.UserNotAuthenticated],
+                WebMarketplaceDomainErrorCodes.UserNotAuthenticated);
+        }
+        
+        var totalCount = await _userAddressRepository.GetDetailCountAsync(userId);
+
+        var items = await _userAddressRepository.GetDetailListAsync(
+            input.Sorting,
+            input.MaxResultCount,
+            input.SkipCount,
+            userId
         );
 
         var dtos = ObjectMapper.Map<List<UserAddressDetailQueryResultItem>, List<UserAddressDto>>(items);
@@ -124,7 +147,21 @@ public class UserAddressAppService : WebMarketplaceAppService, IUserAddressAppSe
 
     public async Task DeleteAsync(Guid id)
     {
+        var userId = CurrentUser.GetId();
+        if (userId == Guid.Empty)
+        {
+            throw new AbpAuthorizationException(
+                L[WebMarketplaceDomainErrorCodes.UserNotAuthenticated],
+                WebMarketplaceDomainErrorCodes.UserNotAuthenticated);
+        }
+        
         var item = await _userAddressRepository.GetAsync(id);
+        
+        if (item == null || item.UserId != userId)
+        {
+            throw new BusinessException(WebMarketplaceDomainErrorCodes.AddressNotFound);
+        }
+        
         await _addressRepository.DeleteAsync(item.AddressId);
         await _userAddressRepository.DeleteAsync(id);
     }

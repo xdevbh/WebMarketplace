@@ -190,14 +190,14 @@ public class WebMarketplaceMenuContributor : IMenuContributor
         context.Menu.AddItem(new ApplicationMenuItem(
             WebMarketplaceMenus.Orders,
             l["Menu:MyOrders"],
-            $"{authServerUrl.EnsureEndsWith('/')}account/order/list",
+            $"/account/order/list",
             icon: "fa fa-list",
             order: 1).RequireAuthenticated());
         
         context.Menu.AddItem(new ApplicationMenuItem(
             WebMarketplaceMenus.Orders,
             l["Menu:MyAddresses"],
-            $"{authServerUrl.EnsureEndsWith('/')}account/address/list",
+            $"/account/address/list",
             icon: "fa fa-map-location-dot",
             order: 1).RequireAuthenticated());
 

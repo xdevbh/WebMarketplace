@@ -1,0 +1,197 @@
+﻿@page "/account/address/list"
+@page "/my-addresses"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.Application.Dtos
+@using Volo.Abp.AspNetCore.Components.Messages
+@using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars
+@using WebMarketplace.Addresses
+@using WebMarketplace.Localization
+@using WebMarketplace.Orders
+@using WebMarketplace.Permissions
+@using WebMarketplace.Users.UserAddresses
+@inherits WmDataGridPageBase
+@attribute [Authorize]
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject IUserAddressAppService UserAddressAppService
+@inject IAuthorizationService AuthorizationService
+@inject IAddressAppService AddressAppService
+@inject IUiMessageService UiMessageService
+
+<WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle"/>
+
+<Card>
+    <CardBody>
+        <DataGrid TItem="UserAddressDto"
+                  Data="Addresses"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="false"
+                  ShowPageSizes="false"
+                  PageSize="PageSize"
+                  Filterable="false"
+                  Responsive="true"
+                  Resizable="true">
+            <DataGridColumns>
+                <DataGridColumn TItem="UserAddressDto"
+                                Filterable="false"
+                                Sortable="false">
+                    <DisplayTemplate>
+                        <Dropdown>
+                            <DropdownToggle Color="Color.Primary"/>
+                            <DropdownMenu>
+                                <DropdownItem Clicked="() => EditAddressAsync(context.AddressId)" Disabled="!CanEdit">
+                                    <Icon Name="IconName.Edit" Margin="Margin.Is1.FromEnd"/>
+                                    @L["Action:Edit"]
+                                </DropdownItem>
+                                <DropdownItem Clicked="() => DeleteAsync(context.Id)" Disabled="!CanDelete">
+                                    <Icon Name="IconName.Delete" Margin="Margin.Is1.FromEnd"/>
+                                    @L["Action:Delete"]
+                                </DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="UserAddressDto"
+                                Filterable="false"
+                                Sortable="false">
+                    <DisplayTemplate>
+                        <Div Flex="Flex.Column.AlignItems.Center.JustifyContent.Start">
+                            <Text>@context.FullName</Text>
+                            <Text>@context.Country</Text>
+                            <Text>@context.State</Text>
+                            <Text>@context.City</Text>
+                            <Text>@context.Line1</Text>
+                            @if (!context.Line2.IsNullOrWhiteSpace())
+                            {
+                                <Text>@context.Line2</Text>
+                            }
+                            <Text>@context.ZipCode</Text>
+                            @if (!context.Note.IsNullOrWhiteSpace())
+                            {
+                                <Text>@context.Note</Text>
+                            }
+                            <Text>@context.ZipCode</Text>
+                            <Text>@context.PhoneNumber</Text>
+                            @if (!context.Email.IsNullOrWhiteSpace())
+                            {
+                                <Text>@context.Email</Text>
+                            }
+                        </Div>
+                    </DisplayTemplate>
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+
+<WmAddressNewModal @ref="WmNewAddressModalRef" OnCreated="OnAddressCreated"/>
+<WmAddressEditModal @ref="WmEditAddressModalRef" OnUpdated="OnAddressUpdated"/>
+
+
+@code {
+    protected IReadOnlyList<UserAddressDto> Addresses { get; set; } = new List<UserAddressDto>();
+    protected WmAddressNewModal WmNewAddressModalRef { get; set; } = new();
+    protected WmAddressEditModal WmEditAddressModalRef { get; set; } = new();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        PageTitle = L["Page:MyAddresses"];
+        PageHeader = L["Header:MyAddresses"];
+        await base.OnInitializedAsync();
+    }
+
+    protected override Task SetToolBarAsync()
+    {
+        PageToolbar = new();
+        PageToolbar.AddButton(L["Action:ReloadData"],
+            () => GetDataAsync(),
+            IconName.Redo,
+            Color.Secondary);
+
+        PageToolbar.AddButton(L["Action:New"],
+            () => CreateAsync(),
+            IconName.Add,
+            Color.Primary,
+            !CanCreate);
+
+        return Task.CompletedTask;
+    }
+
+    protected override Task SetBreadcrumbItemsAsync()
+    {
+        BreadcrumbItems = new();
+        BreadcrumbItems.Add(new BreadcrumbItem(L["Menu:MyAddresses"], "/account/address/list"));
+        return Task.CompletedTask;
+    }
+
+    protected override async Task SetPermissionsAsync()
+    {
+        CanView = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.Products.Default);
+        CanCreate = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.Products.Create);
+        CanEdit = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.Products.Create);
+        CanDelete = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.Products.Create);
+    }
+
+    protected override async Task GetDataAsync()
+    {
+        var filter = new PagedAndSortedResultRequestDto();
+        var result = await UserAddressAppService.GetMyListAsync(filter);
+        TotalCount = (int)result.TotalCount;
+        Addresses = result.Items;
+    }
+
+    private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<UserAddressDto> arg)
+    {
+        await GetDataAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    protected override Task CreateAsync()
+    {
+        WmNewAddressModalRef.Show();
+        return base.CreateAsync();
+    }
+
+    protected async Task EditAddressAsync(Guid addressId)
+    {
+        await WmEditAddressModalRef.SetIdAsync(addressId);
+        await WmEditAddressModalRef.ShowAsync();
+    }
+
+    private async Task OnAddressCreated(AddressDto address)
+    {
+        if (address == null)
+        {
+            return;
+        }
+        
+        await UserAddressAppService.CreateMyAsync(address.Id);
+        await GetDataAsync();
+    }
+
+    private async Task OnAddressUpdated(AddressDto address)
+    {
+        if (address == null)
+        {
+            return;
+        }
+        
+        // await UserAddressAppService.CreateMyAsync(dto.Id);
+        await GetDataAsync();
+    }
+
+    protected override async Task DeleteAsync(Guid id)
+    {
+        var confirmMessage = L["Message:AddressDeletionConfirmation"];
+        var message = confirmMessage;
+        if (!await UiMessageService.Confirm(message))
+        {
+            return;
+        }
+
+        await UserAddressAppService.DeleteAsync(id);
+        await GetDataAsync();
+    }
+
+}

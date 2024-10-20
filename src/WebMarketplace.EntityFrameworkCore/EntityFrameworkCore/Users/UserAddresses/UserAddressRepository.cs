@@ -45,6 +45,7 @@ public class UserAddressRepository : EfCoreRepository<WebMarketplaceDbContext, U
                 Note = address.Note,
                 PhoneNumber = address.PhoneNumber,
                 Email = user.Email,
+                CreationTime = userAddress.CreationTime,
             };
 
         if (userId != null)
@@ -91,7 +92,7 @@ public class UserAddressRepository : EfCoreRepository<WebMarketplaceDbContext, U
         var query = await GetDetailQueryableAsync(userId, addressId);
         if (sorting.IsNullOrWhiteSpace())
         {
-            sorting = nameof(UserAddressDetailQueryResultItem.CreationTime) + " DESC";
+            sorting = "CreationTime DESC";
         }
 
         query = query.OrderBy(sorting);
