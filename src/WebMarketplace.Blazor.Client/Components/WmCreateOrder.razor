@@ -5,19 +5,27 @@
 
 <Card Margin="Margin.Is3.FromBottom">
     <CardBody>
-        <Row Margin="Margin.Is3.FromBottom">
-            <Column Flex="Flex.Row.JustifyContent.Between">
-                <Heading Size="HeadingSize.Is5">
-                    @Order.CompanyName
-                </Heading>
-                <Heading Size="HeadingSize.Is6">
-                    @Order.TotalPrice @Order.Currency
-                </Heading>
-            </Column>
+        <Row>
+            <Field Horizontal="true">
+                <FieldLabel ColumnSize="ColumnSize.Is2.OnDesktop">@L["Field:Company"]</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.Is10.OnDesktop">
+                    <Heading Size="HeadingSize.Is5">
+                        <CardLink To="@GetCompanyLink()">@Order.CompanyName</CardLink >
+                    </Heading>
+                </FieldBody>
+            </Field>
+            <Field Horizontal="true">
+                <FieldLabel ColumnSize="ColumnSize.Is2.OnDesktop">@L["Field:TotalPrice"]</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.Is10.OnDesktop">
+                    <Heading Size="HeadingSize.Is6">
+                        @Order.TotalPrice @Order.Currency
+                    </Heading>
+                </FieldBody>
+            </Field>
         </Row>
         @foreach (var item in Order.Items)
         {
-            <WmCreateOrderItem OrderItem="@item"/>
+        <WmCreateOrderItem OrderItem="@item"/>
         }
     </CardBody>
 </Card>
@@ -25,4 +33,9 @@
 
 @code {
     [Parameter] public CreateOrderBuyerDto Order { get; set; }
+    
+    private string GetCompanyLink()
+    {
+        return $"/company/{Order.CompanyId}";
+    }
 }

@@ -116,6 +116,8 @@ public class CartAppService : WebMarketplaceAppService, ICartAppService
             dto.Items.Add(cartItemDto);
         }
         
+        dto.Items = dto.Items.OrderBy(x=>x.CompanyId).ToList();
+        
         dto.TotalPrice = dto.Items.Sum(x => x.TotalPrice);
         return dto;
     }

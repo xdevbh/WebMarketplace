@@ -4,86 +4,45 @@
 @inject IStringLocalizer<WebMarketplaceResource> L
 @inject ICartAppService CartAppService
 
-
-<Card Margin="Margin.Is3.FromBottom">
+<Card Margin="Margin.Is2.FromBottom">
     <CardBody>
-        <Fields>
-            <Field ColumnSize="ColumnSize.Is3.OnDesktop">
-                <FieldLabel>@L["Field:Company"]</FieldLabel>
-                <Addons>
-                    <Addon AddonType="AddonType.Start">
-                        <AddonLabel>
-                            <Icon Name="IconName.Store"/>
-                        </AddonLabel>
-                    </Addon>
-                    <Addon AddonType="AddonType.Body">
-                        <TextEdit @bind-Text="@CartItem.CompanyName"
-                                  ReadOnly="true"/>
-                    </Addon>
-                </Addons>
-            </Field>
-            <Field ColumnSize="ColumnSize.Is3.OnDesktop">
-                <FieldLabel>@L["Field:ProductName"]</FieldLabel>
-                <Addons>
-                    <Addon AddonType="AddonType.Start">
-                        <AddonLabel>
-                            <Icon Name="IconName.Shapes"/>
-                        </AddonLabel>
-                    </Addon>
-                    <Addon AddonType="AddonType.Body">
-                        <TextEdit @bind-Text="@CartItem.ProductName"
-                                  ReadOnly="true"/>
-                    </Addon>
-                </Addons>
-            </Field>
-            <Field ColumnSize="ColumnSize.Is2.OnDesktop">
-                <FieldLabel>@L["Field:Quantity"]</FieldLabel>
-                <Addons>
-                    <Addon AddonType="AddonType.Start">
-                        <AddonLabel>
-                            <Icon Name="IconName.CartMinus"/>
-                        </AddonLabel>
-                    </Addon>
-                    <Addon AddonType="AddonType.Body">
-                        <NumericPicker TValue="int"
-                                       Value="@CartItem.Quantity"
-                                       ValueChanged="OnQuantityChanged"
-                                       Min="1"
-                                       ReadOnly="ReadOnly"/>
-                    </Addon>
-                </Addons>
-            </Field>
-            <Field ColumnSize="ColumnSize.Is2.OnDesktop">
-                <FieldLabel>@L["Field:TotalPrice"]</FieldLabel>
-                <Addons>
-                    <Addon AddonType="AddonType.Start">
-                        <AddonLabel>
-                            <Icon Name="IconName.EuroSign"/>
-                        </AddonLabel>
-                    </Addon>
-                    <Addon AddonType="AddonType.Body">
-                        <NumericPicker TValue="decimal"
-                                       @bind-Value="@CartItem.TotalPrice"
-                                       Min="1"
-                                       ReadOnly="true"/>
-                    </Addon>
-                    <Addon AddonType="AddonType.End">
-                        <AddonLabel>
-                            @CartItem.Currency
-                        </AddonLabel>
-                    </Addon>
-                </Addons>
-            </Field>
-            <Field ColumnSize="ColumnSize.Is2.OnDesktop"
-                   Flex="Flex.AlignItems.End.JustifyContent.Center">
-                <FieldLabel></FieldLabel>
-                <ToolbarButton Clicked="() => DeleteItem()"
+        <Row>
+            <Column Flex="Flex.Column"
+                    ColumnSize="ColumnSize.Is6.OnDesktop">
+                <CardTitle Size="5">
+                    <CardLink To="@GetProductLink()">
+                        @CartItem.ProductName
+                    </CardLink >
+                </CardTitle>
+                <CardText>
+                    @L["Field:Company"]:
+                    <CardLink To="@GetCompanyLink()">
+                        @CartItem.CompanyName
+                    </CardLink >
+                </CardText>
+                <Small TextColor="TextColor.Muted">@CartItem.Quantity x @CartItem.UnitPrice @CartItem.Currency</Small>
+            </Column>
+            <Column Flex="Flex.JustifyContent.Center.AlignItems.Center"
+                    ColumnSize="ColumnSize.Is2.OnDesktop">
+                <NumericPicker TValue="int"
+                               Value="@CartItem.Quantity"
+                               ValueChanged="OnQuantityChanged"
+                               Min="1"
+                               ReadOnly="ReadOnly"/>
+            </Column>
+            <Column Flex="Flex.JustifyContent.End.AlignItems.Center"
+                    ColumnSize="ColumnSize.Is2.OnDesktop">
+                <Heading Size="HeadingSize.Is6">@CartItem.TotalPrice @CartItem.Currency</Heading>
+            </Column>
+            <Column Flex="Flex.JustifyContent.End.AlignItems.Center"
+                    ColumnSize="ColumnSize.Is2.OnDesktop">
+                <ToolbarButton Clicked="DeleteItem"
                                Color="Color.Secondary"
                                Icon="IconName.Delete"
                                Text="@L["Action:Remove"]"
                                Disabled="ReadOnly"/>
-            </Field>
-        </Fields>
+            </Column>
+        </Row>
     </CardBody>
 </Card>
 
@@ -116,5 +75,14 @@
         await CartAppService.RemoveProductAsync(input);
         await OnItemChanged.InvokeAsync(CartItem);
     }
+    
+    protected string GetProductLink()
+    {
+        return $"/product/{CartItem.ProductId}";
+    }
 
+    private string GetCompanyLink()
+    {
+        return $"/company/{CartItem.CompanyId}";
+    }
 }
