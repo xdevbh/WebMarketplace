@@ -1,0 +1,35 @@
+﻿@using Microsoft.Extensions.Localization
+@using WebMarketplace.Localization
+@using WebMarketplace.Orders
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject NavigationManager NavigationManager
+
+
+<Card Margin="Margin.Is2.FromBottom">
+    <CardBody>
+        <Row>
+            <Column Flex="Flex.Column">
+                <CardTitle>
+                    <CardLink To="@GetProductLink()">
+                        @OrderItem.ProductName
+                    </CardLink >
+                </CardTitle>
+                <Small TextColor="TextColor.Muted">@OrderItem.Quantity x @OrderItem.UnitPrice @OrderItem.Currency</Small>
+            </Column>
+            <Column Flex="Flex.JustifyContent.End.AlignItems.Center">
+                <Heading Size="HeadingSize.Is6">@OrderItem.TotalPrice @OrderItem.Currency</Heading>
+            </Column>
+        </Row>
+    </CardBody>
+</Card>
+
+
+@code {
+    [Parameter] public OrderItemDto OrderItem { get; set; }
+
+    protected string GetProductLink()
+    {
+        return $"/product/{OrderItem.ProductId}";
+    }
+
+}

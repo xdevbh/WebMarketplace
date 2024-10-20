@@ -135,6 +135,7 @@
     "Page:CreateOrder": "Create order",
     "Page:CreateOrders": "Create orders",
     "Page:MyAddresses": "My addresses",
+    "Page:MyOrders": "My orders",
 
     "Modal:ManagementAddProductPrice": "Add price",
     "Modal:ManagementAddProductImage": "Add image",
@@ -175,6 +176,7 @@
     "Header:OrderItems": "Order items",
     "Header:ShippingAddress": "Shipping address",
     "Header:MyAddresses": "My addresses",
+    "Header:MyOrders": "My orders",
 
     "Field:Id": "ID",
     "Field:UserName": "UserName",

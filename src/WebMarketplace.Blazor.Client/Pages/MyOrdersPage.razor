@@ -1,0 +1,52 @@
+﻿@page "/account/order/list"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.Application.Dtos
+@using Volo.Abp.AspNetCore.Components.Messages
+@using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars
+@using WebMarketplace.Localization
+@using WebMarketplace.Orders
+@using WebMarketplace.Permissions
+@inherits WmDataGridPageBase
+@attribute [Authorize]
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject IAuthorizationService AuthorizationService
+@inject IUiMessageService UiMessageService
+@inject IOrderBuyerAppService OrderAppService
+
+<WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle"/>
+
+<Card>
+    <CardBody>
+        @foreach (var order in Orders)
+        {
+            <WmOrderView Order="@order"/>
+        }
+    </CardBody>
+</Card>
+
+@code {
+
+    protected IReadOnlyList<OrderDto> Orders { get; set; } = new List<OrderDto>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        PageTitle = L["Page:MyOrders"];
+        PageHeader = L["Header:MyOrders"];
+        await GetDataAsync();
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task GetDataAsync()
+    {
+        var filter = new OrderBuyerFilterDto()
+        {
+        };
+
+        var result = await OrderAppService.GetListAsync(filter);
+        Orders = result.Items;
+        TotalCount = (int)result.TotalCount;
+    }
+
+}

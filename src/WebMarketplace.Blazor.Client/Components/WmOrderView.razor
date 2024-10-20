@@ -1,0 +1,56 @@
+﻿@using Microsoft.Extensions.Localization
+@using WebMarketplace.Localization
+@using WebMarketplace.Orders
+@inject IStringLocalizer<WebMarketplaceResource> L
+
+<Card Margin="Margin.Is3.FromBottom">
+    <CardBody>
+        <Row>
+            <Field Horizontal="true">
+                <FieldLabel ColumnSize="ColumnSize.Is2.OnDesktop">@L["Field:Status"]</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.Is10.OnDesktop">
+                    <WmOrderStatusBadge Status="@Order.Status"/>
+                </FieldBody>
+            </Field>
+            <Field Horizontal="true">
+                <FieldLabel ColumnSize="ColumnSize.Is2.OnDesktop">@L["Field:Company"]</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.Is10.OnDesktop">
+                    <Heading Size="HeadingSize.Is5">
+                        <CardLink To="@GetCompanyLink()">@Order.CompanyName</CardLink >
+                    </Heading>
+                </FieldBody>
+            </Field>
+            <Field Horizontal="true">
+                <FieldLabel ColumnSize="ColumnSize.Is2.OnDesktop">@L["Field:TotalPrice"]</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.Is10.OnDesktop">
+                    <Heading Size="HeadingSize.Is6">
+                        @Order.TotalPrice @Order.Currency
+                    </Heading>
+                </FieldBody>
+            </Field>
+            <Field Horizontal="true">
+                <FieldLabel ColumnSize="ColumnSize.Is2.OnDesktop">@L["Field:CreationTime"]</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.Is10.OnDesktop">
+                    <Text>
+                        @Order.CreationTime.ToString("dd.MM.yyyy HH:mm:ss")
+                    </Text>
+                </FieldBody>
+            </Field>
+        </Row>
+        @foreach (var item in Order.Items)
+        {
+            <WmOrderItemView OrderItem="@item"/>
+        }
+    </CardBody>
+</Card>
+
+
+@code {
+    [Parameter] public OrderDto Order { get; set; }
+
+    private string GetCompanyLink()
+    {
+        return $"/company/{Order.CompanyId}";
+    }
+
+}

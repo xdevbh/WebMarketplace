@@ -37,7 +37,7 @@ public class OrderBuyerAppService : WebMarketplaceAppService, IOrderBuyerAppServ
         return dto;
     }
 
-    public async Task<PagedResultDto<OrderCardDto>> GetListAsync(OrderBuyerFilterDto input)
+    public async Task<PagedResultDto<OrderDto>> GetListAsync(OrderBuyerFilterDto input)
     {
         var userId = CurrentUser.GetId();
         if (userId == Guid.Empty)
@@ -62,8 +62,13 @@ public class OrderBuyerAppService : WebMarketplaceAppService, IOrderBuyerAppServ
             input.Status
         );
 
-        var dtos = ObjectMapper.Map<List<Order>, List<OrderCardDto>>(orders);
-        return new PagedResultDto<OrderCardDto>(totalCount, dtos);
+        var dtos = new List<OrderDto>();
+        foreach (var order in orders)
+        {
+            var dto = await MapAsync(order);
+            dtos.Add(dto);
+        }
+        return new PagedResultDto<OrderDto>(totalCount, dtos);
     }
 
     public async Task<OrderDto> CreateAsync(CreateOrderBuyerDto input)
