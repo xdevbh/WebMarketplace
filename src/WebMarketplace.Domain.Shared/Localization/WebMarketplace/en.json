@@ -134,6 +134,7 @@
     "Page:Cart": "Cart",
     "Page:CreateOrder": "Create order",
     "Page:CreateOrders": "Create orders",
+    "Page:MyAddresses": "My addresses",
 
     "Modal:ManagementAddProductPrice": "Add price",
     "Modal:ManagementAddProductImage": "Add image",
@@ -141,6 +142,7 @@
     "Modal:ManagementAddCompanyImage": "Add image",
     "Modal:AddProductReview": "Add review",
     "Modal:AddAddress": "Add address",
+    "Modal:EditAddress": "Edit address",
     
     "Tab:Description": "Description",
     "Tab:Reviews": "Reviews",
@@ -172,6 +174,7 @@
     "Header:Orders": "Orders",
     "Header:OrderItems": "Order items",
     "Header:ShippingAddress": "Shipping address",
+    "Header:MyAddresses": "My addresses",
 
     "Field:Id": "ID",
     "Field:UserName": "UserName",
