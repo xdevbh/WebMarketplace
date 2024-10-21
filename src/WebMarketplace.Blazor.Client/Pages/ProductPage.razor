@@ -171,6 +171,7 @@
 
         PageHeader = null;
         PageTitle = Product != null ? Product.Name : L["Page:Product"];
+        RatingInt = (int)(Product.Rating);
         await base.OnInitializedAsync();
     }
 

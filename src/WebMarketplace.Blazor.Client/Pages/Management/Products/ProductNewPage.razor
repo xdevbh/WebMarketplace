@@ -107,7 +107,8 @@
             </Heading>
         </AccordionHeader>
         <AccordionBody>
-            // todo: add rich text editor
+            <MemoEdit @bind-Text="@Product.FullDescription"
+                      Rows="15"/>
         </AccordionBody>
     </AccordionItem>
 </Accordion>
