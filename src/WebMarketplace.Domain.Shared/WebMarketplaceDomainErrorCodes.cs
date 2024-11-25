@@ -15,6 +15,7 @@ public static class WebMarketplaceDomainErrorCodes
     public const string CompanyImagesNotFound = "Exception:CompanyImagesNotFound";
     public const string CompanyImageDefaultRemoveNotAllowed = "Exception:CompanyImageDefaultRemoveNotAllowed";
     public const string CompanyNotFoundForUser = "Exception:CompanyNotFoundForUser";
+    public const string CompanyBlogPostNotFound = "Exception:CompanyBlogPostNotFound";
 
     public const string ProductNotFound = "Exception:ProductNotFound";
     public const string ProductReviewUserAlreadyExists = "Exception:ProductReviewUserAlreadyExists";

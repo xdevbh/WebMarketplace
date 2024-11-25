@@ -20,6 +20,9 @@ public class Company : FullAuditedAggregateRoot<Guid>
     public virtual CompanyImage? DefaultImage => 
         Images?.Where(x => x.IsDefault).FirstOrDefault() ?? Images?.FirstOrDefault();
 
+    public virtual List<CompanyBlogPost> BlogPosts { get; set; }              
+    
+    
     // todo: add contact information as list with ContactInformationType: mail, phone ... 
 
     protected Company() { }
@@ -44,6 +47,7 @@ public class Company : FullAuditedAggregateRoot<Guid>
         Website = website;
 
         Images = new List<CompanyImage>();
+        BlogPosts = new List<CompanyBlogPost>();
     }
     
     public Company SetIdentificationNumber(string companyIdentificationNumber)
@@ -122,6 +126,51 @@ public class Company : FullAuditedAggregateRoot<Guid>
         return this;
     }
 
+    #endregion
+    
+    #region BlogPosts
+    
+    public Company AddBlogPost(
+        Guid blogPostId,
+        string title,
+        string content,
+        bool isPublished)
+    {
+        var blogPost = new CompanyBlogPost(blogPostId, this.Id, title, content, isPublished);
+        BlogPosts.Add(blogPost);
+        return this;
+    }
+    
+    public Company UpdateBlogPost(
+        Guid blogPostId,
+        string title,
+        string content,
+        bool isPublished)
+    {
+        var blogPost = BlogPosts.FirstOrDefault(x => x.Id == blogPostId);
+        if (blogPost is null)
+        {
+            throw new BusinessException(WebMarketplaceDomainErrorCodes.CompanyBlogPostNotFound);
+        }
+
+        blogPost.SetTitle(title);
+        blogPost.SetContent(content);
+        blogPost.IsPublished = isPublished;
+        return this;
+    }
+    
+    public Company RemoveBlogPost(Guid blogPostId)
+    {
+        var blogPost = BlogPosts.FirstOrDefault(x => x.Id == blogPostId);
+        if (blogPost is null)
+        {
+            throw new BusinessException(WebMarketplaceDomainErrorCodes.CompanyBlogPostNotFound);
+        }
+
+        BlogPosts.Remove(blogPost);
+        return this;
+    }
+    
     #endregion
 
 }

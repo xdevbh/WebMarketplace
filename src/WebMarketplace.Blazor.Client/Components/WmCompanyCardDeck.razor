@@ -1,0 +1,13 @@
+﻿@using WebMarketplace.Companies
+
+<Div Flex="Flex.Wrap.JustifyContent.Center" Gap="Gap.Is3">
+    @foreach (var company in Companies)
+    {
+        <WmCompanyCard Company="company"/>
+    }
+</Div>
+
+@code {
+    [Parameter] public IReadOnlyList<CompanyCardDto> Companies { get; set; }
+
+}

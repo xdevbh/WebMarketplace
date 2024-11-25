@@ -31,6 +31,10 @@ public class WebMarketplaceApplicationAutoMapperProfile : Profile
         CreateMap<CompanyDto, CreateUpdateCompanyAdminDto>();
         CreateMap<CompanyImage, CompanyImageDto>()
             .Ignore(x => x.Content);
+        CreateMap<CompanyBlogPost, CompanyBlogPostDto>();
+        CreateMap<CompanyDetailQueryResultItem, CompanyCardDto>()
+            .Ignore(x => x.ImageContent)
+            .Ignore(x => x.ImageContentType);
 
         CreateMap<Address, AddressDto>();
         CreateMap<CreateUpdateAddressDto, Address>()

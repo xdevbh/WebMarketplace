@@ -9,13 +9,11 @@ namespace WebMarketplace.Products;
 public class ProductReview : AuditedEntity<Guid>
 {
     public virtual Guid UserId { get; set; }
-    // public virtual IdentityUser User { get; set; } 
     public virtual Guid ProductId { get; set; }
     public virtual int Rating { get; private set; }
-
     public virtual string? Comment { get; set; }
 
-    protected ProductReview()
+protected ProductReview()
     {
     }
 

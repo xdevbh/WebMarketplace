@@ -82,6 +82,14 @@ public static class WebMarketplaceDbContextModelBuilderExtensions
             b.HasKey(x => new { x.CompanyId, BlobId = x.BlobName });
             b.HasIndex(x => new { x.CompanyId, x.IsDefault }).IsUnique().HasFilter("[IsDefault] = 1");
         });
+        
+        builder.Entity<CompanyBlogPost>(b =>
+        {
+            b.ToTable(WebMarketplaceConsts.DbTablePrefix + "CompanyBlogPosts", WebMarketplaceConsts.DbSchema);
+            b.ConfigureByConvention(); // auto configure for the base class props
+            b.Property(x => x.IsPublished).IsRequired().HasDefaultValue(false);;
+            b.Property(x => x.CompanyId).IsRequired();
+        });
     }
 
     private static void ConfigureProducts([NotNull] this ModelBuilder builder)

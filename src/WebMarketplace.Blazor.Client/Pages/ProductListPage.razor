@@ -206,12 +206,6 @@
         await GetDataAsync();
         await base.OnInitializedAsync();
     }
-    
-    protected override async Task OnParametersSetAsync()
-    {
-        await SetBreadcrumbItemsAsync();
-        await base.OnParametersSetAsync();
-    }
 
     protected override async Task SetToolBarAsync()
     {

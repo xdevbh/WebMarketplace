@@ -1,5 +1,37 @@
 ﻿@page "/company/list"
+@using Volo.Abp.Application.Dtos
+@using WebMarketplace.Companies
+@inherits WmDataGridPageBase
+@inject ICompanyBuyerAppService CompanyAppService
+
+<WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle" />
+
+<WmCompanyCardDeck Companies="Companies"/>
 
 @code {
-    
+    [Parameter] public IReadOnlyList<CompanyCardDto> Companies { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        PageHeader = L["Header:Companies"];
+        PageTitle = L["Page:Companies"];
+
+        await GetDataAsync();
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task GetDataAsync()
+    {
+        var filter = new PagedAndSortedResultRequestDto()
+        {
+            Sorting = CurrentSorting,
+            MaxResultCount = PageSize,
+            SkipCount = CurrentPage * PageSize,
+        };
+
+        var result = await CompanyAppService.GetListAsync(filter);
+        Companies = result.Items;
+        TotalCount = (int) result.TotalCount;
+    }
+
 }

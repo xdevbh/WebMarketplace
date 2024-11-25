@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.BlobStoring;
 using Volo.Abp.Domain.Repositories;
 
 namespace WebMarketplace.Companies;
@@ -11,11 +12,13 @@ namespace WebMarketplace.Companies;
 [AllowAnonymous]
 public class CompanyBuyerAppService : WebMarketplaceAppService, ICompanyBuyerAppService
 {
-    private readonly IRepository<Company, Guid> _companyRepository;
+    private readonly ICompanyRepository _companyRepository;
+    private readonly IBlobContainer<CompanyImageContainer> _companyBlobContainer;
 
-    public CompanyBuyerAppService(IRepository<Company, Guid> companyRepository)
+    public CompanyBuyerAppService(ICompanyRepository companyRepository, IBlobContainer<CompanyImageContainer> companyBlobContainer)
     {
         _companyRepository = companyRepository;
+        _companyBlobContainer = companyBlobContainer;
     }
 
     // public async Task<ListResultDto<CompanyDto>> GetAllAsync()
@@ -25,14 +28,26 @@ public class CompanyBuyerAppService : WebMarketplaceAppService, ICompanyBuyerApp
     //     return new ListResultDto<CompanyDto>(vendorListDto);
     // }
     [AllowAnonymous]
-    public async Task<PagedResultDto<CompanyDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    public async Task<PagedResultDto<CompanyCardDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
-        var vendorList = await _companyRepository.GetPagedListAsync(input.SkipCount, input.MaxResultCount, input.Sorting);
-        var totalCount = await _companyRepository.GetCountAsync();
+        var list = await _companyRepository.GetDetailListAsync(input.Sorting, input.MaxResultCount, input.SkipCount);
+        var totalCount = await _companyRepository.GetDetailCountAsync();
         
-        return new PagedResultDto<CompanyDto>(
+        var dtos = new List<CompanyCardDto>();
+        foreach (var item in list)
+        {
+            var dto = ObjectMapper.Map<CompanyDetailQueryResultItem, CompanyCardDto>(item);
+            if (!item.DefaultImageBlobName.IsNullOrWhiteSpace())
+            {
+                dto.ImageContent = await _companyBlobContainer.GetAllBytesOrNullAsync(item.DefaultImageBlobName);
+            }
+            
+            dtos.Add(dto);
+        }
+        
+        return new PagedResultDto<CompanyCardDto>(
             totalCount,
-            ObjectMapper.Map<List<Company>, List<CompanyDto>>(vendorList)
+            dtos
         );
     }
     

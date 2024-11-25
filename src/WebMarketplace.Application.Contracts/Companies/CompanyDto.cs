@@ -12,4 +12,10 @@ public class CompanyDto : EntityDto<Guid>
     public string? ShortDescription { get; set; }
     public string? FullDescription { get; set; }
     public string? Website { get; set; }
+    
+    // public string City { get; set; }
+    // public string Country { get; set; }
+    // public double Rating { get; set; }
+    // public int RatingCount { get; set; }    
+    // public int OrderCount { get; set; }    
 }

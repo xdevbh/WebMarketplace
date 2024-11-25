@@ -104,6 +104,7 @@
     "Message:CompanyDeletionConfirmation": "Are you sure you want to delete the company?",
     "Message:CompanyMembershipDeletionConfirmation": "Are you sure you want to delete the company membership?",
     "Message:CompanyImageDeletionConfirmation": "Are you sure you want to delete the image?",
+    "Message:CompanyBlogPostNotFound": "Blog post not found.",
     "Message:ProductNotFound": "Are you sure you want to delete the product?",
     "Message:ProductDeletionConfirmation": "Are you sure you want to delete the product?",
     "Message:ProductPublicationConfirmation": "Are you sure you want to publish the product?",
@@ -136,6 +137,8 @@
     "Page:CreateOrders": "Create orders",
     "Page:MyAddresses": "My addresses",
     "Page:MyOrders": "My orders",
+    "Page:Company": "Company",
+    "Page:Companies": "Companies",
 
     "Modal:ManagementAddProductPrice": "Add price",
     "Modal:ManagementAddProductImage": "Add image",
