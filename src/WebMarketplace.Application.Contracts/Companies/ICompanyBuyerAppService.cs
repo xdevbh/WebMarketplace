@@ -12,4 +12,11 @@ public interface ICompanyBuyerAppService : IApplicationService
     Task<ListResultDto<CompanySelectItemDto>> GetSelectItemListAsync();
     Task<CompanyDto> GetAsync(Guid id);
     Task<CompanyDto> GetByNameAsync(string name);
+    
+    // images 
+    Task<CompanyImageDto> GetDefaultImageAsync(Guid productId);
+    Task <ListResultDto<CompanyImageDto>> GetAllImagesAsync(Guid productId);
+    
+    // blog posts
+    Task<PagedResultDto<CompanyBlogPostDto>> GetBlogPostListAsync(CompanyBlogPostFilterDto input);
 }

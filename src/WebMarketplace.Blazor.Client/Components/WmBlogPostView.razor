@@ -1,0 +1,38 @@
+﻿@using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Components.Web
+@using WebMarketplace.Companies
+@using WebMarketplace.Localization
+@inject IStringLocalizer<WebMarketplaceResource> L
+
+<Card Margin="Margin.Is3.OnAll">
+
+    <CardBody>
+        <CardTitle>
+            <Heading>@BlogPost.Title</Heading>
+        </CardTitle>
+        <CardText>
+            @BlogPost.Content
+        </CardText>
+
+        @if (ShowDate)
+        {
+            <CardText>
+                <Small TextColor="TextColor.Muted">
+                    @BlogPost.CreationTime.ToString("dd.MM.yyyy HH:mm:ss")
+                </Small>
+            </CardText>
+        }
+    </CardBody>
+</Card>
+
+@code {
+    [Parameter] public CompanyBlogPostDto BlogPost { get; set; } = new();
+    [Parameter] public bool ShowCompany { get; set; } = false;
+    [Parameter] public bool ShowDate { get; set; } = false;
+
+    private string GetCompanyLink()
+    {
+        return $"/company/{BlogPost.CompanyId}";
+    }
+
+}

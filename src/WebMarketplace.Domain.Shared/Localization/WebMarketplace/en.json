@@ -100,6 +100,7 @@
     "Action:Next": "Next",
     "Action:CreateOrder": "Create order",
     "Action:AddAddress": "Add address",
+    "Action:ShowAll": "Show all",
 
     "Message:CompanyNotFound": "Company not found.",
     "Message:CompanyDeletionConfirmation": "Are you sure you want to delete the company?",
@@ -156,6 +157,8 @@
     
     "Tab:Description": "Description",
     "Tab:Reviews": "Reviews",
+    "Tab:BlogPosts": "Blog posts",
+    "Tab:ContactInfo": "Contact information",
 
     "Header:Search": "Search",
     "Header:Filter": "Filter",

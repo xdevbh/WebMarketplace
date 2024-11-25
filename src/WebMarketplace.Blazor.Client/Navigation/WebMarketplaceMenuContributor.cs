@@ -89,6 +89,19 @@ public class WebMarketplaceMenuContributor : IMenuContributor
             order: 3
         ));
     }
+    
+    private static async Task ConfigureBlogPostsMenuAsync(MenuConfigurationContext context)
+    {
+        var l = context.GetLocalizer<WebMarketplaceResource>();
+
+        context.Menu.AddItem(new ApplicationMenuItem(
+            WebMarketplaceMenus.Companies,
+            l["Menu:BlogPosts"],
+            "/blogposts/list",
+            icon: "fa fa-message",
+            order: 3
+        ));
+    }
 
     private static async Task ConfigureManagementMenuAsync(MenuConfigurationContext context)
     {

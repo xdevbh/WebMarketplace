@@ -48,6 +48,9 @@
                         </Column>
                     </Row>
                     <Row Margin="Margin.Is3.FromBottom">
+                        <Link To="@GetCompanyLink()">@Product.CompanyName</Link>
+                    </Row>
+                    <Row Margin="Margin.Is3.FromBottom">
                         <Column>
                             @Product.ShortDescription
                         </Column>
@@ -236,5 +239,8 @@
         return Task.CompletedTask;
     }
 
-
+    private string GetCompanyLink()
+    {
+        return $"/company/{Product.CompanyId}";
+    }
 }

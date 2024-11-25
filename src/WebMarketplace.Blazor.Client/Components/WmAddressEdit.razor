@@ -198,7 +198,7 @@
 </Validations>
 
 @code {
-    [Parameter] public CreateUpdateAddressDto Address { get; set; }
+    [Parameter] public CreateUpdateAddressDto Address { get; set; } = new();
     [Parameter] public Guid? Id { get; set; } = null;
     [Parameter] public bool ReadOnly { get; set; } = false;
     [Parameter] public Validations ValidationsRef { get; set; }

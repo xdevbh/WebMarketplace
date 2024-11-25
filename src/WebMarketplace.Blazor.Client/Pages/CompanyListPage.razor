@@ -1,7 +1,10 @@
 ﻿@page "/company/list"
+@using Microsoft.Extensions.Localization
 @using Volo.Abp.Application.Dtos
 @using WebMarketplace.Companies
+@using WebMarketplace.Localization
 @inherits WmDataGridPageBase
+@inject IStringLocalizer<WebMarketplaceResource> L
 @inject ICompanyBuyerAppService CompanyAppService
 
 <WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle" />
@@ -10,6 +13,14 @@
 
 @code {
     [Parameter] public IReadOnlyList<CompanyCardDto> Companies { get; set; }
+    
+    protected override Task SetBreadcrumbItemsAsync()
+    {
+        BreadcrumbItems = new();
+        BreadcrumbItems.Add(new BreadcrumbItem(L["Menu:Companies"], $"/company/list/"));
+
+        return base.SetBreadcrumbItemsAsync();
+    }
 
     protected override async Task OnInitializedAsync()
     {

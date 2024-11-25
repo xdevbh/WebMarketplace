@@ -79,4 +79,63 @@ public class CompanyBuyerAppService : WebMarketplaceAppService, ICompanyBuyerApp
         var vendorDto = ObjectMapper.Map<Company, CompanyDto>(vendor);
         return vendorDto;    
     }
+
+    #region Images
+
+    public async Task<CompanyImageDto> GetDefaultImageAsync(Guid productId)
+    {
+        var company = await _companyRepository.GetAsync(productId);
+
+        if (company == null || company.Images == null || !company.Images.Any() || company.DefaultImage != null)
+        {
+            return new CompanyImageDto();
+        }
+
+        var dto = ObjectMapper.Map<CompanyImage, CompanyImageDto>(company.DefaultImage);
+        var bytes = await _companyBlobContainer.GetAllBytesOrNullAsync(company.DefaultImage.BlobName);
+        dto.Content = bytes;
+
+        return dto;
+    }
+
+    [AllowAnonymous]
+    public async Task<ListResultDto<CompanyImageDto>> GetAllImagesAsync(Guid productId)
+    {
+        var company = await _companyRepository.GetAsync(productId);
+
+        if (company == null || company.Images == null || !company.Images.Any())
+        {
+            return new ListResultDto<CompanyImageDto>();
+        }
+
+        var imageDtos = new List<CompanyImageDto>();
+
+        foreach (var image in company.Images)
+        {
+            var dto = ObjectMapper.Map<CompanyImage, CompanyImageDto>(image);
+
+
+            var bytes = await _companyBlobContainer.GetAllBytesOrNullAsync(image.BlobName);
+            dto.Content = bytes;
+
+            imageDtos.Add(dto);
+        }
+
+        return new ListResultDto<CompanyImageDto>(imageDtos);
+    }
+
+    #endregion
+
+    #region BlogPosts
+
+    public async Task<PagedResultDto<CompanyBlogPostDto>> GetBlogPostListAsync(CompanyBlogPostFilterDto input)
+    {
+        var posts = await _companyRepository.GetBlogPostListAsync(input.Sorting, input.MaxResultCount, input.SkipCount, input.CompanyId);
+        var totalCount = await _companyRepository.GetBlogPostCountAsync(input.CompanyId);
+        
+        return new PagedResultDto<CompanyBlogPostDto>(totalCount,
+            ObjectMapper.Map<List<CompanyBlogPost>, List<CompanyBlogPostDto>>(posts));
+    }
+
+    #endregion
 }

@@ -1,7 +1,211 @@
 ﻿@page "/company/{id:guid}"
+@using Microsoft.Extensions.Localization
+@using WebMarketplace.Addresses
+@using WebMarketplace.Companies
+@using WebMarketplace.Localization
+@using WebMarketplace.Products
+@inherits WmPageBase
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject ICompanyBuyerAppService CompanyAppService
+@inject IAddressAppService AddressAppService
+@inject IProductBuyerAppService ProductAppService
+@inject NavigationManager NavigationManager
 
-<h3>CompanyPage</h3>
+<WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle"/>
+
+<Row Height="Height.Is100" Margin="Margin.Is3">
+    <Column ColumnSize="ColumnSize.Is12.OnDesktop">
+        <Carousel @bind-SelectedSlide="@selectedSlide" Height="Height.Is100" Autoplay="false">
+            @foreach (var image in Images)
+            {
+                <CarouselSlide Name="@image.BlobName">
+                    @{
+                        var imageDataUrl = $"data:{image.ContentType};base64,{Convert.ToBase64String(image.Content)}";
+                        <Image Source="@imageDataUrl"
+                               Text="@image.BlobName"
+                               Display="Display.Block"
+                               Width="Width.Is100"
+                               Height="Height.Px(500)"
+                               Style="object-fit: cover;"/>
+                    }
+                </CarouselSlide>
+            }
+        </Carousel>
+    </Column>
+</Row>
+
+<Row Margin="Margin.Is3">
+    <Column>
+        <Card>
+            <CardBody>
+                <Tabs RenderMode="TabsRenderMode.LazyLoad"
+                      Justified="true"
+                      SelectedTab="@selectedTab">
+                    <Items>
+                        <Tab Name="Description">
+                            <Icon Name="IconName.FileAlt"/>
+                            @L["Tab:Description"]
+                        </Tab>
+                        <Tab Name="BlogPosts">
+                            <Icon Name="IconName.CommentAlt"/>
+                            @L["Tab:BlogPosts"]
+                        </Tab>
+                        <Tab Name="ContactInfo">
+                            <Icon Name="IconName.MapMarkerAlt"/>
+                            @L["Tab:ContactInfo"]
+                        </Tab>
+                    </Items>
+                    <Content>
+                        <TabPanel Name="Description">
+                            <Row>
+                                <Column>
+                                    @Company.FullDescription
+                                </Column>
+                            </Row>
+                        </TabPanel>
+
+                        <TabPanel Name="BlogPosts">
+                            <Row>
+                                <Column>
+                                    @foreach (var post in Posts)
+                                    {
+                                        <WmBlogPostView BlogPost="@post"
+                                                        ShowDate="true"/>
+                                    }
+                                </Column>
+                            </Row>
+                        </TabPanel>
+
+                        <TabPanel Name="ContactInfo">
+                            <Row>
+                                <Column>
+                                    <WmAddressView Address="@Address"
+                                                   ShowNote="false"/>
+                                </Column>
+                            </Row>
+                        </TabPanel>
+                    </Content>
+                </Tabs>
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
+
+<Row Margin="Margin.Is3">
+    <Row>
+        <Column>
+            <Row Flex="Flex.JustifyContent.End.AlignContent.Center">
+                <Column Flex="Flex.Row">
+                    <Heading Size="HeadingSize.Is4">@L["Header:Products"]</Heading>
+                </Column>
+                <Column ColumnSize="ColumnSize.IsAuto" Class="px-1 py-2" Width="Width.Max100">
+                    <ToolbarButton Clicked="() => ShowAllProducts()"
+                                   Color="Color.Secondary"
+                                   Icon="IconName.MoreHorizontal"
+                                   Text="@L["Action:ShowAll"]"/>
+                </Column>
+            </Row>
+            <Row>
+                <WmProductCardDeck Products="Products"></WmProductCardDeck>
+            </Row>
+        </Column>
+    </Row>
+</Row>
 
 @code {
     [Parameter] public Guid Id { get; set; }
+    protected CompanyDto Company = new();
+    protected AddressDto Address = new();
+    protected IReadOnlyList<CompanyImageDto> Images = new List<CompanyImageDto>();
+    protected IReadOnlyList<CompanyBlogPostDto> Posts = new List<CompanyBlogPostDto>();
+    protected IReadOnlyList<ProductCardDto> Products = new List<ProductCardDto>();
+
+    protected string selectedSlide = String.Empty;
+    protected string selectedTab = String.Empty;
+
+
+    protected override Task SetBreadcrumbItemsAsync()
+    {
+        BreadcrumbItems = new();
+        BreadcrumbItems.Add(new BreadcrumbItem(L["Menu:Companies"], $"/company/list/"));
+
+        return base.SetBreadcrumbItemsAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetDataAsync();
+
+        if (Images != null && Images.Any())
+        {
+            selectedSlide = Images.FirstOrDefault().BlobName;
+        }
+
+        if (string.IsNullOrEmpty(selectedTab))
+        {
+            selectedTab = "Description";
+        }
+
+        PageHeader = Company != null ? Company.Name : L["Page:Company"];
+        PageTitle = Company != null ? Company.Name : L["Page:Company"];
+
+        await base.OnInitializedAsync();
+    }
+
+    protected async Task GetDataAsync()
+    {
+        await GetCompanyAsync();
+        await GetAddressAsync();
+        await GetImagesAsync();
+        await GetBlogPostsAsync();
+        await GetProductsAsync();
+    }
+
+    protected async Task GetCompanyAsync()
+    {
+        Company = await CompanyAppService.GetAsync(Id);
+    }
+
+    protected async Task GetAddressAsync()
+    {
+        Address = await AddressAppService.GetAsync(Company.AddressId);
+    }
+
+    protected async Task GetImagesAsync()
+    {
+        var result = await CompanyAppService.GetAllImagesAsync(Id);
+        Images = result.Items;
+    }
+
+    protected async Task GetBlogPostsAsync()
+    {
+        var filter = new CompanyBlogPostFilterDto()
+        {
+            CompanyId = Id,
+        };
+
+        var result = await CompanyAppService.GetBlogPostListAsync(filter);
+        Posts = result.Items;
+    }
+
+    protected async Task GetProductsAsync()
+    {
+        var filter = new ProductCardListFilterDto()
+        {
+            Sorting = ProductSorting.Popularity,
+            MaxResultCount = 4,
+            SkipCount = 0,
+            CompanyId = Id,
+        };
+
+        var result = await ProductAppService.GetProductCardListAsync(filter);
+        Products = result.Items.ToList();
+    }
+
+    protected Task ShowAllProducts()
+    {
+        NavigationManager.NavigateTo($"/product/list/company/{Company.Id}");
+        return Task.CompletedTask;
+    }
+
 }

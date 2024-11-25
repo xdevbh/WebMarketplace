@@ -26,4 +26,22 @@ public interface ICompanyRepository : IRepository<Company, Guid>
     Task<long> GetDetailCountAsync(
         Guid? companyId = null,
         CancellationToken cancellationToken = default);
+
+    Task<IQueryable<CompanyBlogPost>> GetBlogPostQueryableAsync(
+        Guid? companyId = null);
+
+    Task<CompanyBlogPost> GetBlogPostAsync(
+        Guid id,
+        CancellationToken cancellationToken = default);
+
+    Task<List<CompanyBlogPost>> GetBlogPostListAsync(
+        string? sorting = null,
+        int maxResultCount = int.MaxValue,
+        int skipCount = 0,
+        Guid? companyId = null,
+        CancellationToken cancellationToken = default);
+
+    Task<long> GetBlogPostCountAsync(
+        Guid? companyId = null,
+        CancellationToken cancellationToken = default);
 }

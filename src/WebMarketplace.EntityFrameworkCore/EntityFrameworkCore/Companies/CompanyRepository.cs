@@ -97,4 +97,62 @@ public class CompanyRepository : EfCoreRepository<WebMarketplaceDbContext, Compa
         var count = await query.LongCountAsync(GetCancellationToken(cancellationToken));
         return count;
     }
+
+    #region BlogPosts
+
+    public async Task<IQueryable<CompanyBlogPost>> GetBlogPostQueryableAsync(
+        Guid? companyId = null)
+    {
+        var dbContext = await GetDbContextAsync();
+        var query =
+            from blogPost in dbContext.Set<CompanyBlogPost>()
+            select blogPost;
+
+        if (companyId != null)
+        {
+            query = query.Where(x => x.CompanyId == companyId);
+        }
+
+        return query;
+    }
+
+    public async Task<CompanyBlogPost> GetBlogPostAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        var query = await GetBlogPostQueryableAsync();
+        query = query.Where(x => x.Id == id);
+        var item = await query.FirstOrDefaultAsync(GetCancellationToken(cancellationToken));
+        return item;
+    }
+
+    public async Task<List<CompanyBlogPost>> GetBlogPostListAsync(
+        string? sorting = null,
+        int maxResultCount = int.MaxValue,
+        int skipCount = 0,
+        Guid? companyId = null,
+        CancellationToken cancellationToken = default)
+    {
+        var query = await GetBlogPostQueryableAsync(companyId);
+        if (sorting.IsNullOrWhiteSpace())
+        {
+            sorting = "CreationTime DESC";
+        }
+
+        query = query.OrderBy(sorting);
+        query = query.PageBy(skipCount, maxResultCount);
+        var list = await query.ToListAsync(GetCancellationToken(cancellationToken));
+        return list;
+    }
+
+    public async Task<long> GetBlogPostCountAsync(
+        Guid? companyId = null,
+        CancellationToken cancellationToken = default)
+    {
+        var query = await GetBlogPostQueryableAsync(companyId);
+        
+        var count = await query.LongCountAsync(GetCancellationToken(cancellationToken));
+        return count;
+    }
+    #endregion
 }
