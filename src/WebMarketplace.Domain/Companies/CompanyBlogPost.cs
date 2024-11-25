@@ -39,4 +39,10 @@ public class CompanyBlogPost : AuditedEntity<Guid>
         Content = content;
         return this;
     }
+    
+    public CompanyBlogPost Publish(bool isPublished)
+    {
+        IsPublished = isPublished;
+        return this;
+    }
 }

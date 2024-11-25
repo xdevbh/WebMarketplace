@@ -24,4 +24,12 @@ public interface ICompanySellerAppService : IApplicationService
     Task SetDefaultImageAsync(UpdateCompanyImageDto input);
 
     Task DeleteImageAsync(string blobName);
+    
+    // blog post 
+    Task<PagedResultDto<CompanyBlogPostDto>> GetBlogPostListAsync(PagedAndSortedResultRequestDto input);
+    Task<CompanyBlogPostDto> GetBlogPostAsync(Guid id);
+    Task CreateBlogPostAsync(CreateUpdateCompanyBlogPostSellerDto input);
+    Task UpdateBlogPostAsync(Guid id, CreateUpdateCompanyBlogPostSellerDto input);
+    Task PublishBlogPostAsync(Guid blogPostId);
+    Task UnpublishBlogPostAsync(Guid blogPostId);
 }

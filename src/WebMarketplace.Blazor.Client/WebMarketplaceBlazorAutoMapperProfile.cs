@@ -13,5 +13,6 @@ public class WebMarketplaceBlazorAutoMapperProfile : Profile
         CreateMap<ProductDto, CreateUpdateProductDto>();
         CreateMap<CompanyDto, UpdateCompanySellerDto>();
         CreateMap<AddressDto, CreateUpdateAddressDto>();
+        CreateMap<CompanyBlogPostDto, CreateUpdateCompanyBlogPostSellerDto>();
     }
 }

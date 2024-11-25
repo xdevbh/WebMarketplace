@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Volo.Abp;
@@ -17,17 +18,17 @@ namespace WebMarketplace.Companies;
 [Authorize("SellerOnly")]
 public class CompanySellerAppService : WebMarketplaceAppService, ICompanySellerAppService
 {
-    private readonly IRepository<Company, Guid> _companyRepository;
+    private readonly ICompanyRepository _companyRepository;
+    private readonly CompanyManager _companyManager;
     private readonly ICompanyMembershipRepository _companyMembershipRepository;
     private readonly IBlobContainer<CompanyImageContainer> _companyBlobContainer;
 
-
-    public CompanySellerAppService(
-        IRepository<Company, Guid> companyRepository,
+    public CompanySellerAppService(ICompanyRepository companyRepository, CompanyManager companyManager,
         ICompanyMembershipRepository companyMembershipRepository,
         IBlobContainer<CompanyImageContainer> companyBlobContainer)
     {
         _companyRepository = companyRepository;
+        _companyManager = companyManager;
         _companyMembershipRepository = companyMembershipRepository;
         _companyBlobContainer = companyBlobContainer;
     }
@@ -80,10 +81,9 @@ public class CompanySellerAppService : WebMarketplaceAppService, ICompanySellerA
         return company;
     }
 
-
     #endregion
 
-    #region Images 
+    #region Images
 
     public async Task<CompanyImageDto> GetDefaultImageAsync()
     {
@@ -93,7 +93,7 @@ public class CompanySellerAppService : WebMarketplaceAppService, ICompanySellerA
         {
             return new CompanyImageDto();
         }
-        
+
         var dto = ObjectMapper.Map<CompanyImage, CompanyImageDto>(company.DefaultImage);
         var bytes = await _companyBlobContainer.GetAllBytesOrNullAsync(company.DefaultImage.BlobName);
         dto.Content = bytes;
@@ -152,6 +152,71 @@ public class CompanySellerAppService : WebMarketplaceAppService, ICompanySellerA
 
         company.RemoveImage(blobName);
         await _companyBlobContainer.DeleteAsync(blobName);
+    }
+
+    #endregion
+
+    #region BlogPosts
+
+    public async Task<PagedResultDto<CompanyBlogPostDto>> GetBlogPostListAsync(PagedAndSortedResultRequestDto input)
+    {
+        var company = await GetMyCompany();
+        if (company == null || company.BlogPosts == null || !company.BlogPosts.Any())
+        {
+            return new PagedResultDto<CompanyBlogPostDto>();
+        }
+
+        var query = company.BlogPosts.AsQueryable();
+        var totalCount = company.BlogPosts.Count;
+        if (input.Sorting.IsNullOrWhiteSpace())
+        {
+            input.Sorting = "CreationTime DESC";
+        }
+
+        query = query
+            .OrderBy(input.Sorting)
+            .Skip(input.SkipCount)
+            .Take(input.MaxResultCount);
+        var posts = query.ToList();
+        return new PagedResultDto<CompanyBlogPostDto>(totalCount,
+            ObjectMapper.Map<List<CompanyBlogPost>, List<CompanyBlogPostDto>>(posts));
+    }
+
+    public async Task<CompanyBlogPostDto> GetBlogPostAsync(Guid id)
+    {
+        var company = await GetMyCompany();
+        if (company == null || company.BlogPosts == null || !company.BlogPosts.Any())
+        {
+            return new CompanyBlogPostDto();
+        }
+
+        var post = company.BlogPosts.FirstOrDefault(x => x.Id == id);
+        var dto = ObjectMapper.Map<CompanyBlogPost, CompanyBlogPostDto>(post);
+        return dto;
+    }
+
+    public async Task UpdateBlogPostAsync(Guid id, CreateUpdateCompanyBlogPostSellerDto input)
+    {
+        var company = await GetMyCompany();
+        await _companyManager.EditBlogPostAsync(company, id, input.Title, input.Content);
+    }
+
+    public async Task CreateBlogPostAsync(CreateUpdateCompanyBlogPostSellerDto input)
+    {
+        var company = await GetMyCompany();
+        await _companyManager.AddBlogPostAsync(company, input.Title, input.Content, false);
+    }
+
+    public async Task PublishBlogPostAsync(Guid blogPostId)
+    {
+        var company = await GetMyCompany();
+        company.PublishBlogPost(blogPostId, true);
+    }
+
+    public async Task UnpublishBlogPostAsync(Guid blogPostId)
+    {
+        var company = await GetMyCompany();
+        company.PublishBlogPost(blogPostId, false);
     }
 
     #endregion

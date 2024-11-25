@@ -1,0 +1,135 @@
+﻿@page "/management/blogpost/edit/{id:guid}"
+@attribute [Authorize("SellerOnly")]
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.Application.Dtos
+@using Volo.Abp.AspNetCore.Components.Messages
+@using Volo.Abp.AspNetCore.Components.Web
+@using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars
+@using WebMarketplace.Companies
+@using WebMarketplace.Localization
+@using WebMarketplace.Permissions
+@inherits WmPageBase
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject AbpBlazorMessageLocalizerHelper<WebMarketplaceResource> LH
+@inject NavigationManager NavigationManager
+@inject IUiMessageService UiMessageService
+@inject ICompanySellerAppService CompanyAppService
+
+<WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle"/>
+
+<Accordion Margin="Margin.Is3.FromBottom">
+    <AccordionItem Visible="true">
+        <AccordionHeader>
+            <Heading Size="HeadingSize.Is3">
+                <AccordionToggle>@L["Header:BasicInfo"]</AccordionToggle>
+            </Heading>
+        </AccordionHeader>
+        <AccordionBody>
+            <Validations @ref="@CompanyValidationsRef" Model="@Post" ValidateOnLoad="false">
+                <Validation MessageLocalizer="@LH.Localize">
+                    <Field>
+                        <FieldLabel>@L["Field:Name"]</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.Pen" />
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <TextEdit Placeholder="@L["Placeholder:Write"]"
+                                          @bind-Text="@Post.Title" />
+                            </Addon>
+                        </Addons>
+                    </Field>
+                </Validation>
+                <Validation MessageLocalizer="@LH.Localize">
+                    <Field>
+                        <FieldLabel>@L["Field:Content"]</FieldLabel>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel>
+                                    <Icon Name="IconName.Pen" />
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <MemoEdit @bind-Text="@Post.Content"
+                                          Rows="15"/>
+                            </Addon>
+                        </Addons>
+                    </Field>
+                </Validation>
+            </Validations>
+        </AccordionBody>
+    </AccordionItem>
+</Accordion>
+
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    public CreateUpdateCompanyBlogPostSellerDto Post { get; set; } = new();
+    protected Validations CompanyValidationsRef { get; set; } = new();
+    protected bool CanCreate { get; set; } = false;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        PageTitle = L["Page:ManagementUpdateBlogPost"];
+        PageHeader = L["Header:UpdateBlogPost"];
+        await GetDataAsync();
+        await base.OnInitializedAsync();
+    }
+
+    protected override Task SetToolBarAsync()
+    {
+        PageToolbar.AddButton(L["Action:Cancel"],
+            () => Cancel(),
+            IconName.Times,
+            Color.Danger);
+
+        PageToolbar.AddButton(L["Action:Save"],
+            () => UpdateAsync(),
+            IconName.Save,
+            Color.Primary,
+            !CanCreate);
+
+        return Task.CompletedTask;
+    }
+    
+    protected override async Task SetPermissionsAsync()
+    {
+        CanCreate = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.Companies.Update);
+        await base.SetPermissionsAsync();
+    }
+
+    protected async Task GetDataAsync()
+    {
+        var result = await CompanyAppService.GetBlogPostAsync(Id);
+        Post = ObjectMapper.Map<CompanyBlogPostDto, CreateUpdateCompanyBlogPostSellerDto>(result);
+    }
+
+    
+    protected async Task UpdateAsync()
+    {
+        if (await CompanyValidationsRef.ValidateAll() )
+        {
+            await CompanyAppService.UpdateBlogPostAsync(Id, Post);
+            await UiMessageService.Success(L["Message:SavedSuccessfully"]);
+            await GoToList();
+        }
+    }
+    
+    protected Task Cancel()
+    {
+        GoToList();
+        return Task.CompletedTask;
+    }
+
+    protected Task GoToList()
+    {
+        NavigationManager.NavigateTo("/management/blogpost/list");
+        return Task.CompletedTask;
+    }
+
+}

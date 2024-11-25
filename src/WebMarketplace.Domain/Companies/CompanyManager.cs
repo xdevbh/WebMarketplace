@@ -96,4 +96,29 @@ public class CompanyManager : DomainService
         company.FullDescription = fullDescription;
         company.Website = website;
     }
+    
+    public async Task AddBlogPostAsync(
+        Company company,
+        string title,
+        string content,
+        bool isPublished)
+    {
+        company.AddBlogPost(
+            GuidGenerator.Create(), 
+            title,
+            content,
+            isPublished);
+    }
+    
+    public async Task EditBlogPostAsync(
+        Company company,
+        Guid blogPostId,
+        string title,
+        string content)
+    {
+        company.UpdateBlogPost(
+            blogPostId,
+            title,
+            content);
+    }
 }

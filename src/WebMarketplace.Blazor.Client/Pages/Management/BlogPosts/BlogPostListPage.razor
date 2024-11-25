@@ -1,0 +1,198 @@
+﻿@page "/management/blogpost/list"
+@attribute [Authorize("SellerOnly")]
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.Application.Dtos
+@using Volo.Abp.AspNetCore.Components.Messages
+@using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars
+@using WebMarketplace.Companies
+@using WebMarketplace.Localization
+@using WebMarketplace.Permissions
+@inherits WmDataGridPageBase
+@inject IStringLocalizer<WebMarketplaceResource> L
+@inject NavigationManager NavigationManager
+@inject IUiMessageService UiMessageService
+@inject ICompanySellerAppService CompanyAppService
+
+<WmPageHeader Toolbar="@PageToolbar" BreadcrumbItems="@BreadcrumbItems" Header="@PageHeader" Title="@PageTitle"/>
+
+<Card>
+    <CardBody>
+        <DataGrid TItem="CompanyBlogPostDto"
+                  Data="BlogPosts"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  ShowPageSizes="true"
+                  PageSize="PageSize"
+                  Filterable="false"
+                  Responsive="true"
+                  Resizable="true"
+                  FixedHeader="false">
+            <DataGridColumns>
+                <DataGridColumn TItem="CompanyBlogPostDto" Filterable="false">
+                    <DisplayTemplate>
+                        <Dropdown>
+                            <DropdownToggle Color="Color.Primary"/>
+                            <DropdownMenu>
+                                @if (!context.IsPublished)
+                                {
+                                    <DropdownItem Clicked="() => PublishAsync(context.Id)" Disabled="!CanPublish">
+                                        <Icon Name="IconName.Eye" Margin="Margin.Is1.FromEnd"/>
+                                        @L["Action:Publish"]
+                                    </DropdownItem>
+                                }
+                                @if (context.IsPublished)
+                                {
+                                    <DropdownItem Clicked="() => UnpublishAsync(context.Id)" Disabled="!CanPublish">
+                                        <Icon Name="IconName.EyeSlash" Margin="Margin.Is1.FromEnd"/>
+                                        @L["Action:Unpublish"]
+                                    </DropdownItem>
+                                }
+                                <DropdownItem Clicked="() => EditAsync(context.Id)" Disabled="!CanEdit">
+                                    <Icon Name="IconName.Edit" Margin="Margin.Is1.FromEnd"/>
+                                    @L["Action:Edit"]
+                                </DropdownItem>
+                                <DropdownItem Clicked="() => DeleteAsync(context.Id)" Disabled="!CanDelete">
+                                    <Icon Name="IconName.Delete" Margin="Margin.Is1.FromEnd"/>
+                                    @L["Action:Delete"]
+                                </DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="CompanyBlogPostDto"
+                                Field="@nameof(CompanyBlogPostDto.Title)"
+                                Caption="@L["Field:Title"]"
+                                />
+                <DataGridColumn TItem="CompanyBlogPostDto"
+                                Field="@nameof(CompanyBlogPostDto.Content)"
+                                Caption="@L["Field:Content"]"/>
+                <DataGridCheckColumn TItem="CompanyBlogPostDto"
+                                     Field="@nameof(CompanyBlogPostDto.IsPublished)"
+                                     Caption="@L["Field:IsPublished"]"/>
+                <DataGridDateColumn TItem="CompanyBlogPostDto"
+                                    Field="@nameof(CompanyBlogPostDto.CreationTime)"
+                                    Caption="@L["Field:CreationTime"]"
+                                    DisplayFormat="{0:dd.MM.yyyy HH:mm:ss}"/>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+
+@code {
+
+    protected IReadOnlyList<CompanyBlogPostDto> BlogPosts { get; set; } = new List<CompanyBlogPostDto>();
+    protected bool CanPublish { get; set; } = false;
+
+    protected override Task OnInitializedAsync()
+    {
+        PageHeader = L["Header:BlogPosts"];
+        PageTitle = L["Page:ManagementBlogPosts"];
+        
+        return base.OnInitializedAsync();
+    }
+    
+    protected override Task SetBreadcrumbItemsAsync()
+    {
+        BreadcrumbItems = new();
+        BreadcrumbItems.Add((new BreadcrumbItem(L["Menu:Management"], "/management")));
+        BreadcrumbItems.Add((new BreadcrumbItem(L["Menu:BlogPosts"], "/management/blogpost/list")));
+
+        return base.SetBreadcrumbItemsAsync();
+    }
+    
+    protected override Task SetToolBarAsync()
+    {
+        PageToolbar = new();
+
+        PageToolbar.AddButton(L["Action:ReloadData"],
+            () => GetDataAsync(),
+            IconName.Redo,
+            Color.Secondary);
+
+        PageToolbar.AddButton(L["Action:New"],
+            () => CreateAsync(),
+            IconName.Add,
+            Color.Primary,
+            !CanCreate);
+
+        return base.SetToolBarAsync();
+    }
+    
+    protected override async Task SetPermissionsAsync()
+    {
+        CanView = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.Companies.Default);
+        CanCreate = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.Companies.Update);
+        CanEdit = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.Companies.Update);
+        CanDelete = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.Companies.Update);
+        CanPublish = await AuthorizationService.IsGrantedAsync(WebMarketplacePermissions.Companies.Update);
+
+        await base.SetPermissionsAsync();
+    }
+
+    protected override async Task GetDataAsync()
+    {
+        var filter = new PagedAndSortedResultRequestDto()
+        {
+            MaxResultCount = PageSize,
+            SkipCount = CurrentPage * PageSize,
+            Sorting = CurrentSorting
+        };
+
+        var result = await CompanyAppService.GetBlogPostListAsync(filter);
+        BlogPosts = result.Items;
+        TotalCount = (int)result.TotalCount;
+    }
+
+    private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<CompanyBlogPostDto> e)
+    {
+        PageSize = e.PageSize;
+        CurrentPage = e.Page - 1;
+        CurrentSorting = string.Join(",", e.Columns
+            .Where(c => c.SortDirection != SortDirection.Default)
+            .Select(c => $"{c.Field} {(c.SortDirection == SortDirection.Descending ? "DESC" : "")}"));
+
+        await GetDataAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    protected async Task PublishAsync(Guid id)
+    {
+        var confirmMessage = L["Message:BlogPostPublicationConfirmation"];
+        var message = confirmMessage;
+        if (!await UiMessageService.Confirm(message))
+        {
+            return;
+        }
+
+        await CompanyAppService.PublishBlogPostAsync(id);
+        await GetDataAsync();
+    }
+
+    protected async Task UnpublishAsync(Guid id)
+    {
+        var confirmMessage = L["Message:BlogPostCancelPublicationConfirmation"];
+        var message = confirmMessage;
+        if (!await UiMessageService.Confirm(message))
+        {
+            return;
+        }
+
+        await CompanyAppService.UnpublishBlogPostAsync(id);
+        await GetDataAsync();
+    }
+    
+    protected override Task CreateAsync()
+    {
+        NavigationManager.NavigateTo("/management/blogpost/new");
+        return Task.CompletedTask;
+    }
+
+    protected override Task EditAsync(Guid id)
+    {
+        NavigationManager.NavigateTo($"/management/blogpost/edit/{id}");
+        return Task.CompletedTask;
+    }
+
+}

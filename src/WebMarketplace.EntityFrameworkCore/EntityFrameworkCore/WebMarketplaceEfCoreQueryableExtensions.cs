@@ -42,6 +42,7 @@ public static class WebMarketplaceEfCoreQueryableExtensions
         }
 
         return queryable
-            .Include(x => x.Images);
+            .Include(x => x.Images)
+            .Include(x => x.BlogPosts);
     }
 }

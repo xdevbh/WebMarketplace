@@ -144,8 +144,7 @@ public class Company : FullAuditedAggregateRoot<Guid>
     public Company UpdateBlogPost(
         Guid blogPostId,
         string title,
-        string content,
-        bool isPublished)
+        string content)
     {
         var blogPost = BlogPosts.FirstOrDefault(x => x.Id == blogPostId);
         if (blogPost is null)
@@ -155,7 +154,6 @@ public class Company : FullAuditedAggregateRoot<Guid>
 
         blogPost.SetTitle(title);
         blogPost.SetContent(content);
-        blogPost.IsPublished = isPublished;
         return this;
     }
     
@@ -168,6 +166,18 @@ public class Company : FullAuditedAggregateRoot<Guid>
         }
 
         BlogPosts.Remove(blogPost);
+        return this;
+    }
+    
+    public Company PublishBlogPost(Guid blogPostId, bool isPublished)
+    {
+        var blogPost = BlogPosts.FirstOrDefault(x => x.Id == blogPostId);
+        if (blogPost is null)
+        {
+            throw new BusinessException(WebMarketplaceDomainErrorCodes.CompanyBlogPostNotFound);
+        }
+
+        blogPost.Publish(isPublished);
         return this;
     }
     

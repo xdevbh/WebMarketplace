@@ -137,13 +137,23 @@ public class WebMarketplaceMenuContributor : IMenuContributor
             order: 4
         );
         management.AddItem(managementProducts);
+        
+        var managementBlogPosts = new ApplicationMenuItem(
+            WebMarketplaceMenus.ManagementProduct,
+            l["Menu:BlogPosts"],
+            "/management/blogpost/list",
+            icon: "fa fa-message",
+            order: 5
+        );
+        management.AddItem(managementBlogPosts);
+
 
         var managementCompanies = new ApplicationMenuItem(
             WebMarketplaceMenus.ManagementCompany,
             l["Menu:Company"],
             "/management/company",
             icon: "fa fa-building",
-            order: 5
+            order: 6
         );
         management.AddItem(managementCompanies);
     }

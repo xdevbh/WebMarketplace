@@ -22,6 +22,7 @@
     "Menu:CreateOrder": "Create order",
     "Menu:MyOrders": "My orders",
     "Menu:MyAddresses": "My addresses",
+    "Menu:BlogPosts": "Blog posts",
 
     "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP framework. For more information visit",
     "Welcome": "Welcome",
@@ -119,6 +120,8 @@
     "Message:OrderCancelConfirmation": "Are you sure you want to cancel the order?",
     "Message:AddressIsRequired": "Address is required.",
     "Message:AddressDeletionConfirmation": "Are you sure you want to delete the address?",
+    "Message:BlogPostPublicationConfirmation": "Are you sure you want to publish the blog post?",
+    "Message:BlogPostCancelPublicationConfirmation": "Are you sure you want to unpublish the blog post?",
     
     "Page:AdministrationCompanies": "Companies | Administration",
     "Page:AdministrationCreateCompany": "Create Company | Administration",
@@ -130,6 +133,9 @@
     "Page:ManagementUpdateProduct": "Edit products | Management",
     "Page:ManagementOrders": "Orders | Management",
     "Page:ManagementUpdateOrder": "Edit order | Management",
+    "Page:ManagementBlogPosts": "Blog posts | Management",
+    "Page:ManagementCreateBlogPost": "Create blog post | Management",
+    "Page:ManagementUpdateBlogPost": "Edit blog post | Management",
     "Page:Product": "Product",
     "Page:Products": "Products",
     "Page:Cart": "Cart",
@@ -180,6 +186,9 @@
     "Header:ShippingAddress": "Shipping address",
     "Header:MyAddresses": "My addresses",
     "Header:MyOrders": "My orders",
+    "Header:BlogPosts": "Blog posts",
+    "Header:CreateBlogPost": "Create blog post",
+    "Header:UpdateBlogPost": "Edit blog post",
 
     "Field:Id": "ID",
     "Field:UserName": "UserName",
@@ -229,6 +238,8 @@
     "Field:BuyerEmail": "Buyer email",
     "Field:CreationTime": "Creation time",
     "Field:EnableSearch": "Enable search",
+    "Field:Title": "Title",
+    "Field:Content": "Content",
     
     "Text:ReviewsCount" : "reviews",
     "Info:CartIsEmpty": "Cart is empty."
